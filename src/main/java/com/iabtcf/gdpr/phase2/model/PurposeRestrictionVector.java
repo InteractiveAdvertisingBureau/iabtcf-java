@@ -23,7 +23,7 @@ public class PurposeRestrictionVector {
                         case 1:
                             return (vendor.getFlexiblePurposes().contains(purposeId) && vendor.getLegIntPurposes().contains(purposeId));
                         case 2:
-                            return (vendor.getLegIntPurposes().contains(purposeId) && vendor.getPurposes().contains(purposeId));
+                            return (vendor.getFlexiblePurposes().contains(purposeId) && vendor.getPurposes().contains(purposeId));
 
                     }
                     return false;
