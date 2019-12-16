@@ -57,7 +57,7 @@ public class CoreTCEncoder implements BaseSegmentEncoder {
                         } else if (encoder instanceof FixedVectorEncoder || encoder instanceof VendorVectorEncoder) {
                             SortedVector vector = (SortedVector) encoder.decode(bits);
                             TCModelEnum.valueOf(key).setValue(tcModel, vector);
-                            tcKeyLength = vector.bitLength;
+                            tcKeyLength = vector.getBitLength();
                         }
                         bStringIdx.addAndGet(tcKeyLength);
                     }
