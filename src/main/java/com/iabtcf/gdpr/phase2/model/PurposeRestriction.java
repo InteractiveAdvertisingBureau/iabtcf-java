@@ -20,13 +20,24 @@ public class PurposeRestriction {
 
     public static PurposeRestriction unHash(String hash) {
         List<String> splitUp = Arrays.asList(hash.split(hashSeparator));
-        PurposeRestriction purpRestriction = new PurposeRestriction();
+        PurposeRestriction purposeRestriction = null;
         if(splitUp.size()!=2) {
             // throw error
         }
-        purpRestriction.purposeId = Integer.parseInt(splitUp.get(0));
-        purpRestriction.restrictionType.setType(Integer.parseInt(splitUp.get(1)));
-        return purpRestriction;
+        int purposeId = Integer.parseInt(splitUp.get(0));
+        int restrictionType = Integer.parseInt(splitUp.get(1));
+        switch(restrictionType) {
+            case 0:
+                purposeRestriction = new PurposeRestriction(purposeId,RestrictionType.NOT_ALLOWED);
+                break;
+            case 1:
+                purposeRestriction = new PurposeRestriction(purposeId,RestrictionType.REQUIRE_CONSENT);
+                break;
+            case 2:
+                purposeRestriction = new PurposeRestriction(purposeId,RestrictionType.REQUIRE_LI);
+                break;
+        }
+        return purposeRestriction;
 
     }
 

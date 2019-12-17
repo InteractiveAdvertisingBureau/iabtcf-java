@@ -16,7 +16,7 @@ public class Base64Url {
     }
 
     private static final int ONE_BYTE = 8;
-    private static final Pattern p = Pattern.compile("[A-Z0-9]",Pattern.CASE_INSENSITIVE);
+    private static final Pattern p = Pattern.compile("[A-Z0-9\\-_]*",Pattern.CASE_INSENSITIVE);
     /**
      * decodes a base64url encoded bitfield string
      *

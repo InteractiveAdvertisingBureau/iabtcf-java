@@ -68,7 +68,7 @@ public class PurposeRestrictionVector {
         return list;
     }
 
-    public List<PurposeRestriction> getAllRestriction(int vendorId) {
+    public List<PurposeRestriction> getAllRestriction() {
         List<PurposeRestriction> list = new ArrayList<>();
         this.map.forEach((hash,bst) -> {
             list.add(PurposeRestriction.unHash(hash));
