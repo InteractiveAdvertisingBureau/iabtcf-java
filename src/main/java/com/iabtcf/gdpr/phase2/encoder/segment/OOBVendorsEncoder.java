@@ -6,6 +6,7 @@ import com.iabtcf.gdpr.phase2.encoder.Base64Url;
 import com.iabtcf.gdpr.phase2.encoder.BaseEncoder;
 import com.iabtcf.gdpr.phase2.encoder.BitLength;
 import com.iabtcf.gdpr.phase2.encoder.field.FieldEncoderMap;
+import com.iabtcf.gdpr.phase2.model.Fields;
 import com.iabtcf.gdpr.phase2.model.SortedVector;
 
 import java.util.Map;
@@ -27,17 +28,16 @@ public class OOBVendorsEncoder implements BaseSegmentEncoder {
         int segType = (int)(encMap.get("segmentType").decode(bits.substring(index,index + Optional.ofNullable(BitLength.fieldLengths.get("segmentType")).orElse(0))));
         String segmentName = "";
         switch(segType) {
-            case 0:
-                segmentName = SegmentType.zero;
-                break;
             case 1:
                 segmentName = SegmentType.one;
                 break;
             case 2:
                 segmentName = SegmentType.two;
-                break;
-            case 3:
-                segmentName = SegmentType.three;
+                /**
+                 * if a vendors allowed segment exists, then support for OOB signaling is
+                 * implied
+                 */
+                TCModelEnum.valueOf(Fields.supportOOB).setValue(tcModel,true);
                 break;
         }
         BaseEncoder<SortedVector> encoder = (BaseEncoder<SortedVector>) encMap.get(segmentName);

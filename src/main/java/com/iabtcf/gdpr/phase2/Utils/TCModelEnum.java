@@ -298,6 +298,17 @@ public enum TCModelEnum {
         public void setValue(TCModel tcModel, Object value) {
             tcModel.setNumCustomPurposes((Integer) value);
         }
+    },
+    supportOOB(){
+        @Override
+        public Object getValue(TCModel tcModel) {
+            return tcModel.getSupportOOB();
+        }
+
+        @Override
+        public void setValue(TCModel tcModel, Object value) {
+            tcModel.setSupportOOB((Boolean)value);
+        }
     };
 
     public abstract Object getValue(TCModel tcModel);

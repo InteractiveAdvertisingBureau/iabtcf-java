@@ -43,9 +43,8 @@ public class TCString {
                 }
             } else {
                 // first char will contain 6 bits, we only need the first 3
-                //TODO require fix
-                String firstChar = Base64Url.decode(String.valueOf(segment.charAt(0)-'A')); //I
-                String segTypeBits = firstChar.substring(0, Optional.ofNullable(BitLength.fieldLengths.get("segmentType")).orElse(0));
+                String bits = Base64Url.decode(segment);
+                String segTypeBits = bits.substring(0, Optional.ofNullable(BitLength.fieldLengths.get("segmentType")).orElse(0));
                 int segType = intEncoder.decode(segTypeBits);
 
                 switch (segType) {
