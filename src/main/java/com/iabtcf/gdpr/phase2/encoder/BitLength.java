@@ -34,7 +34,7 @@ public class BitLength {
         put("restrictionType",2);
         put("numRestrictions",12);
         put("segmentType",3);
-        put("publisherPurposeConsents",24);
+        put("publisherConsents",24);
         put("publisherLegitimateInterest",24);
         put("numCustomPurposes",6);
     }};
