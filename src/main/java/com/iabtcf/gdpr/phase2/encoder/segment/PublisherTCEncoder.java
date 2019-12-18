@@ -32,12 +32,13 @@ public class PublisherTCEncoder implements BaseSegmentEncoder {
         }
         AtomicInteger bStringIdx = new AtomicInteger();
         String bitField = Base64Url.decode(encodedString);
+        String finalBitField = bitField.substring(Optional.ofNullable(BitLength.fieldLengths.get("segmentType")).orElse(0));
         encodedSequence.forEach(key -> {
             BaseEncoder encoder = encMap.get(key);
             Object keyLength = null;
             keyLength = Optional.ofNullable(BitLength.fieldLengths.get(key)).orElse(0);
             int numBits = (int) keyLength > 0 ? (int)keyLength : tcModel.getNumCustomPurposes();
-            TCModelEnum.valueOf(key).setValue(tcModel,encoder.decode(bitField.substring(bStringIdx.get(), bStringIdx.get() + numBits)));
+            TCModelEnum.valueOf(key).setValue(tcModel,encoder.decode(finalBitField.substring(bStringIdx.get(), bStringIdx.get() + numBits)));
             bStringIdx.addAndGet(numBits);
         });
         return tcModel;
