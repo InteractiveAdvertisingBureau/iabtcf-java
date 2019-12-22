@@ -59,17 +59,8 @@ public class VendorVectorEncoder implements BaseEncoder<SortedVector> {
         index += Optional.ofNullable(BitLength.fieldLengths.get("encodingType")).orElse(0);
 
         if(encodingType.getType() == VectorEncodingType.RANGE.getType()) {
-            Boolean defaultValue = booleanEncoder.decode(Character.toString(value.charAt(index)));
-            index += Optional.ofNullable(BitLength.fieldLengths.get("encodingType")).orElse(0);
-            vector = new SortedVector();
-
-            if(defaultValue) {
-                for(int i=1; i<=maxId; i++) {
-                    vector.getSet().add(i);
-                }
-            }
             int numEntries = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("numEntries")).orElse(0)));
-
+            vector = new SortedVector();
             for(int i=0;i< numEntries; i++) {
                 Boolean isIdRange = booleanEncoder.decode(Character.toString(value.charAt(index)));
                 index += Optional.ofNullable(BitLength.fieldLengths.get("singleOrRange")).orElse(0);
@@ -80,19 +71,11 @@ public class VendorVectorEncoder implements BaseEncoder<SortedVector> {
                     int secondId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("vendorId")).orElse(0)));
 
                     for(int j=firstId; j<=secondId; j++) {
-                        if(defaultValue) {
-                            vector.getSet().remove(j);
-                        } else {
-                            vector.getSet().add(j);
-                        }
+                        vector.getSet().add(j);
                         vector.setBitLength(0);
                     }
                 } else {
-                    if(defaultValue) {
-                        vector.getSet().remove(firstId);
-                    } else {
-                        vector.getSet().add(firstId);
-                    }
+                    vector.getSet().add(firstId);
                     vector.setBitLength(0);
                 }
             }

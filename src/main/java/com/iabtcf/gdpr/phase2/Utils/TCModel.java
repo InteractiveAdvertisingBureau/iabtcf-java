@@ -247,7 +247,7 @@ public class TCModel {
             //throw error
         }
         gvlMap.forEach((key,value)->{
-            vector.getSet().add((Integer) key);
+            vector.getSet().add(key);
         });
         vector.setBitLength(0);
     }

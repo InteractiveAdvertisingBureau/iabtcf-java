@@ -43,20 +43,22 @@ public class OOBVendorsEncoder implements BaseSegmentEncoder {
         BaseEncoder<SortedVector> encoder = (BaseEncoder<SortedVector>) encMap.get(segmentName);
         SortedVector vector = encoder.decode(bits.substring(Optional.ofNullable(BitLength.fieldLengths.get("segmentType")).orElse(0)));
 
-        SortedVector set = new SortedVector();
-        for(int i=0; i <= (int)vector.getSet().first(); i++) {
-            if(vector.getSet().contains(i)){
-                set = (SortedVector) TCModelEnum.valueOf(segmentName).getValue(tcModel);
-                set.getSet().add(i);
-                if(set.getBitLength()!=0) {
-                    set.setBitLength(0);
+        if(!vector.getSet().isEmpty()) {
+            SortedVector set = new SortedVector();
+            for (int i = 0; i <= (int) vector.getSet().first(); i++) {
+                if (vector.getSet().contains(i)) {
+                    set = (SortedVector) TCModelEnum.valueOf(segmentName).getValue(tcModel);
+                    set.getSet().add(i);
+                    if (set.getBitLength() != 0) {
+                        set.setBitLength(0);
+                    }
+
                 }
 
             }
-
-        }
-        if(set.getSet().size()>0) {
-            TCModelEnum.valueOf(segmentName).setValue(tcModel, set);
+            if(set.getSet().size()>0) {
+                TCModelEnum.valueOf(segmentName).setValue(tcModel, set);
+            }
         }
         return tcModel;
 
