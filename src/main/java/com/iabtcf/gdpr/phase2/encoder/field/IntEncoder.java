@@ -1,6 +1,8 @@
 package com.iabtcf.gdpr.phase2.encoder.field;
 
 import com.iabtcf.gdpr.phase2.encoder.BaseEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IntEncoder implements BaseEncoder<Integer> {
     private IntEncoder() {
@@ -10,6 +12,7 @@ public class IntEncoder implements BaseEncoder<Integer> {
     public static IntEncoder getInstance() {
         return instance;
     }
+    private static final Logger logger = LogManager.getLogger(IntEncoder.class);
 //    public static String encode(Integer value,int numBits) {
 //        String bitString="";
 //        bitString = value.toBinaryString(2);
@@ -25,6 +28,11 @@ public class IntEncoder implements BaseEncoder<Integer> {
 //    }
 
     public Integer decode(String value) {
-        return Integer.parseInt(value,2);
+        try {
+            return Integer.parseInt(value,2);
+        } catch(Exception e){
+            logger.error("IntEncoder's decoding failed:" + e.getMessage());
+        }
+        return null;
     }
 }

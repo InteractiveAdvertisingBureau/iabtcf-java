@@ -2,6 +2,8 @@ package com.iabtcf.gdpr.phase2.Utils;
 
 import com.iabtcf.gdpr.phase2.model.ConsentLanguages;
 import com.iabtcf.gdpr.phase2.model.gvl.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.util.*;
@@ -56,7 +58,7 @@ enum PurposeSubType {
 
 /**
  * @Usage
-     * My Library is right now only implementing following cunstructor
+     * My Library is right now only implementing following constructor
          @Constructor GVL(GVL vendorList)
      * Promises are Ignored in the GVL loading for now
 
@@ -66,6 +68,7 @@ enum PurposeSubType {
 public class GVL extends VendorList {
     private static Map<String, Declarations> LANGUAGE_CACHE = new HashMap<String, Declarations>();
     public static String DEFAULT_LANGUAGE = "EN";
+    private static final Logger logger = LogManager.getLogger(GVL.class);
 
     /**
      * @static
@@ -132,12 +135,6 @@ public class GVL extends VendorList {
      * ```
      */
     public static String languageFilename = "purposes-[LANG].json";
-
-    /**
-     * @param {Promise} resolved when this com.gdpr2.Utils.GVL object is populated with the data
-     * or rejected if there is an error
-     */
-//    public Promise<ObjectUtils.Null> readyPromise;
 
     /**
      * @param {number} gvlSpecificationVersion - schema version for the com.gdpr2.Utils.GVL that is used
@@ -227,28 +224,8 @@ public class GVL extends VendorList {
     /**
      * Set of available consent languages published by the IAB
      */
-    private ConsentLanguages consentLanguages  = new ConsentLanguages();
+    private ConsentLanguages consentLanguages  = ConsentLanguages.getInstance();
 
-    /**
-     * @param {VersionOrVendorList} [versionOrVendorList] - can be either a
-     * [[VendorList]] object  or a version number represented as a string or
-     * number to download.  If nothing is passed the latest version of the com.gdpr2.Utils.GVL
-     * will be loaded
-     */
-//    public GVL(String version) {
-//        String url = GVL.baseUrl;
-//        this.lang = GVL.DEFAULT_LANGUAGE;
-//
-//        if(url == null || url.isEmpty()) {
-//            //throw error
-//        }
-//        url  = this.addTrailingSlashMaybe(url);
-//        if(Integer.parseInt(version) > 0) {
-//            url += GVL.versionedFilename.replace("[VERSION]",version);
-//            this.getJson(url);
-//        }
-////        this.readyPromise.succeeded();
-//    }
 
     public GVL(GVL vendorList) {
         this.lang = GVL.DEFAULT_LANGUAGE;
@@ -301,32 +278,31 @@ public class GVL extends VendorList {
 //        return null;
 //    }
 
-//    public CompletableFuture<String> changeLanguage(String lang) {
+    //    public void changeLanguage(String lang) {
 //        lang = lang.toUpperCase();
 //        String finalLang = lang;
-//        CompletableFuture<String> stringCompletableFuture = CompletableFuture.supplyAsync(()->{
-//                if(this.consentLanguages.getLanguages().contains(finalLang)) {
-//                    if(!finalLang.equals(this.lang)) {
-//                        if(com.gdpr2.Utils.GVL.LANGUAGE_CACHE.containsKey(finalLang)) {
-//                            final Declarations cached = com.gdpr2.Utils.GVL.LANGUAGE_CACHE.get(finalLang);
-//                            this.gvlSpecificationNumber = cached.getGvlSpecificationVersion();
-//                            this.vendorListVersion = cached.getVendorListVersion();
-//                            this.tcfPolicyVersion = cached.getTcfPolicyVersion();
-//                            this.lastUpdated = cached.getLastUpdate();
-//                            this.purposes = cached.getPurposes();
-//                            this.specialPurposes = cached.getSpecialPurposes();
-//                            this.features = cached.getFeatures();
-//                            this.specialFeatures = cached.getSpecialFeatures();
-//                            this.stacks = cached.getStacks();
-//                        }
-//                    }
-//
+//        if(this.consentLanguages.getLanguages().contains(finalLang)) {
+//            if(!finalLang.equals(this.lang)) {
+//                if(GVL.LANGUAGE_CACHE.containsKey(finalLang)) {
+//                    final Declarations cached = GVL.LANGUAGE_CACHE.get(finalLang);
+//                    this.gvlSpecificationNumber = cached.getGvlSpecificationVersion();
+//                    this.vendorListVersion = cached.getVendorListVersion();
+//                    this.tcfPolicyVersion = cached.getTcfPolicyVersion();
+//                    this.lastUpdated = cached.getLastUpdate();
+//                    this.purposes = cached.getPurposes();
+//                    this.specialPurposes = cached.getSpecialPurposes();
+//                    this.features = cached.getFeatures();
+//                    this.specialFeatures = cached.getSpecialFeatures();
+//                    this.stacks = cached.getStacks();
+//                } else {
+//                    //TODO: load from URL
 //                }
+//            }
 //
+//        } else {
+//            logger.error("Invalid Language: " + lang);
 //        }
 //
-//        });
-//        return stringCompletableFuture;
 //    }
     private String addTrailingSlashMaybe(String url) {
         if(url.charAt(url.length() - 1)!= '/') {

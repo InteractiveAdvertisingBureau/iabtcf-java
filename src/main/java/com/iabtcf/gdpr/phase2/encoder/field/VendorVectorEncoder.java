@@ -3,6 +3,8 @@ package com.iabtcf.gdpr.phase2.encoder.field;
 import com.iabtcf.gdpr.phase2.encoder.BaseEncoder;
 import com.iabtcf.gdpr.phase2.model.SortedVector;
 import com.iabtcf.gdpr.phase2.encoder.BitLength;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ public class VendorVectorEncoder implements BaseEncoder<SortedVector> {
     public FixedVectorEncoder fixedVectorEncoder = FixedVectorEncoder.getInstance();
     public IntEncoder intEncoder = IntEncoder.getInstance();
     public BooleanEncoder booleanEncoder = BooleanEncoder.getInstance();
+    private static final Logger logger = LogManager.getLogger(VendorVectorEncoder.class);
 
 //    public static String encode(SortedSet<Integer> value) {
 //        List<Integer> range = new ArrayList<>();
@@ -52,40 +55,45 @@ public class VendorVectorEncoder implements BaseEncoder<SortedVector> {
 //    }
 
     public final SortedVector decode(String value) {
-        SortedVector vector = null;
-        int index = 0;
-        int maxId = intEncoder.decode(value.substring(index,index += Optional.ofNullable(BitLength.fieldLengths.get("maxId")).orElse(0)));
-        VectorEncodingType encodingType = VectorEncodingType.valueOf(intEncoder.decode(Character.toString(value.charAt(index)))==0?"FIELD":"RANGE");
-        index += Optional.ofNullable(BitLength.fieldLengths.get("encodingType")).orElse(0);
+        try {
+            SortedVector vector = null;
+            int index = 0;
+            int maxId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("maxId")).orElse(0)));
+            VectorEncodingType encodingType = VectorEncodingType.valueOf(intEncoder.decode(Character.toString(value.charAt(index))) == 0 ? "FIELD" : "RANGE");
+            index += Optional.ofNullable(BitLength.fieldLengths.get("encodingType")).orElse(0);
 
-        if(encodingType.getType() == VectorEncodingType.RANGE.getType()) {
-            int numEntries = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("numEntries")).orElse(0)));
-            vector = new SortedVector();
-            for(int i=0;i< numEntries; i++) {
-                Boolean isIdRange = booleanEncoder.decode(Character.toString(value.charAt(index)));
-                index += Optional.ofNullable(BitLength.fieldLengths.get("singleOrRange")).orElse(0);
+            if (encodingType.getType() == VectorEncodingType.RANGE.getType()) {
+                int numEntries = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("numEntries")).orElse(0)));
+                vector = new SortedVector();
+                for (int i = 0; i < numEntries; i++) {
+                    Boolean isIdRange = booleanEncoder.decode(Character.toString(value.charAt(index)));
+                    index += Optional.ofNullable(BitLength.fieldLengths.get("singleOrRange")).orElse(0);
 
-                int firstId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("vendorId")).orElse(0)));
+                    int firstId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("vendorId")).orElse(0)));
 
-                if(isIdRange) {
-                    int secondId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("vendorId")).orElse(0)));
+                    if (isIdRange) {
+                        int secondId = intEncoder.decode(value.substring(index, index += Optional.ofNullable(BitLength.fieldLengths.get("vendorId")).orElse(0)));
 
-                    for(int j=firstId; j<=secondId; j++) {
-                        vector.getSet().add(j);
+                        for (int j = firstId; j <= secondId; j++) {
+                            vector.getSet().add(j);
+                            vector.setBitLength(0);
+                        }
+                    } else {
+                        vector.getSet().add(firstId);
                         vector.setBitLength(0);
                     }
-                } else {
-                    vector.getSet().add(firstId);
-                    vector.setBitLength(0);
                 }
-            }
 
-        } else {
-            String bitField = value.substring(index, index += maxId);
-            vector = fixedVectorEncoder.decode(bitField);
+            } else {
+                String bitField = value.substring(index, index += maxId);
+                vector = fixedVectorEncoder.decode(bitField);
+            }
+            vector.setBitLength(index);
+            return vector;
+        } catch (Exception e) {
+            logger.error("VendorVectorEncoder's decoder failed: " + e.getMessage());
         }
-        vector.setBitLength(index);
-        return vector;
+        return null;
     }
 
 //    private static String buildRangeEncoding(List<List<Integer>> ranges) {

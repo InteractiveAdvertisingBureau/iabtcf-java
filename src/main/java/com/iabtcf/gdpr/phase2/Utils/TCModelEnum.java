@@ -86,7 +86,8 @@ public enum TCModelEnum {
 
         @Override
         public void setValue(TCModel tcModel, Object value) {
-            tcModel.setConsentLanguage((String)value);
+            //TODO: Implement it in GVL class
+//            tcModel.setConsentLanguage((String)value);
         }
     },
     vendorListVersion(){
