@@ -2,6 +2,8 @@ package com.iabtcf.gdpr.phase2.encoder.field;
 
 
 import com.iabtcf.gdpr.phase2.encoder.BaseEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LangEncoder implements BaseEncoder<String> {
     private LangEncoder() {
@@ -12,6 +14,7 @@ public class LangEncoder implements BaseEncoder<String> {
     public static LangEncoder getInstance() {
         return instance;
     }
+    private static final Logger logger = LogManager.getLogger(LangEncoder.class);
 //    public static String encode(String value,int numBits) {
 //        value = value.toUpperCase();
 //        final int ASCII_START = 65;
@@ -31,15 +34,14 @@ public class LangEncoder implements BaseEncoder<String> {
 
     public final String decode(String value) {
         String retr = "";
-
-        if(value.length() % 2 == 0) {
+        if(value!=null && !value.isEmpty() && value.length() % 2 == 0) {
             final int ASCII_START = 65;
             final int mid = value.length() / 2;
             final int firstLetter = intEncoder.decode(value.substring(0, mid)) + ASCII_START;
             final int secondLetter = intEncoder.decode(value.substring(mid)) + ASCII_START;
             retr = fromCharCode(firstLetter) + fromCharCode(secondLetter);
         } else {
-            // throw error;
+            logger.error("Decoding bits should be even in length and greater than 0. " + value);
         }
         return retr;
 

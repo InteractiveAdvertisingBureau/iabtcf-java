@@ -4,6 +4,8 @@ import com.iabtcf.gdpr.phase2.model.ConsentLanguages;
 import com.iabtcf.gdpr.phase2.model.PurposeRestrictionVector;
 import com.iabtcf.gdpr.phase2.model.SortedVector;
 import com.iabtcf.gdpr.phase2.model.gvl.Purpose;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -55,7 +57,9 @@ public class TCModel {
 
     public PurposeRestrictionVector publisherRestrictions = new PurposeRestrictionVector();
 
-    public ConsentLanguages consentLanguages = new ConsentLanguages();
+    public ConsentLanguages consentLanguages = ConsentLanguages.getInstance();
+
+    private static final Logger logger = LogManager.getLogger(TCModel.class);
 
 
     public TCModel(GVL gvl) {
@@ -76,7 +80,7 @@ public class TCModel {
         if(version > 0 && version <=TCModel.MAX_ENCODING_VERSION) {
             this.version = version;
         } else {
-            // throw error
+            logger.error("Incorrect Version: " + version);
         }
 
     }
@@ -89,7 +93,7 @@ public class TCModel {
         if(consentScreen > -1) {
             this.consentScreen = consentScreen;
         } else {
-            // throw error
+            logger.error("Incorrect consentScreen: " + consentScreen);
         }
     }
 
@@ -133,7 +137,7 @@ public class TCModel {
         if(p.matcher(countryCode).matches()) {
             this.publisherCountryCode = countryCode.toUpperCase();
         } else {
-            // throw error
+            logger.error("Incorrect CountryCode : " + countryCode);
         }
 
 
@@ -151,18 +155,18 @@ public class TCModel {
         return consentLanguage;
     }
 
-    public void setConsentLanguage(String lang) {
-        lang = lang.toUpperCase();
-        if(this.consentLanguages.getLanguages().contains(lang)) {
-            this.consentLanguage = lang;
-            if(this.gvl!=null && GVL.getBaseUrl() !=null && !GVL.getBaseUrl().isEmpty()) {
-//                this.gvl.changeLanguage(lang);
-            }
-        } else {
-            // throw error
-        }
-
-    }
+//    public void setConsentLanguage(String lang) {
+//        lang = lang.toUpperCase();
+//        if(this.consentLanguages.getLanguages().contains(lang)) {
+//            this.consentLanguage = lang;
+//            if(this.gvl!=null && GVL.getBaseUrl() !=null && !GVL.getBaseUrl().isEmpty()) {
+////                this.gvl.changeLanguage(lang);
+//            }
+//        } else {
+//            // throw error
+//        }
+//
+//    }
 
     public int getCmpId() {
         return this.cmpId;
@@ -172,7 +176,7 @@ public class TCModel {
         if(cmpId>1) {
             this.cmpId = cmpId;
         } else {
-            // throw error
+            logger.error("Invalid cmpId: "+ cmpId);
         }
     }
 
@@ -184,7 +188,7 @@ public class TCModel {
         if(cmpVersion > 1) {
             this.cmpVersion = cmpVersion;
         } else {
-            //throw error
+            logger.error("Invalid cmpVersion:" + cmpVersion);
         }
     }
 
@@ -198,7 +202,7 @@ public class TCModel {
                 this.vendorListVersion = vendorListVersion;
             }
         } else {
-            // throw error
+            logger.error("Invalid VendorListVersion:" + vendorListVersion);
         }
     }
 
@@ -244,10 +248,10 @@ public class TCModel {
      */
     private void setAllOnVector(Map gvlMap, SortedVector vector) {
         if(this.gvl == null) {
-            //throw error
+            logger.error("GVL is null");
         }
         gvlMap.forEach((key,value)->{
-            vector.getSet().add((Integer) key);
+            vector.getSet().add(key);
         });
         vector.setBitLength(0);
     }
