@@ -8,5 +8,5 @@ import java.util.List;
 public class Stacks extends GVLMapItem {
     String description;
     List<Integer> purposes;
-    List<Integer> specialFeature;
+    List<Integer> specialFeatures;
 }
