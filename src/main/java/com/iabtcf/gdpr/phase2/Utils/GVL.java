@@ -139,7 +139,7 @@ public class GVL extends VendorList {
     /**
      * @param {number} gvlSpecificationVersion - schema version for the com.gdpr2.Utils.GVL that is used
      */
-    public int gvlSpecificationNumber;
+    public int gvlSpecificationVersion;
 
     /**
      * @param {number} incremented with each published file change
@@ -261,7 +261,7 @@ public class GVL extends VendorList {
 
     private void cacheLanguage(String lang) {
         Declarations dec = new Declarations();
-        dec.setGvlSpecificationVersion(this.gvlSpecificationNumber);
+        dec.setGvlSpecificationVersion(this.gvlSpecificationVersion);
         dec.setVendorListVersion(this.vendorListVersion);
         dec.setTcfPolicyVersion(this.tcfPolicyVersion);
         dec.setLastUpdate(this.lastUpdated);
@@ -285,7 +285,7 @@ public class GVL extends VendorList {
 //            if(!finalLang.equals(this.lang)) {
 //                if(GVL.LANGUAGE_CACHE.containsKey(finalLang)) {
 //                    final Declarations cached = GVL.LANGUAGE_CACHE.get(finalLang);
-//                    this.gvlSpecificationNumber = cached.getGvlSpecificationVersion();
+//                    this.gvlSpecificationVersion = cached.getGvlSpecificationVersion();
 //                    this.vendorListVersion = cached.getVendorListVersion();
 //                    this.tcfPolicyVersion = cached.getTcfPolicyVersion();
 //                    this.lastUpdated = cached.getLastUpdate();
@@ -319,7 +319,7 @@ public class GVL extends VendorList {
         return gvlObject!=null && gvlObject.getVendors()!=null;
     }
     private void deserialize(GVL gvlObject) {
-        this.gvlSpecificationNumber = gvlObject.gvlSpecificationNumber;
+        this.gvlSpecificationVersion = gvlObject.gvlSpecificationVersion;
         this.vendorListVersion = gvlObject.vendorListVersion;
         this.tcfPolicyVersion = gvlObject.tcfPolicyVersion;
         this.lastUpdated = gvlObject.lastUpdated; // check here
