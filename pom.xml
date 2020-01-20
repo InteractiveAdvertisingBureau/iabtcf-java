@@ -5,10 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.iabtcf</groupId>
-    <artifactId>gdpr-phase2</artifactId>
-    <version>1.0</version>
-    <name>gdpr-phase2</name>
+    <artifactId>iabtcf-core</artifactId>
+    <version>1.0.0</version>
     <url>http://maven.apache.org</url>
+    <name>IAB TCF Core Library</name>
+    <packaging>jar</packaging>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
     <build>
         <plugins>
             <plugin>
