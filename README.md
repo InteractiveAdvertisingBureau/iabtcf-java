@@ -38,56 +38,33 @@ public class IabTCFCore {
     }
 }
 ```
-# TCModel
-
-[API Docs](https://www.iabtcf.com/api/core/classes/tcmodel.html)
-
-### Creating a new TCModel
-
-To encode a `TCModel` a `GVL` must be included.
-
-```java
-import com.iabtcf.TCModel;
-// creates a TCModel
-TCModel tcModel = new TCModel();
-
-// to encode you must have a cmpId and cmpVersion
-tcModel.setCmpId(myCMPID)
-tcModel.setCmpVersion(myCMPVersion)
-
-/**
- * we now have a TCString assigned with a GVL which will set vendorListVersion,
- * tcfPolicyVersion and consentLanguage
- */
-
-```
 **Note:-** The current library only support decoding of TCString(consent String) to [populate](#using) the TCModel.
 
 
-### Vectors
+### SortedVectors
 
-The [`TCModel`](https://www.iabtcf.com/api/core/classes/tcmodel.html) leverages a [`Set`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) style [`Vector`](https://www.iabtcf.com/api/core/classes/vector.html) data structure to set consents, optins, allowed, disclosed, and legitimate interest establishment.  Properties that leverage this data structure are:
+The [`TCModel`]() leverages a [`SortedSet`](https://docs.oracle.com/javase/7/docs/api/java/util/SortedSet.html) style [`Vector`]() data structure to set consents, optins, allowed, disclosed, and legitimate interest establishment.  Properties that leverage this data structure are:
  - **Vendors**
-   - [`vendorConsents`](https://www.iabtcf.com/api/core/classes/tcmodel.html#vendorconsents)
-   - [`vendorLegitimateInterest`](https://www.iabtcf.com/api/core/classes/tcmodel.html#vendorlegitimateinterest)
-   - [`vendorsAllowed`](https://www.iabtcf.com/api/core/classes/tcmodel.html#vendorsallowed)
-   - [`vendorsDisclosed`](https://www.iabtcf.com/api/core/classes/tcmodel.html#vendorsdisclosed)
+   - [`vendorConsents`](#vendorconsents)
+   - [`vendorLegitimateInterest`](#vendorlegitimateinterest)
+   - [`vendorsAllowed`](#vendorsallowed)
+   - [`vendorsDisclosed`](#vendorsdisclosed)
  - **Global Purposes**
-   - [`purposeConsents`](https://www.iabtcf.com/api/core/classes/tcmodel.html#purposeconsents)
-   - [`purposeLegitimateInterest`](https://www.iabtcf.com/api/core/classes/tcmodel.html#legitimateinterest)
+   - [`purposeConsents`](#purposeconsents)
+   - [`purposeLegitimateInterest`](#legitimateinterest)
  - **Special Feature Opt-Ins**
-   - [`specialFeatureOptIns`](https://www.iabtcf.com/api/core/classes/tcmodel.html#specialfeatureoptins)
+   - [`specialFeatureOptIns`](#specialfeatureoptins)
  - **Publisher**
-   - [`publisherConsents`](https://www.iabtcf.com/api/core/classes/tcmodel.html#publisherconsents)
-   - [`publisherCustomConsents`](https://www.iabtcf.com/api/core/classes/tcmodel.html#publishercustomconsents)
-   - [`publisherLegitimateInterest`](https://www.iabtcf.com/api/core/classes/tcmodel.html#publisherlegitimateinterest)
-   - [`publisherCustomLegitimateInterest`](https://www.iabtcf.com/api/core/classes/tcmodel.html#publishercustomlegitimateInterest)
-   - [`publisherRestrictions`](https://www.iabtcf.com/api/core/classes/tcmodel.html#publisherrestrictions)
-     - This Vector is a special [`PurposeRestrictionVector`](https://www.iabtcf.com/api/core/classes/purposerestrictionvector.html) of [`PurposeRestrictions`](https://www.iabtcf.com/api/core/classes/purposerestriction.html)
+   - [`publisherConsents`](#publisherconsents)
+   - [`publisherCustomConsents`](#publishercustomconsents)
+   - [`publisherLegitimateInterest`](#publisherlegitimateinterest)
+   - [`publisherCustomLegitimateInterest`](#publishercustomlegitimateInterest)
+   - [`publisherRestrictions`](#publisherrestrictions)
+     - This Vector is a special [`PurposeRestrictionVector`]() of [`PurposeRestrictions`]()
 
 **Example with `vendorConsents`**
 
-The `vendorConsents` property on the `TCModel` is a [`Vector`](https://www.iabtcf.com/api/core/classes/vector.html).  This example illustrates the methods of a [`Vector`](https://www.iabtcf.com/api/core/classes/vector.html). With the exception of the `publisherRestrictions`, which implements a different type of [`PurposeRestrictionVector`](https://www.iabtcf.com/api/core/classes/purposerestrictionvector.html), all of the above Vectors will have this interface and functionality.
+The `vendorConsents` property on the `TCModel` is a [`SortedVector`]().  This example illustrates the methods of a [`SortedVector`](). With the exception of the `publisherRestrictions`, which implements a different type of [`PurposeRestrictionVector`](), all of the above Vectors will have this interface and functionality.
 
 ```java
 // Give Vendor ID 24 consent
@@ -136,7 +113,7 @@ System.out.println(tcModel.getVendorConsents().getSet().size()); // 0
 
 ### Setting Publisher Restrictions
 
-A [Publisher Restriction](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#what-are-publisher-restrictions) is a restriction placed on a Vendor by a publisher limiting the purposes for which that Vendor is allowed to process personal data.  The `TCModel.publisherRestrictions` is an instance of the [`PurposeRestrictionVector`](https://www.iabtcf.com/api/core/classes/purposerestrictionvector.html), which is a vector containing [`PurposeRestrictions`](https://www.iabtcf.com/api/core/classes/purposerestriction.html)'s.
+A [Publisher Restriction](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#what-are-publisher-restrictions) is a restriction placed on a Vendor by a publisher limiting the purposes for which that Vendor is allowed to process personal data.  The `TCModel.publisherRestrictions` is an instance of the [`PurposeRestrictionVector`](), which is a vector containing [`PurposeRestrictions`]()'s.
 
 **Example of setting publisher restrictions**
 
