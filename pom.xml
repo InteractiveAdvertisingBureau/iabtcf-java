@@ -6,7 +6,7 @@
 
     <groupId>com.iabtcf</groupId>
     <artifactId>iabtcf-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-alpha.0</version>
     <url>http://maven.apache.org</url>
     <name>IAB TCF Core Library</name>
     <packaging>jar</packaging>
