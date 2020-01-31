@@ -1,4 +1,4 @@
-package com.iabtcf.gdpr.phase2.encoder.field;
+package com.iabtcf.encoder.field;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,6 +1,6 @@
-package com.iabtcf.gdpr.phase2.encoder.field;
+package com.iabtcf.encoder.field;
 
-import com.iabtcf.gdpr.phase2.model.SortedVector;
+import com.iabtcf.model.SortedVector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

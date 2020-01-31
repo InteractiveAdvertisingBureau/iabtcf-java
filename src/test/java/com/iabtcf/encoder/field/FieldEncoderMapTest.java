@@ -1,7 +1,7 @@
-package com.iabtcf.gdpr.phase2.encoder.field;
+package com.iabtcf.encoder.field;
 
-import com.iabtcf.gdpr.phase2.encoder.BaseEncoder;
-import com.iabtcf.gdpr.phase2.model.Fields;
+import com.iabtcf.encoder.BaseEncoder;
+import com.iabtcf.model.Fields;
 import org.junit.Assert;
 import org.junit.Test;
 
