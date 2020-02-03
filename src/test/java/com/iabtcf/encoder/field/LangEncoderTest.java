@@ -7,8 +7,9 @@ import org.junit.Test;
 public class LangEncoderTest {
     private static final String EXPECTED_VALUE_PT = "PT";
     private static final String EXPECTED_VALUE_EN = "EN";
-    private static final String INVALID_VALUE = "Invalid";
+    private static final String INVALID_VALUE = "invalid_value";
     private static final String EMPTY_VALUE = "";
+    private static final String NULL_VALUE = null;
     private static String VALUE_PT = "";
     private static String VALUE_EN = "";
 
@@ -26,8 +27,17 @@ public class LangEncoderTest {
 
     @Test
     public void whenValueIsInvalidShouldReturnFalse() {
-        Assert.assertNull(IntEncoder.getInstance().decode(EMPTY_VALUE));
         Assert.assertNull(IntEncoder.getInstance().decode(INVALID_VALUE));
+    }
+
+    @Test
+    public void whenValueIsEmptyShouldReturnFalse() {
+        Assert.assertNull(IntEncoder.getInstance().decode(EMPTY_VALUE));
+    }
+
+    @Test
+    public void whenValueIsNullShouldReturnFalse() {
+        Assert.assertNull(IntEncoder.getInstance().decode(NULL_VALUE));
     }
 
     private String getBinaryISO31661Alpha2Code(char c) {

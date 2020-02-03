@@ -6,8 +6,10 @@ import org.junit.Test;
 public class BooleanEncoderTest {
     private static final String VALUE_0 = "0";
     private static final String VALUE_1 = "1";
-    private static final String INVALID_VALUE = "231";
+
+    private static final String INVALID_VALUE = "invalid_value";
     private static final String EMPTY_VALUE = "";
+    private static final String NULL_VALUE = null;
 
     @Test
     public void whenValueIsZeroShouldReturnFalse() {
@@ -21,7 +23,17 @@ public class BooleanEncoderTest {
 
     @Test
     public void whenValueIsInvalidShouldReturnFalse() {
-        Assert.assertFalse(BooleanEncoder.getInstance().decode(EMPTY_VALUE));
         Assert.assertFalse(BooleanEncoder.getInstance().decode(INVALID_VALUE));
     }
+
+    @Test
+    public void whenValueIsEmptyShouldReturnFalse() {
+        Assert.assertFalse(BooleanEncoder.getInstance().decode(EMPTY_VALUE));
+    }
+
+    @Test
+    public void whenValueIsNullShouldReturnFalse() {
+        Assert.assertFalse(BooleanEncoder.getInstance().decode(NULL_VALUE));
+    }
+
 }
