@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.iabtcf</groupId>
     <artifactId>iabtcf-core</artifactId>
-    <version>1.0.1-alpha.0</version>
+    <version>1.0.2-alpha.0-SNAPSHOT</version>
     <url>https://github.com/InteractiveAdvertisingBureau/iabtcf-java</url>
     <name>IAB TCF Core Library</name>
     <packaging>jar</packaging>
