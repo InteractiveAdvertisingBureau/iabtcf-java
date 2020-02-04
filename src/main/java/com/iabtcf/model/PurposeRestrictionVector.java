@@ -124,4 +124,19 @@ public class PurposeRestrictionVector {
     public int getNumRestrictions() {
         return this.map.size();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PurposeRestrictionVector that = (PurposeRestrictionVector) o;
+        return bitLength == that.bitLength &&
+                Objects.equals(map, that.map) &&
+                Objects.equals(gvl, that.gvl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bitLength, map, gvl);
+    }
 }
