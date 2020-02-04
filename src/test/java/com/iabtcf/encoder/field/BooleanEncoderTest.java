@@ -22,18 +22,18 @@ public class BooleanEncoderTest {
     }
 
     @Test
-    public void whenValueIsInvalidShouldReturnFalse() {
-        Assert.assertFalse(BooleanEncoder.getInstance().decode(INVALID_VALUE));
+    public void whenValueIsInvalidShouldReturnNull() {
+        Assert.assertNull(BooleanEncoder.getInstance().decode(INVALID_VALUE));
     }
 
     @Test
-    public void whenValueIsEmptyShouldReturnFalse() {
-        Assert.assertFalse(BooleanEncoder.getInstance().decode(EMPTY_VALUE));
+    public void whenValueIsEmptyShouldReturnNull() {
+        Assert.assertNull(BooleanEncoder.getInstance().decode(EMPTY_VALUE));
     }
 
     @Test
-    public void whenValueIsNullShouldReturnFalse() {
-        Assert.assertFalse(BooleanEncoder.getInstance().decode(NULL_VALUE));
+    public void whenValueIsNullShouldReturnNull() {
+        Assert.assertNull(BooleanEncoder.getInstance().decode(NULL_VALUE));
     }
 
 }
