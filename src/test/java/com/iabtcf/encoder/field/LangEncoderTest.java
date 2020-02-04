@@ -26,17 +26,17 @@ public class LangEncoderTest {
     }
 
     @Test
-    public void whenValueIsInvalidShouldReturnFalse() {
+    public void whenValueIsInvalidShouldReturnNull() {
         Assert.assertNull(IntEncoder.getInstance().decode(INVALID_VALUE));
     }
 
     @Test
-    public void whenValueIsEmptyShouldReturnFalse() {
+    public void whenValueIsEmptyShouldReturnNull() {
         Assert.assertNull(IntEncoder.getInstance().decode(EMPTY_VALUE));
     }
 
     @Test
-    public void whenValueIsNullShouldReturnFalse() {
+    public void whenValueIsNullShouldReturnNull() {
         Assert.assertNull(IntEncoder.getInstance().decode(NULL_VALUE));
     }
 
