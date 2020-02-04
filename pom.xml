@@ -27,8 +27,18 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
+    <profiles>
+        <profile>
+            <id>disable-java8-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <doclint>none</doclint>
+            </properties>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
