@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class TCModel {
     private static final int MAX_ENCODING_VERSION =2;
     private static Pattern p = Pattern.compile("[A-Z]{2}",Pattern.CASE_INSENSITIVE);
-    private int version = TCModel.MAX_ENCODING_VERSION;
+    private int version = 0;
     private int consentScreen = 0;
     private int policyVersion = 2;
     private Boolean isServiceSpecific = false;
@@ -503,6 +503,53 @@ public class TCModel {
     public void setPublisherCustomLegitimateInterest(SortedVector publisherCustomLegitimateInterest) {
         this.publisherCustomLegitimateInterest = publisherCustomLegitimateInterest;
     }
+    /**
+     * @Description Whenever decoding is failed call this method to reset the tcModel
+     */
+    public void reset() {
+        version = 0;
+        consentScreen = 0;
+        policyVersion = 2;
+        isServiceSpecific = false;
+        useNonStandardStacks = false;
+        purposeOneTreatment = false;
+        publisherCountryCode = "AA";
+        supportOOB = false;
+        consentLanguage = "EN";
+        cmpId = 0;
+        cmpVersion = 0;
+        vendorListVersion = 0;
+
+
+        specialFeatureOptIns = new SortedVector();
+
+        purposeConsents = new SortedVector();
+
+        publisherConsents = new SortedVector();
+
+        purposeLegitimateInterest = new SortedVector();
+
+        publisherLegitimateInterest = new SortedVector();
+
+        Map<String,Purpose> customPurposes = new HashMap<>();
+
+        publisherCustomConsents = new SortedVector();
+
+        publisherCustomLegitimateInterest = new SortedVector();
+
+        vendorConsents = new SortedVector();
+
+        vendorLegitimateInterest = new SortedVector();
+
+        vendorsDisclosed = new SortedVector();
+
+        vendorsAllowed = new SortedVector();
+
+        publisherRestrictions = new PurposeRestrictionVector();
+
+
+    }
+
 
     public Boolean isValid() {
         return (this.isServiceSpecific != null

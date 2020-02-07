@@ -25,7 +25,7 @@ public class OOBVendorsEncoder implements BaseSegmentEncoder {
 
     private static final Logger logger = LogManager.getLogger(OOBVendorsEncoder.class);
 
-    public TCModel decode(String encodedString, TCModel tcModel) {
+    public void decode(String encodedString, TCModel tcModel) {
         try {
             final Map<String, BaseEncoder> encMap = FieldEncoderMap.getInstance().getFieldMap();
             String bits = Base64Url.decode(encodedString);
@@ -65,11 +65,11 @@ public class OOBVendorsEncoder implements BaseSegmentEncoder {
                     TCModelEnum.valueOf(segmentName).setValue(tcModel, set);
                 }
             }
-            return tcModel;
+
         } catch (Exception e) {
             logger.error("OOBVendorEncoder's decoder failed: "+ e.getMessage());
+            tcModel.reset();
         }
-        return null;
     }
 
 

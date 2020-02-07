@@ -4,11 +4,9 @@ import com.iabtcf.TCModel;
 import com.iabtcf.TCModelEnum;
 import com.iabtcf.encoder.Base64Url;
 import com.iabtcf.encoder.BaseEncoder;
-import com.iabtcf.encoder.field.FieldEncoderMap;
-import com.iabtcf.encoder.field.FixedVectorEncoder;
-import com.iabtcf.encoder.field.PurposeRestrictionVectorEncoder;
-import com.iabtcf.encoder.field.VendorVectorEncoder;
+import com.iabtcf.encoder.field.*;
 import com.iabtcf.encoder.sequence.CoreFieldSequence;
+import com.iabtcf.model.Fields;
 import com.iabtcf.model.PurposeRestrictionVector;
 import com.iabtcf.model.SortedVector;
 import com.iabtcf.encoder.BitLength;
@@ -29,17 +27,19 @@ public class CoreTCEncoder implements BaseSegmentEncoder {
 
     private static final Logger logger = LogManager.getLogger(CoreTCEncoder.class);
 
-    public TCModel decode(String encodedString, TCModel tcModel) {
+    public void decode(String encodedString, TCModel tcModel) {
         try {
             final Map<String, BaseEncoder> encMap = FieldEncoderMap.getInstance().getFieldMap();
             final CoreFieldSequence coreFieldSequence = CoreFieldSequence.getInstance();
             List<String> encodeSequence = null;
-            if (tcModel.getVersion() == 1) {
+            String bitField = Base64Url.decode(encodedString);
+            int versionLength = BitLength.fieldLengths.get(Fields.version);
+            int version = IntEncoder.getInstance().decode(bitField.substring(0,versionLength));
+            if (version == 1) {
                 encodeSequence = coreFieldSequence.one;
-            } else if (tcModel.getVersion() == 2) {
+            } else if (version == 2) {
                 encodeSequence = coreFieldSequence.two;
             }
-            String bitField = Base64Url.decode(encodedString);
             AtomicInteger bStringIdx = new AtomicInteger();
             if (encodeSequence != null && !encodeSequence.isEmpty()) {
                 encodeSequence.forEach(key -> {
@@ -73,11 +73,10 @@ public class CoreTCEncoder implements BaseSegmentEncoder {
                     }
                 });
             }
-            return tcModel;
         } catch (Exception e){
             logger.error("CoreTCEncoder's decoder failed: " + e.getMessage());
+            tcModel.reset();
         }
-        return null;
     }
 
 

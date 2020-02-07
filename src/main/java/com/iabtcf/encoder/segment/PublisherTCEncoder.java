@@ -23,7 +23,7 @@ public class PublisherTCEncoder implements BaseSegmentEncoder {
     }
     private static final Logger logger = LogManager.getLogger(PublisherTCEncoder.class);
 
-    public TCModel decode(String encodedString, TCModel tcModel) {
+    public void decode(String encodedString, TCModel tcModel) {
         try {
             Map<String, BaseEncoder> encMap = FieldEncoderMap.getInstance().fieldMap;
             PublisherFieldSequence pubFieldSequence = PublisherFieldSequence.getInstance();
@@ -44,10 +44,11 @@ public class PublisherTCEncoder implements BaseSegmentEncoder {
                 TCModelEnum.valueOf(key).setValue(tcModel, encoder.decode(finalBitField.substring(bStringIdx.get(), bStringIdx.get() + numBits)));
                 bStringIdx.addAndGet(numBits);
             });
-            return tcModel;
+
         } catch (Exception e) {
             logger.error("PublisherTCEncoder's decoder failed: " + e.getMessage());
+            tcModel.reset();
         }
-        return null;
+
     }
 }
