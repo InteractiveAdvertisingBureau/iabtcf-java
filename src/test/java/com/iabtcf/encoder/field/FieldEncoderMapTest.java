@@ -7,7 +7,6 @@ import org.junit.Test;
 
 public class FieldEncoderMapTest {
     private static final FieldEncoderMap FIELD_ENCODER_MAP = FieldEncoderMap.getInstance();
-    private static final String INVALID_KEY = "invalid_key";
 
     @Test
     public void whenMapKeyIsValidThenTheValueShouldIsCorrect() {
@@ -43,11 +42,6 @@ public class FieldEncoderMapTest {
                 getValueOfFieldMap(Fields.publisherCustomConsents));
         Assert.assertEquals(FIELD_ENCODER_MAP.publisherCustomLegitimateInterest,
                 getValueOfFieldMap(Fields.publisherCustomLegitimateInterest));
-    }
-
-    @Test
-    public void whenMapKeyIsInvalidThenTheValueShouldIsNull() {
-        Assert.assertNull(getValueOfFieldMap(INVALID_KEY));
     }
 
     private BaseEncoder getValueOfFieldMap(String key) {
