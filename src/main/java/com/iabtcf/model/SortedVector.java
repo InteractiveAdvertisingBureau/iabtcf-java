@@ -1,11 +1,14 @@
 package com.iabtcf.model;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.*;
 
 
 /**
  * @Description Its a java replacement of the "Vector" class defined in the Typescript code of Chris's Library
  */
+@EqualsAndHashCode
 public class SortedVector {
     private int bitLength;
     private SortedSet<Integer> set;
@@ -36,16 +39,4 @@ public class SortedVector {
         this.set = set;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SortedVector that = (SortedVector) o;
-        return (bitLength == that.bitLength) && Objects.equals(set, that.set);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(bitLength, set);
-    }
 }
