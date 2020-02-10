@@ -34,8 +34,9 @@ public class VendorVectorEncoderTest {
     public void before() {
         //BitField
         for (int i = 0; i < FIELD_VENDOR_CONSENT.length(); i++) {
-            if (FIELD_VENDOR_CONSENT.charAt(i) == '1')
+            if (FIELD_VENDOR_CONSENT.charAt(i) == '1') {
                 FIELD_EXPECTED_RETURN.getSet().add(i + 1);
+            }
         }
         FIELD_EXPECTED_RETURN.setBitLength(VALID_FIELD_VALUE.length());
 

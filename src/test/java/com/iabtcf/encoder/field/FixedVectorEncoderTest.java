@@ -17,8 +17,9 @@ public class FixedVectorEncoderTest {
     @Before
     public void before() {
         for (int i = 0; i < VALID_VALUE.length(); i++) {
-            if (VALID_VALUE.charAt(i) == '1')
+            if (VALID_VALUE.charAt(i) == '1') {
                 EXPECTED_RETURN.getSet().add(i + 1);
+            }
         }
         EXPECTED_RETURN.setBitLength(VALID_VALUE.length());
     }
