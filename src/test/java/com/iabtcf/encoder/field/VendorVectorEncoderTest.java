@@ -26,10 +26,6 @@ public class VendorVectorEncoderTest {
             RANGE_MAX_ID + IS_RANGE + RANGE_NUM_ENTRIES + RANGE_2_TO_4 + RANGE_8_TO_8;
     private static final SortedVector RANGE_EXPECTED_RETURN = new SortedVector();
 
-    private static final String EMPTY_VALUE = "";
-    private static final String INVALID_VALUE = "invalid_value";
-    private static final String NULL_VALUE = null;
-
     @Before
     public void before() {
         //BitField
@@ -57,20 +53,4 @@ public class VendorVectorEncoderTest {
     public void whenRangeValueIsValidThenShouldReturnExpectedSortedVector() {
         Assert.assertEquals(RANGE_EXPECTED_RETURN, VendorVectorEncoder.getInstance().decode(VALID_RANGE_VALUE));
     }
-
-    @Test
-    public void whenValueIsEmptyThenShouldReturnNull() {
-        Assert.assertNull(VendorVectorEncoder.getInstance().decode(EMPTY_VALUE));
-    }
-
-    @Test
-    public void whenValueIsInvalidThenShouldReturnNull() {
-        Assert.assertNull(VendorVectorEncoder.getInstance().decode(INVALID_VALUE));
-    }
-
-    @Test
-    public void whenValueIsNullThenShouldReturnNull() {
-        Assert.assertNull(VendorVectorEncoder.getInstance().decode(NULL_VALUE));
-    }
-
 }

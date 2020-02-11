@@ -25,11 +25,6 @@ public class PurposeRestrictionVectorEncoderTest {
     private static final String VALID_VALUE =
             NUM_RESTRICTION + PURPOSE_ID + RESTRICTION_TYPE + RANGE_NUM_ENTRIES + RANGE_2_TO_4 + RANGE_8_TO_8;
     private static final PurposeRestrictionVector EXPECTED_RETURN = new PurposeRestrictionVector();
-
-    private static final String EMPTY_VALUE = "";
-    private static final String INVALID_VALUE = "invalid_value";
-    private static final String NULL_VALUE = null;
-
     private static final int PURPOSE_ID_NUMBER = 2;
     private static final PurposeRestriction PURPOSE_RESTRICTION = new PurposeRestriction(PURPOSE_ID_NUMBER, RestrictionType.REQUIRE_CONSENT);
 
@@ -47,20 +42,4 @@ public class PurposeRestrictionVectorEncoderTest {
     public void whenValueIsValidThenShouldReturnExpectedSortedVector() {
         Assert.assertEquals(EXPECTED_RETURN, PurposeRestrictionVectorEncoder.getInstance().decode(VALID_VALUE));
     }
-
-    @Test
-    public void whenValueIsEmptyThenShouldReturnNull() {
-        Assert.assertNull(PurposeRestrictionVectorEncoder.getInstance().decode(EMPTY_VALUE));
-    }
-
-    @Test
-    public void whenValueIsInvalidThenShouldReturnNull() {
-        Assert.assertNull(PurposeRestrictionVectorEncoder.getInstance().decode(INVALID_VALUE));
-    }
-
-    @Test
-    public void whenValueIsNullThenShouldReturnNull() {
-        Assert.assertNull(PurposeRestrictionVectorEncoder.getInstance().decode(NULL_VALUE));
-    }
-
 }

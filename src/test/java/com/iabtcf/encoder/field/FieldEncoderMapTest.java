@@ -47,5 +47,4 @@ public class FieldEncoderMapTest {
     private BaseEncoder getValueOfFieldMap(String key) {
         return FIELD_ENCODER_MAP.fieldMap.get(key);
     }
-
 }
