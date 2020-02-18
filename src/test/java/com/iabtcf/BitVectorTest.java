@@ -39,14 +39,14 @@ public class BitVectorTest {
         String bitString = "1 001110101101110010100111000111000100 1";
         BitVector bitVector = fromBitString(bitString);
         assertEquals(
-                Instant.parse("2020-01-26T18:19:25.200Z"), bitVector.instanceFromDeciSecond(1, 36));
+                Instant.parse("2020-01-26T18:19:25.200Z"), bitVector.readInstantFromDeciSecond(1, 36));
     }
 
     @Test
     public void tesCanReadEpochInstantFromDeciSecond() {
         String bitString = Stream.generate(() -> "0").limit(36).collect(Collectors.joining());
         BitVector bitVector = fromBitString(bitString);
-        assertEquals(Instant.EPOCH, bitVector.instanceFromDeciSecond(1, 36));
+        assertEquals(Instant.EPOCH, bitVector.readInstantFromDeciSecond(1, 36));
     }
 
     @Test
