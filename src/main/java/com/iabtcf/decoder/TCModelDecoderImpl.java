@@ -13,7 +13,7 @@ public class TCModelDecoderImpl implements TCModelDecoder {
 
     @Override
     public TCModel decode(String consentString) {
-        String[] split = consentString.split("\\.", 0);
+        String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         BitVector bitVector = vectorFromString(base64UrlEncodedString);
 
