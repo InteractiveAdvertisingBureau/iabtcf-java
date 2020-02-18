@@ -49,7 +49,7 @@ public class BitVector {
         return num;
     }
 
-    public Instant instanceFromDeciSecond(int offset, int length) {
+    public Instant readInstantFromDeciSecond(int offset, int length) {
         long epochDeci = readUnsignedLong(offset, length) * 100;
         return Instant.ofEpochMilli(epochDeci);
     }

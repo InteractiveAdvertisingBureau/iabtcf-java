@@ -44,9 +44,9 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     private BitVectorTCModelV2(BitVector coreBitVector) {
         this.version = coreBitVector.readUnsignedInt(VERSION_OFFSET, TINY_INT.length());
         this.consentRecordCreated =
-                coreBitVector.instanceFromDeciSecond(CREATED_OFFSET, EPOCH_TIME.length());
+                coreBitVector.readInstantFromDeciSecond(CREATED_OFFSET, EPOCH_TIME.length());
         this.consentRecordLastUpdated =
-                coreBitVector.instanceFromDeciSecond(LAST_UPDATED_OFFSET, EPOCH_TIME.length());
+                coreBitVector.readInstantFromDeciSecond(LAST_UPDATED_OFFSET, EPOCH_TIME.length());
         this.consentManagerProviderId = coreBitVector.readUnsignedInt(CMP_ID_OFFSET, SHORT.length());
         this.consentManagerProviderVersion =
                 coreBitVector.readUnsignedInt(CMP_VERSION_OFFSET, SHORT.length());
