@@ -1,5 +1,6 @@
 package com.iabtcf.v2;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +12,9 @@ public class PublisherRestriction {
 
     public PublisherRestriction(
             int purposeId, RestrictionType restrictionType, List<Integer> vendorIds) {
+        Objects.requireNonNull(vendorIds);
+        Objects.requireNonNull(restrictionType);
+
         this.purposeId = purposeId;
         this.restrictionType = restrictionType;
         this.vendorIds = vendorIds;
@@ -51,7 +55,7 @@ public class PublisherRestriction {
         PublisherRestriction that = (PublisherRestriction) o;
         return purposeId == that.purposeId
                 && restrictionType == that.restrictionType
-                && vendorIds.equals(that.vendorIds);
+                && new HashSet<>(this.vendorIds).equals(new HashSet<>(that.vendorIds));
     }
 
     @Override
