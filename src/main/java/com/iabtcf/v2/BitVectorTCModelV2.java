@@ -51,7 +51,6 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         this.consentManagerProviderVersion =
                 coreBitVector.readUnsignedInt(CMP_VERSION_OFFSET, SHORT.length());
         this.consentScreen = coreBitVector.readUnsignedInt(CONSENT_SCREEN_OFFSET, TINY_INT.length());
-        ;
         this.consentLanguage = coreBitVector.readStr(CONSENT_LANGUAGE_OFFSET, CHAR.length() * 2);
         this.vendorListVersion =
                 coreBitVector.readUnsignedInt(VENDOR_LIST_VERSION_OFFSET, SHORT.length());
@@ -110,8 +109,8 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     private int fillRemainingVector(BitVector bitVector) {
         int currentPointer = 0;
-        int segmentType = bitVector.readUnsignedInt(DISCLOSED_VENDOR_SEGMENT_TYPE_OFFSET, 3);
-        currentPointer += DISCLOSED_VENDOR_SEGMENT_TYPE_OFFSET + 3;
+        int segmentType = bitVector.readUnsignedInt(SEGMENT_TYPE_OFFSET, 3);
+        currentPointer += SEGMENT_TYPE_OFFSET + 3;
         switch (segmentType) {
             case SEGMENT_TYPE_DEFAULT:
                 break;
