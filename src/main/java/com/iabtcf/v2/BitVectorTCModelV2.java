@@ -116,10 +116,10 @@ public class BitVectorTCModelV2 implements TCModelV2 {
             case SEGMENT_TYPE_DEFAULT:
                 break;
             case SEGMENT_TYPE_DISCLOSED_VENDOR:
-                currentPointer = vendorIdsFromRange(this.disclosedVendors, bitVector, currentPointer);
+                currentPointer = fetchSet(this.disclosedVendors, currentPointer, bitVector);
                 break;
             case SEGMENT_TYPE_ALLOWED_VENDOR:
-                currentPointer = vendorIdsFromRange(this.allowedVendors, bitVector, currentPointer);
+                currentPointer = fetchSet(this.allowedVendors, currentPointer, bitVector);
                 break;
             case SEGMENT_TYPE_PUBLISHER_TC:
                 currentPointer = fillPublisherPurposesTC(currentPointer, bitVector);

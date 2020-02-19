@@ -80,9 +80,9 @@ public class BitVectorTCModelV2Test {
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(64, 512, 40961)), tcModel.allowedVendors());
+        assertEquals(new TreeSet<>(Arrays.asList(12, 23, 37, 47, 48, 53)), tcModel.allowedVendors());
         assertEquals(
-                new TreeSet<>(Arrays.asList(0, 2, 64, 512, 8192, 32768)), tcModel.disclosedVendors());
+                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98, 129)), tcModel.disclosedVendors());
     }
 
     @Test
