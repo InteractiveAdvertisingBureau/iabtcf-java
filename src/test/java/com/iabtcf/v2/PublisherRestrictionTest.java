@@ -22,7 +22,7 @@ public class PublisherRestrictionTest {
         PublisherRestriction pub1 =
                 new PublisherRestriction(1, RestrictionType.NOT_ALLOWED, Arrays.asList(1, 2));
         PublisherRestriction pub2 =
-                new PublisherRestriction(1, RestrictionType.NOT_ALLOWED, Arrays.asList(1, 2));
+                new PublisherRestriction(1, RestrictionType.NOT_ALLOWED, Arrays.asList(2, 1));
 
         assertEquals(pub1, pub2);
         assertEquals(pub1, pub1);
