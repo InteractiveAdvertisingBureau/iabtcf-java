@@ -63,6 +63,7 @@ public class FieldConstants {
         public static final int PUBLISHER_CC_OFFSET = 201;
 
         public static final int SEGMENT_TYPE_OFFSET = 0;
+        public static final int SEGMENT_TYPE_LENGTH = 3;
         public static final int SEGMENT_TYPE_DEFAULT = 0;
         public static final int SEGMENT_TYPE_DISCLOSED_VENDOR = 1;
         public static final int SEGMENT_TYPE_ALLOWED_VENDOR = 2;

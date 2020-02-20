@@ -97,8 +97,8 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     private int fillRemainingVector(BitVector bitVector) {
         int currentPointer = 0;
-        int segmentType = bitVector.readUnsignedInt(SEGMENT_TYPE_OFFSET, 3);
-        currentPointer += SEGMENT_TYPE_OFFSET + 3;
+        int segmentType = bitVector.readUnsignedInt(SEGMENT_TYPE_OFFSET, SEGMENT_TYPE_LENGTH);
+        currentPointer += SEGMENT_TYPE_OFFSET + SEGMENT_TYPE_LENGTH;
         switch (segmentType) {
             case SEGMENT_TYPE_DEFAULT:
                 break;
