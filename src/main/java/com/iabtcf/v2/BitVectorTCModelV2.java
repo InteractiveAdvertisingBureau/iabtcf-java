@@ -83,28 +83,16 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         this.customPurposesLITransparency = new TreeSet<>();
     }
 
-    private BitVectorTCModelV2(BitVector coreVector, BitVector secondPart) {
+    private BitVectorTCModelV2(BitVector coreVector, BitVector... theRest) {
         this(coreVector);
-        fillRemainingVector(secondPart);
-    }
-
-    private BitVectorTCModelV2(BitVector coreVector, BitVector secondPart, BitVector thirdPart) {
-        this(coreVector, secondPart);
-        fillRemainingVector(thirdPart);
-    }
-
-    public static BitVectorTCModelV2 fromBitVector(BitVector coreBitVector) {
-        return new BitVectorTCModelV2(coreBitVector);
+        for (BitVector bitVector : theRest) {
+            fillRemainingVector(bitVector);
+        }
     }
 
     public static BitVectorTCModelV2 fromBitVector(
-            BitVector coreBitVector, BitVector remainingVector) {
-        return new BitVectorTCModelV2(coreBitVector, remainingVector);
-    }
-
-    public static BitVectorTCModelV2 fromBitVector(
-            BitVector coreBitVector, BitVector secondVector, BitVector thirdVector) {
-        return new BitVectorTCModelV2(coreBitVector, secondVector, thirdVector);
+            BitVector coreBitVector, BitVector... remainingVectors) {
+        return new BitVectorTCModelV2(coreBitVector, remainingVectors);
     }
 
     private int fillRemainingVector(BitVector bitVector) {
