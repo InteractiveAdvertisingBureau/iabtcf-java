@@ -1,7 +1,7 @@
 package com.iabtcf;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
@@ -34,15 +34,25 @@ public interface CoreString {
 
 	String getPublisherCountryCode();
 
-	Set<Integer> getSpecialFeaturesOptInts();
+	boolean isSpecialFeatureOptedIn(final int specialFeature);
 
-	Set<Integer> getPurposesConsent();
+	IntStream getAllOptedInSpecialFeatures();
 
-	Set<Integer> getPurposesLITransparency();
+	boolean isPurposeConsented(final int purpose);
 
-	Set<Integer> getVendorConsents();
+	IntStream getAllConsentedPurposes();
 
-	Set<Integer> getVendorLegitimateInterests();
+	boolean isPurposeLegitimateInterest(final int purpose);
 
-	Set<PublisherRestriction> getPublisherRestrictions();
+	IntStream getAllLegitimatePurposes();
+
+	boolean isVendorConsented(final int vendor);
+
+	IntStream getAllConsentedVendors();
+
+	boolean isVendorLegitimateInterestEstablished(final int vendor);
+
+	IntStream getAllLegitimateInterestVendors();
+
+	RestrictionType getVendorRestrictionType(final int purpose, final int vendor);
 }

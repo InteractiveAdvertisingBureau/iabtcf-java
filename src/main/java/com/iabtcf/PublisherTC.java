@@ -1,17 +1,25 @@
 package com.iabtcf;
 
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
  */
 public interface PublisherTC {
 
-	Set<Integer> getPurposesConsent();
+	boolean isPurposeConsented(final int purpose);
 
-	Set<Integer> getPurposesLITransparency();
+	IntStream getAllConsentedPurposes();
 
-	Set<Integer> getCustomPurposesConsent();
+	boolean isPurposeLegitimateInterest(final int purpose);
 
-	Set<Integer> getCustomPurposesLITransparency();
+	IntStream getAllLegitimateInterestPurposes();
+
+	boolean isCustomPurposeConsented(final int customPurpose);
+
+	IntStream getAllConsentedCustomPurposes();
+
+	 boolean isCustomPurposeLegitimateInterest(final int customPurpose);
+
+	 IntStream getAllLegitimateInterestCustomPurposes();
 }

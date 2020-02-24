@@ -2,47 +2,68 @@ package com.iabtcf.decoder;
 
 import com.iabtcf.PublisherTC;
 
+import java.util.BitSet;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
  */
 class PublisherTCImpl implements PublisherTC {
 
-	private final Set<Integer> publisherPurposesConsent;
-	private final Set<Integer> publisherPurposesLITransparency;
-	private final Set<Integer> customPurposesConsent;
-	private final Set<Integer> customPurposesLITransparency;
+	private final BitSet purposesConsent;
+	private final BitSet purposesLegitimateInterest;
+	private final BitSet customPurposesConsent;
+	private final BitSet customPurposesLegitimateInterest;
 
-	PublisherTCImpl(final Set<Integer> publisherPurposesConsent,
-	                final Set<Integer> publisherPurposesLITransparency,
-	                final Set<Integer> customPurposesConsent,
-	                final Set<Integer> customPurposesLITransparency) {
-		this.publisherPurposesConsent = publisherPurposesConsent;
-		this.publisherPurposesLITransparency = publisherPurposesLITransparency;
+	PublisherTCImpl(final BitSet purposesConsent,
+	                final BitSet purposesLegitimateInterest,
+	                final BitSet customPurposesConsent,
+	                final BitSet customPurposesLegitimateInterest) {
+		this.purposesConsent = purposesConsent;
+		this.purposesLegitimateInterest = purposesLegitimateInterest;
 		this.customPurposesConsent = customPurposesConsent;
-		this.customPurposesLITransparency = customPurposesLITransparency;
+		this.customPurposesLegitimateInterest = customPurposesLegitimateInterest;
 	}
 
 	@Override
-	public Set<Integer> getPurposesConsent() {
-		return publisherPurposesConsent;
+	public boolean isPurposeConsented(final int purpose) {
+		return purposesConsent.get(purpose);
 	}
 
 	@Override
-	public Set<Integer> getPurposesLITransparency() {
-		return publisherPurposesLITransparency;
+	public IntStream getAllConsentedPurposes() {
+		return purposesConsent.stream();
 	}
 
 	@Override
-	public Set<Integer> getCustomPurposesConsent() {
-		return customPurposesConsent;
+	public boolean isPurposeLegitimateInterest(final int purpose) {
+		return purposesLegitimateInterest.get(purpose);
 	}
 
 	@Override
-	public Set<Integer> getCustomPurposesLITransparency() {
-		return customPurposesLITransparency;
+	public IntStream getAllLegitimateInterestPurposes() {
+		return purposesLegitimateInterest.stream();
+	}
+
+	@Override
+	public boolean isCustomPurposeConsented(final int customPurpose) {
+		return customPurposesConsent.get(customPurpose);
+	}
+
+	@Override
+	public IntStream getAllConsentedCustomPurposes() {
+		return customPurposesConsent.stream();
+	}
+
+	@Override
+	public boolean isCustomPurposeLegitimateInterest(final int customPurpose) {
+		return customPurposesLegitimateInterest.get(customPurpose);
+	}
+
+	@Override
+	public IntStream getAllLegitimateInterestCustomPurposes() {
+		return customPurposesLegitimateInterest.stream();
 	}
 
 	@Override
@@ -54,24 +75,24 @@ class PublisherTCImpl implements PublisherTC {
 			return false;
 		}
 		final PublisherTCImpl that = (PublisherTCImpl) o;
-		return Objects.equals(publisherPurposesConsent, that.publisherPurposesConsent) &&
-		       Objects.equals(publisherPurposesLITransparency, that.publisherPurposesLITransparency) &&
+		return Objects.equals(purposesConsent, that.purposesConsent) &&
+		       Objects.equals(purposesLegitimateInterest, that.purposesLegitimateInterest) &&
 		       Objects.equals(customPurposesConsent, that.customPurposesConsent) &&
-		       Objects.equals(customPurposesLITransparency, that.customPurposesLITransparency);
+		       Objects.equals(customPurposesLegitimateInterest, that.customPurposesLegitimateInterest);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(publisherPurposesConsent, publisherPurposesLITransparency, customPurposesConsent, customPurposesLITransparency);
+		return Objects.hash(purposesConsent, purposesLegitimateInterest, customPurposesConsent, customPurposesLegitimateInterest);
 	}
 
 	@Override
 	public String toString() {
 		return "PublisherTCImpl{" +
-		       "publisherPurposesConsent: " + publisherPurposesConsent +
-		       ", publisherPurposesLITransparency: " + publisherPurposesLITransparency +
+		       "publisherPurposesConsent: " + purposesConsent +
+		       ", publisherPurposesLITransparency: " + purposesLegitimateInterest +
 		       ", customPurposesConsent: " + customPurposesConsent +
-		       ", customPurposesLITransparency: " + customPurposesLITransparency +
+		       ", customPurposesLITransparency: " + customPurposesLegitimateInterest +
 		       '}';
 	}
 }

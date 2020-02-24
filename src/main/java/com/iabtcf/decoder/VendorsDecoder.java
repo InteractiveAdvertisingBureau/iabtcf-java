@@ -1,7 +1,6 @@
 package com.iabtcf.decoder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.BitSet;
 import java.util.stream.IntStream;
 
 import static com.iabtcf.decoder.Field.Vendors.BIT_FIELD;
@@ -26,36 +25,36 @@ final class VendorsDecoder {
 	 * @param bitVector bit vector to read data from
 	 * @return the new position that was read to
 	 */
-	static Set<Integer> decode(BitVector bitVector) {
+	static BitSet decode(BitVector bitVector) {
 		int maxVendor = bitVector.readInt(MAX_VENDOR_ID);
 		boolean isRangeEncoding = bitVector.readBit(IS_RANGE_ENCODING);
 
 		if (!isRangeEncoding) {
-			final Set<Integer> set = new HashSet<>();
+			final BitSet set = new BitSet(maxVendor);
 			for (int i = 0; i < maxVendor; i++) {
 				boolean hasVendorConsent = bitVector.readBit(BIT_FIELD);
 				if (hasVendorConsent) {
 					// vendors are 1 indexed so add 1 to current index
-					set.add(i + 1);
+					set.set(i + 1);
 				}
 			}
 			return set;
 		} else {
-			return vendorIdsFromRange(bitVector);
+			return vendorIdsFromRange(bitVector, maxVendor);
 		}
 	}
 
-	static Set<Integer> vendorIdsFromRange(BitVector bitVector) {
-		final Set<Integer> set = new HashSet<>();
+	static BitSet vendorIdsFromRange(BitVector bitVector, int maxVendor) {
+		final BitSet set = new BitSet(maxVendor);
 		int numberOfVendorEntries = bitVector.readInt(NUM_ENTRIES);
 		for (int i = 0; i < numberOfVendorEntries; i++) {
 			boolean isRangeEntry = bitVector.readBit(IS_A_RANGE);
 			int startOrOnlyVendorId = bitVector.readInt(START_OR_ONLY_VENDOR_ID);
 			if (isRangeEntry) {
 				int endVendorId = bitVector.readInt(END_VENDOR_ID);
-				IntStream.rangeClosed(startOrOnlyVendorId, endVendorId).forEach(set::add);
+				IntStream.rangeClosed(startOrOnlyVendorId, endVendorId).forEach(set::set);
 			} else {
-				set.add(startOrOnlyVendorId);
+				set.set(startOrOnlyVendorId);
 			}
 		}
 		return set;

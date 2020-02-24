@@ -1,13 +1,17 @@
 package com.iabtcf;
 
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
  */
 public interface OutOfBandConsent {
 
-	Set<Integer> getDisclosedVendors();
+	boolean isVendorDisclosed(final int vendor);
 
-	Set<Integer> getAllowedVendors();
+	IntStream getAllDisclosedVendors();
+
+	boolean isVendorAllowed(final int vendor);
+
+	IntStream getAllAllowedVendors();
 }

@@ -2,10 +2,13 @@ package com.iabtcf.decoder;
 
 import com.iabtcf.CoreString;
 import com.iabtcf.PublisherRestriction;
+import com.iabtcf.RestrictionType;
 
 import java.time.Instant;
+import java.util.BitSet;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
@@ -25,12 +28,12 @@ public class CoreStringImpl implements CoreString {
 	private final boolean useNonStandardStacks;
 	private final boolean isPurposeOneTreatment;
 	private final String publisherCountryCode;
-	private final Set<Integer> specialFeaturesOptInts;
-	private final Set<Integer> purposesConsent;
-	private final Set<Integer> purposesLITransparency;
-	private final Set<Integer> vendorConsents;
-	private final Set<Integer> vendorLegitimateInterests;
-	private final Set<PublisherRestriction> publisherRestrictions;
+	private final BitSet specialFeaturesOptInts;
+	private final BitSet purposesConsent;
+	private final BitSet purposesLITransparency;
+	private final BitSet vendorConsents;
+	private final BitSet vendorLegitimateInterests;
+	private final Map<Integer, PublisherRestriction> publisherRestrictions;
 
 	private CoreStringImpl(final Builder builder) {
 		version = builder.version;
@@ -124,33 +127,61 @@ public class CoreStringImpl implements CoreString {
 	}
 
 	@Override
-	public Set<Integer> getSpecialFeaturesOptInts() {
-		return specialFeaturesOptInts;
+	public boolean isSpecialFeatureOptedIn(final int specialFeature) {
+		return specialFeaturesOptInts.get(specialFeature);
 	}
 
 	@Override
-	public Set<Integer> getPurposesConsent() {
-		return purposesConsent;
+	public IntStream getAllOptedInSpecialFeatures() {
+		return specialFeaturesOptInts.stream();
 	}
 
 	@Override
-	public Set<Integer> getPurposesLITransparency() {
-		return purposesLITransparency;
+	public boolean isPurposeConsented(final int purpose) {
+		return purposesConsent.get(purpose);
 	}
 
 	@Override
-	public Set<Integer> getVendorConsents() {
-		return vendorConsents;
+	public IntStream getAllConsentedPurposes() {
+		return purposesConsent.stream();
 	}
 
 	@Override
-	public Set<Integer> getVendorLegitimateInterests() {
-		return vendorLegitimateInterests;
+	public boolean isPurposeLegitimateInterest(final int purpose) {
+		return purposesLITransparency.get(purpose);
 	}
 
 	@Override
-	public Set<PublisherRestriction> getPublisherRestrictions() {
-		return publisherRestrictions;
+	public IntStream getAllLegitimatePurposes() {
+		return purposesLITransparency.stream();
+	}
+
+	@Override
+	public boolean isVendorConsented(final int vendor) {
+		return vendorConsents.get(vendor);
+	}
+
+	@Override
+	public IntStream getAllConsentedVendors() {
+		return vendorConsents.stream();
+	}
+
+	@Override
+	public boolean isVendorLegitimateInterestEstablished(final int vendor) {
+		return vendorLegitimateInterests.get(vendor);
+	}
+
+	@Override
+	public IntStream getAllLegitimateInterestVendors() {
+		return vendorLegitimateInterests.stream();
+	}
+
+	@Override
+	public RestrictionType getVendorRestrictionType(final int purpose, final int vendor) {
+		if (publisherRestrictions.containsKey(purpose) && publisherRestrictions.get(purpose).isVendorIncluded(vendor)) {
+			return publisherRestrictions.get(purpose).getRestrictionType();
+		}
+		return RestrictionType.UNDEFINED;
 	}
 
 	@Override
@@ -246,12 +277,12 @@ public class CoreStringImpl implements CoreString {
 		private boolean useNonStandardStacks;
 		private boolean isPurposeOneTreatment;
 		private String publisherCountryCode;
-		private Set<Integer> specialFeaturesOptInts;
-		private Set<Integer> purposesConsent;
-		private Set<Integer> purposesLITransparency;
-		private Set<Integer> vendorConsents;
-		private Set<Integer> vendorLegitimateInterests;
-		private Set<PublisherRestriction> publisherRestrictions;
+		private BitSet specialFeaturesOptInts;
+		private BitSet purposesConsent;
+		private BitSet purposesLITransparency;
+		private BitSet vendorConsents;
+		private BitSet vendorLegitimateInterests;
+		private Map<Integer, PublisherRestriction> publisherRestrictions;
 
 		private Builder() {}
 
@@ -320,32 +351,32 @@ public class CoreStringImpl implements CoreString {
 			return this;
 		}
 
-		public Builder specialFeaturesOptInts(final Set<Integer> val) {
+		public Builder specialFeaturesOptInts(final BitSet val) {
 			specialFeaturesOptInts = val;
 			return this;
 		}
 
-		public Builder purposesConsent(final Set<Integer> val) {
+		public Builder purposesConsent(final BitSet val) {
 			purposesConsent = val;
 			return this;
 		}
 
-		public Builder purposesLITransparency(final Set<Integer> val) {
+		public Builder purposesLITransparency(final BitSet val) {
 			purposesLITransparency = val;
 			return this;
 		}
 
-		public Builder vendorConsents(final Set<Integer> val) {
+		public Builder vendorConsents(final BitSet val) {
 			vendorConsents = val;
 			return this;
 		}
 
-		public Builder vendorLegitimateInterests(final Set<Integer> val) {
+		public Builder vendorLegitimateInterests(final BitSet val) {
 			vendorLegitimateInterests = val;
 			return this;
 		}
 
-		public Builder publisherRestrictions(final Set<PublisherRestriction> val) {
+		public Builder publisherRestrictions(final Map<Integer, PublisherRestriction> val) {
 			publisherRestrictions = val;
 			return this;
 		}

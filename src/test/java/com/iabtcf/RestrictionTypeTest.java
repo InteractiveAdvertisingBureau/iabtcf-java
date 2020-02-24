@@ -1,6 +1,5 @@
 package com.iabtcf;
 
-import com.iabtcf.RestrictionType;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

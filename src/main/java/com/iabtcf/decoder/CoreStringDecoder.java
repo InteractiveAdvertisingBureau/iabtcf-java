@@ -3,8 +3,9 @@ package com.iabtcf.decoder;
 import com.iabtcf.PublisherRestriction;
 import com.iabtcf.RestrictionType;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.iabtcf.decoder.Field.CoreString.CMP_ID;
 import static com.iabtcf.decoder.Field.CoreString.CMP_VERSION;
@@ -49,9 +50,9 @@ class CoreStringDecoder {
 		                     .policyVersion(bitVector.readInt(TCF_POLICY_VERSION))
 		                     .isServiceSpecific(bitVector.readBit(IS_SERVICE_SPECIFIC))
 		                     .useNonStandardStacks(bitVector.readBit(USE_NON_STANDARD_STACKS))
-		                     .specialFeaturesOptInts(bitVector.readSet(SPECIAL_FEATURE_OPT_INS.getLength()))
-		                     .purposesConsent(bitVector.readSet(PURPOSES_CONSENT.getLength()))
-		                     .purposesLITransparency(bitVector.readSet(PURPOSE_LI_TRANSPARENCY.getLength()))
+		                     .specialFeaturesOptInts(bitVector.readBitSet(SPECIAL_FEATURE_OPT_INS.getLength()))
+		                     .purposesConsent(bitVector.readBitSet(PURPOSES_CONSENT.getLength()))
+		                     .purposesLITransparency(bitVector.readBitSet(PURPOSE_LI_TRANSPARENCY.getLength()))
 		                     .isPurposeOneTreatment(bitVector.readBit(PURPOSE_ONE_TREATMENT))
 		                     .publisherCountryCode(bitVector.readString(PUBLISHER_CC))
 		                     .vendorConsents(VendorsDecoder.decode(bitVector))
@@ -60,8 +61,8 @@ class CoreStringDecoder {
 		                     .build();
 	}
 
-	static Set<PublisherRestriction> fillPublisherRestrictions(BitVector bitVector) {
-		final Set<PublisherRestriction> restrictions = new HashSet<>();
+	static Map<Integer, PublisherRestriction> fillPublisherRestrictions(BitVector bitVector) {
+		final Map<Integer, PublisherRestriction> restrictions = new HashMap<>();
 		int numberOfPublisherRestrictions = bitVector.readInt(NUM_PUB_RESTRICTIONS);
 
 		for (int i = 0; i < numberOfPublisherRestrictions; i++) {
@@ -69,9 +70,9 @@ class CoreStringDecoder {
 			int restrictionTypeId = bitVector.readInt(RESTRICTION_TYPE);
 			RestrictionType restrictionType = RestrictionType.fromId(restrictionTypeId);
 
-			Set<Integer> vendorIds = VendorsDecoder.vendorIdsFromRange(bitVector);
+			BitSet vendorIds = VendorsDecoder.vendorIdsFromRange(bitVector, numberOfPublisherRestrictions);
 
-			restrictions.add(new PublisherRestriction(purposeId, restrictionType, vendorIds));
+			restrictions.put(purposeId, new PublisherRestriction(restrictionType, vendorIds));
 		}
 		return restrictions;
 	}

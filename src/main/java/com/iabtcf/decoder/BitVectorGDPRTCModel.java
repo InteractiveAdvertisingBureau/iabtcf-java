@@ -5,9 +5,8 @@ import com.iabtcf.GDPRTransparencyAndConsent;
 import com.iabtcf.OutOfBandConsent;
 import com.iabtcf.PublisherTC;
 
-import java.util.Collections;
+import java.util.BitSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author SleimanJneidi
@@ -74,9 +73,11 @@ class BitVectorGDPRTCModel implements GDPRTransparencyAndConsent {
 
     static final class Builder {
 
+        private static final BitSet EMPTY = new BitSet();
+
         private CoreStringImpl coreString;
-        private Set<Integer> disclosedVendors = Collections.emptySet();
-        private Set<Integer> allowedVendors = Collections.emptySet();
+        private BitSet disclosedVendors = EMPTY;
+        private BitSet allowedVendors = EMPTY;
         private PublisherTCImpl publisherPurposes;
 
         private Builder() {}
@@ -86,12 +87,12 @@ class BitVectorGDPRTCModel implements GDPRTransparencyAndConsent {
             return this;
         }
 
-        Builder disclosedVendors(final Set<Integer> disclosedVendors) {
+        Builder disclosedVendors(final BitSet disclosedVendors) {
             this.disclosedVendors = disclosedVendors;
             return this;
         }
 
-        Builder allowedVendors(final Set<Integer> allowedVendors) {
+        Builder allowedVendors(final BitSet allowedVendors) {
             this.allowedVendors = allowedVendors;
             return this;
         }

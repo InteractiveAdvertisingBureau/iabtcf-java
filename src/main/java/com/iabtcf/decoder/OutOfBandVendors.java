@@ -2,30 +2,41 @@ package com.iabtcf.decoder;
 
 import com.iabtcf.OutOfBandConsent;
 
+import java.util.BitSet;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * @author evanwht1
  */
 class OutOfBandVendors implements OutOfBandConsent {
 
-	private final Set<Integer> disclosedVendor;
-	private final Set<Integer> allowedVendors;
+	private final BitSet disclosedVendor;
+	private final BitSet allowedVendors;
 
-	OutOfBandVendors(final Set<Integer> disclosedVendor, final Set<Integer> allowedVendors) {
+	OutOfBandVendors(final BitSet disclosedVendor, BitSet allowedVendors) {
 		this.disclosedVendor = disclosedVendor;
 		this.allowedVendors = allowedVendors;
 	}
 
 	@Override
-	public Set<Integer> getDisclosedVendors() {
-		return disclosedVendor;
+	public boolean isVendorDisclosed(final int vendor) {
+		return disclosedVendor.get(vendor);
 	}
 
 	@Override
-	public Set<Integer> getAllowedVendors() {
-		return allowedVendors;
+	public IntStream getAllDisclosedVendors() {
+		return disclosedVendor.stream();
+	}
+
+	@Override
+	public boolean isVendorAllowed(final int vendor) {
+		return allowedVendors.get(vendor);
+	}
+
+	@Override
+	public IntStream getAllAllowedVendors() {
+		return allowedVendors.stream();
 	}
 
 	@Override
@@ -53,5 +64,4 @@ class OutOfBandVendors implements OutOfBandConsent {
 		       ", allowedVendors: " + allowedVendors +
 		       '}';
 	}
-
 }

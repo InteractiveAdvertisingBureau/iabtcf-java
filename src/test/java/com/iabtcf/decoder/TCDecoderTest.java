@@ -1,20 +1,18 @@
 package com.iabtcf.decoder;
 
+import com.iabtcf.CoreString;
 import com.iabtcf.GDPRTransparencyAndConsent;
 import com.iabtcf.OutOfBandConsent;
-import com.iabtcf.PublisherRestriction;
 import com.iabtcf.PublisherTC;
 import com.iabtcf.RestrictionType;
 import org.junit.Test;
 
 import java.util.Base64;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TCDecoderTest {
 
@@ -25,16 +23,27 @@ public class TCDecoderTest {
 
         final OutOfBandConsent outOfBandSignals = tc.getOutOfBandSignals();
         assertNotNull(outOfBandSignals);
-        assertFalse(outOfBandSignals.getDisclosedVendors().isEmpty());
-        assertFalse(outOfBandSignals.getAllowedVendors().isEmpty());
-        assertEquals(Util.setOf(12, 23, 37, 47, 48, 53), outOfBandSignals.getAllowedVendors());
-        assertEquals(Util.setOf(23, 37, 47, 48, 53, 65, 98, 129), outOfBandSignals.getDisclosedVendors());
+        assertTrue(outOfBandSignals.isVendorAllowed(12));
+        assertTrue(outOfBandSignals.isVendorAllowed(23));
+        assertTrue(outOfBandSignals.isVendorAllowed(37));
+        assertTrue(outOfBandSignals.isVendorAllowed(47));
+        assertTrue(outOfBandSignals.isVendorAllowed(48));
+        assertTrue(outOfBandSignals.isVendorAllowed(53));
+        assertTrue(outOfBandSignals.isVendorDisclosed(23));
+        assertTrue(outOfBandSignals.isVendorDisclosed(37));
+        assertTrue(outOfBandSignals.isVendorDisclosed(47));
+        assertTrue(outOfBandSignals.isVendorDisclosed(48));
+        assertTrue(outOfBandSignals.isVendorDisclosed(53));
+        assertTrue(outOfBandSignals.isVendorDisclosed(65));
+        assertTrue(outOfBandSignals.isVendorDisclosed(98));
+        assertTrue(outOfBandSignals.isVendorDisclosed(129));
         final PublisherTC publisherTC = tc.getPublisherPurposesTC();
         assertNotNull(publisherTC);
-        assertEquals(Util.setOf(1), publisherTC.getPurposesConsent());
-        assertEquals(Util.setOf(24), publisherTC.getPurposesLITransparency());
-        assertEquals(Util.setOf(2), publisherTC.getCustomPurposesConsent());
-        assertEquals(Util.setOf(1, 2), publisherTC.getCustomPurposesLITransparency());
+        assertTrue(publisherTC.isPurposeConsented(1));
+        assertTrue(publisherTC.isPurposeLegitimateInterest(24));
+        assertTrue(publisherTC.isCustomPurposeConsented(2));
+        assertTrue(publisherTC.isCustomPurposeLegitimateInterest(1));
+        assertTrue(publisherTC.isCustomPurposeLegitimateInterest(2));
     }
 
     @Test
@@ -44,10 +53,20 @@ public class TCDecoderTest {
 
         final OutOfBandConsent outOfBandSignals = tc.getOutOfBandSignals();
         assertNotNull(outOfBandSignals);
-        assertFalse(outOfBandSignals.getDisclosedVendors().isEmpty());
-        assertFalse(outOfBandSignals.getAllowedVendors().isEmpty());
-        assertEquals(Util.setOf(12, 23, 37, 47, 48, 53), outOfBandSignals.getAllowedVendors());
-        assertEquals(Util.setOf(23, 37, 47, 48, 53, 65, 98, 129), outOfBandSignals.getDisclosedVendors());
+        assertTrue(outOfBandSignals.isVendorAllowed(12));
+        assertTrue(outOfBandSignals.isVendorAllowed(23));
+        assertTrue(outOfBandSignals.isVendorAllowed(37));
+        assertTrue(outOfBandSignals.isVendorAllowed(47));
+        assertTrue(outOfBandSignals.isVendorAllowed(48));
+        assertTrue(outOfBandSignals.isVendorAllowed(53));
+        assertTrue(outOfBandSignals.isVendorDisclosed(23));
+        assertTrue(outOfBandSignals.isVendorDisclosed(37));
+        assertTrue(outOfBandSignals.isVendorDisclosed(47));
+        assertTrue(outOfBandSignals.isVendorDisclosed(48));
+        assertTrue(outOfBandSignals.isVendorDisclosed(53));
+        assertTrue(outOfBandSignals.isVendorDisclosed(65));
+        assertTrue(outOfBandSignals.isVendorDisclosed(98));
+        assertTrue(outOfBandSignals.isVendorDisclosed(129));
     }
 
     @Test
@@ -69,26 +88,29 @@ public class TCDecoderTest {
                 + "000000000011" // NumPubRestrictions (1)
                 + "000001" // PurposeId
                 + "01" // restriction type Require Consent
-                + "000000000000"
+                + "000000000001"
+                + "0"
+                + "0000000000000001"
                 + "000010" // PurposeId
                 + "00" // restriction type Not Allowed
-                + "000000000000"
+                + "000000000001"
+                + "0"
+                + "0000000000000010"
                 + "000011" // PurposeId
                 + "10" // restriction REQUIRE_LEGITIMATE_INTEREST
-                + "000000000000"
-                + "0"; // padding
+                + "000000000001"
+                + "0"
+                + "0000000000000011";
 
         String base64CoreString = Util.base64FromBitString(bitString);
         GDPRTransparencyAndConsent tc = TCModelDecoder.decode(base64CoreString);
+        final CoreString coreString = tc.getCoreString();
 
-        Set<PublisherRestriction> actual = tc.getCoreString().getPublisherRestrictions();
-        Set<PublisherRestriction> expected =
-                Util.setOf(
-                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, new HashSet<>()),
-                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, new HashSet<>()),
-                        new PublisherRestriction(3, RestrictionType.REQUIRE_LEGITIMATE_INTEREST, new HashSet<>()));
-
-        assertEquals(expected, actual);
+        assertEquals(RestrictionType.REQUIRE_CONSENT, coreString.getVendorRestrictionType(1, 1));
+        assertEquals(RestrictionType.UNDEFINED, coreString.getVendorRestrictionType(1, 2));
+        assertEquals(RestrictionType.NOT_ALLOWED, coreString.getVendorRestrictionType(2, 2));
+        assertEquals(RestrictionType.REQUIRE_LEGITIMATE_INTEREST, coreString.getVendorRestrictionType(3, 3));
+        assertEquals(RestrictionType.UNDEFINED, coreString.getVendorRestrictionType(4, 1));
     }
 
     @Test

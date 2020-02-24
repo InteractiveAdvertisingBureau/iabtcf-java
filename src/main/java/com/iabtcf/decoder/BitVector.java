@@ -1,8 +1,7 @@
 package com.iabtcf.decoder;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.BitSet;
 
 /**
  * @author SleimanJneidi
@@ -25,12 +24,10 @@ class BitVector {
         return (int) readLong(field.getLength());
     }
 
-    Set<Integer> readSet(int length) {
-        final Set<Integer> set = new HashSet<>();
+    BitSet readBitSet(int length) {
+        final BitSet set = new BitSet(length);
         for (int i = 1; i <= length; i++) {
-            if (readBit()) {
-                set.add(i);
-            }
+            set.set(i, readBit());
         }
         return set;
     }
@@ -60,7 +57,9 @@ class BitVector {
      * @return whether or not the bit at the current position is a 1
      */
     boolean readBit() {
-        return (data[position / Byte.SIZE] >> (7 - (position++ % Byte.SIZE)) & 1) == 1;
+        final boolean b = (data[position / Byte.SIZE] >> (7 - (position % Byte.SIZE)) & 1) == 1;
+        position++;
+        return b;
     }
 
     /**

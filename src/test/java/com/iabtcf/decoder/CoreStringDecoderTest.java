@@ -38,8 +38,10 @@ public class CoreStringDecoderTest {
 		assertTrue(coreString.isPurposeOneTreatment());
 		assertFalse(coreString.isUseNonStandardStacks());
 
-		assertEquals(Util.setOf(1), coreString.getSpecialFeaturesOptInts());
-		assertEquals(Util.setOf(2, 10), coreString.getPurposesConsent());
-		assertEquals(Util.setOf(2, 9), coreString.getPurposesLITransparency());
+		assertTrue(coreString.isSpecialFeatureOptedIn(1));
+		assertTrue(coreString.isPurposeConsented(2));
+		assertTrue(coreString.isPurposeConsented(10));
+		assertTrue(coreString.isPurposeLegitimateInterest(2));
+		assertTrue(coreString.isPurposeLegitimateInterest(9));
 	}
 }
