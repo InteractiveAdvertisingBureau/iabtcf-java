@@ -22,10 +22,16 @@ final class VendorsDecoder {
 	 * OOB Allowed Vendors segments, or the Vendor Consent Section or Vendor Legitimate Interest Section parts of
 	 * the Core String.
 	 *
+	 * WARNING: This assumes you are at the correct position in the bit vector to read it's field. {@link TCModelDecoder}
+	 *          will have already read the {@link Field.Vendors#SEGMENT_TYPE} for the OOB segments and will have read up
+	 *          to {@link Field.CoreString#PUBLISHER_CC}, therefor the bit vector should be at the correct position
+	 *          before calling this. Unit tests should mimic this behavior accordingly.
+	 *
 	 * @param bitVector bit vector to read data from
 	 * @return the new position that was read to
 	 */
 	static BitSet decode(BitVector bitVector) {
+		// read fields in order!
 		int maxVendor = bitVector.readInt(MAX_VENDOR_ID);
 		boolean isRangeEncoding = bitVector.readBit(IS_RANGE_ENCODING);
 
@@ -45,6 +51,7 @@ final class VendorsDecoder {
 	}
 
 	static BitSet vendorIdsFromRange(BitVector bitVector, int maxVendor) {
+		// read fields in order!
 		final BitSet set = new BitSet(maxVendor);
 		int numberOfVendorEntries = bitVector.readInt(NUM_ENTRIES);
 		for (int i = 0; i < numberOfVendorEntries; i++) {

@@ -6,9 +6,21 @@ package com.iabtcf;
  */
 public enum RestrictionType {
 
+    /**
+     * Purpose flatly not allowed by publisher
+     */
     NOT_ALLOWED(0),
+    /**
+     * if Vendor has declared the Purpose IDs legal basis as Legitimate Interest and flexible
+     */
     REQUIRE_CONSENT(1),
+    /**
+     * if Vendor has declared the Purpose IDs legal basis as Consent and flexible
+     */
     REQUIRE_LEGITIMATE_INTEREST(2),
+    /**
+     * Not Used or Not Known
+     */
     UNDEFINED(3);
 
     private final int value;

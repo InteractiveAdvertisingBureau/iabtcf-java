@@ -1,6 +1,13 @@
 package com.iabtcf.decoder;
 
 /**
+ * TC string fields defined in the <a href="https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#tc-string-format">IAB TC String and GVL guide</a>.
+ *
+ * These only define the lengths of each field as there are fields that occur multiple times based on the value of
+ * other fields. These are intended to be used by reading IN ORDER from a BitVector that represents a web safe 64
+ * decoded string. Unit tests will catch most mistakes made but please be sure to check that the correct fields are
+ * read in order in the decoders.
+ *
  * @author evanwht1
  */
 interface Field {
@@ -23,9 +30,11 @@ interface Field {
 		SPECIAL_FEATURE_OPT_INS     (12),
 		PURPOSES_CONSENT            (24),
 		PURPOSE_LI_TRANSPARENCY     (24),
-		// Special Jurisdiction Disclosures
 		PURPOSE_ONE_TREATMENT       (1),
-		PUBLISHER_CC                (12)
+		PUBLISHER_CC                (12),
+		// Vendors Field (minus SEGMENT_TYPE)
+		// Vendors Field (minus SEGMENT_TYPE)
+		// Publisher Restrictions
 		;
 
 		private final int length;

@@ -7,6 +7,8 @@ import java.util.Base64;
 import static com.iabtcf.decoder.Field.Vendors.SEGMENT_TYPE;
 
 /**
+ * Decoder to read all information from a IAB TC v2 String.
+ *
  * @author SleimanJneidi
  * @author evanwht1
  */

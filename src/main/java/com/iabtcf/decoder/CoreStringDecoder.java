@@ -33,7 +33,8 @@ class CoreStringDecoder {
 
 	/**
 	 * Builds a {@link CoreStringImpl} from the given bit vector.
-	 * @param bitVector BitVector created from the first segment of the websafe 64 encoded TC string
+	 *
+	 * @param bitVector BitVector created from the first segment of the web safe 64 encoded TC string
 	 * @return a CoreString with all fields parsed
 	 */
 	static CoreStringImpl decode(final int version, BitVector bitVector) {
@@ -57,11 +58,17 @@ class CoreStringDecoder {
 		                     .publisherCountryCode(bitVector.readString(PUBLISHER_CC))
 		                     .vendorConsents(VendorsDecoder.decode(bitVector))
 		                     .vendorLegitimateInterests(VendorsDecoder.decode(bitVector))
-		                     .publisherRestrictions(fillPublisherRestrictions(bitVector))
+		                     .publisherRestrictions(decodePublisherRestrictions(bitVector))
 		                     .build();
 	}
 
-	static Map<Integer, PublisherRestriction> fillPublisherRestrictions(BitVector bitVector) {
+	/**
+	 * Builds a map of purpose id to the restrction type and a list of vendors it applies to.
+	 *
+	 * @param bitVector bit vector to read from
+	 * @return map of purpose to publisher restriction and vendors it applies to
+	 */
+	static Map<Integer, PublisherRestriction> decodePublisherRestrictions(BitVector bitVector) {
 		final Map<Integer, PublisherRestriction> restrictions = new HashMap<>();
 		int numberOfPublisherRestrictions = bitVector.readInt(NUM_PUB_RESTRICTIONS);
 

@@ -152,7 +152,7 @@ public class CoreStringImpl implements CoreString {
 	}
 
 	@Override
-	public IntStream getAllLegitimatePurposes() {
+	public IntStream getAllLegitimateInterestPurposes() {
 		return purposesLITransparency.stream();
 	}
 
@@ -167,7 +167,7 @@ public class CoreStringImpl implements CoreString {
 	}
 
 	@Override
-	public boolean isVendorLegitimateInterestEstablished(final int vendor) {
+	public boolean isVendorLegitimateInterest(final int vendor) {
 		return vendorLegitimateInterests.get(vendor);
 	}
 
