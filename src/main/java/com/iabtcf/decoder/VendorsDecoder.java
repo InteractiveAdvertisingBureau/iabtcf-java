@@ -1,7 +1,6 @@
 package com.iabtcf.decoder;
 
 import java.util.BitSet;
-import java.util.stream.IntStream;
 
 import static com.iabtcf.decoder.Field.Vendors.BIT_FIELD;
 import static com.iabtcf.decoder.Field.Vendors.END_VENDOR_ID;
@@ -31,7 +30,6 @@ final class VendorsDecoder {
 	 * @return the new position that was read to
 	 */
 	static BitSet decode(BitVector bitVector) {
-		// read fields in order!
 		int maxVendor = bitVector.readInt(MAX_VENDOR_ID);
 		boolean isRangeEncoding = bitVector.readBit(IS_RANGE_ENCODING);
 
@@ -51,7 +49,6 @@ final class VendorsDecoder {
 	}
 
 	static BitSet vendorIdsFromRange(BitVector bitVector, int maxVendor) {
-		// read fields in order!
 		final BitSet set = new BitSet(maxVendor);
 		int numberOfVendorEntries = bitVector.readInt(NUM_ENTRIES);
 		for (int i = 0; i < numberOfVendorEntries; i++) {
@@ -59,7 +56,7 @@ final class VendorsDecoder {
 			int startOrOnlyVendorId = bitVector.readInt(START_OR_ONLY_VENDOR_ID);
 			if (isRangeEntry) {
 				int endVendorId = bitVector.readInt(END_VENDOR_ID);
-				IntStream.rangeClosed(startOrOnlyVendorId, endVendorId).forEach(set::set);
+				set.set(startOrOnlyVendorId, endVendorId + 1);
 			} else {
 				set.set(startOrOnlyVendorId);
 			}

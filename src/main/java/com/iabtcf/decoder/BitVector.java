@@ -10,7 +10,7 @@ import java.util.BitSet;
 class BitVector {
 
     private final byte[] data;
-    private int position;
+    private int position = 0;
 
     private BitVector(byte[] bytes) {
         this.data = bytes;

@@ -24,7 +24,6 @@ class PublisherTCDecoder {
 	 * @return PublisherTC fields contained in the bit vector
 	 */
 	static PublisherTCImpl decode(BitVector bitVector) {
-		// read fields in order!
 		final BitSet consents = bitVector.readBitSet(PUB_PURPOSE_CONSENT.getLength());
 		final BitSet liTransparency = bitVector.readBitSet(PUB_PURPOSES_LI_TRANSPARENCY.getLength());
 
