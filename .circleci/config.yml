@@ -1,0 +1,39 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java-maven/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # use this docker image
+      # see https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/openjdk:8-jdk-stretch
+
+    working_directory: ~/iabtcf-java
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+          key: iabtcf-java-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: iabtcf-java-{{ checksum "pom.xml" }}
+
+      - run: mvn package
+
+      - store_test_results:
+          # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: target/surefire-reports
+
+      - store_artifacts:
+          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
+          path: target/iabtcf-core-1.0.3-alpha.0-SNAPSHOT.jar
