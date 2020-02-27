@@ -1,11 +1,9 @@
 package com.iabtcf.decoder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
-import com.iabtcf.BitVector;
+import com.iabtcf.ByteBitVector;
 import com.iabtcf.SegmentInputStream;
 import com.iabtcf.model.TCModel;
 import com.iabtcf.v2.BitVectorTCModelV2;
@@ -19,12 +17,10 @@ public class TCModelDecoderImpl implements TCModelDecoder {
     public TCModel decode(String consentString) {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
-        BitVector bitVector = vectorFromString(base64UrlEncodedString);
+        ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
 
-        int version =
-                bitVector.readUnsignedInt(
-                        FieldConstants.CoreStringConstants.VERSION_OFFSET,
-                        FieldConstants.Type.TINY_INT.length());
+        int version = bitVector.readBits6(FieldConstants.CoreStringConstants.VERSION_OFFSET);
+
         switch (version) {
             case 1:
                 // TODO : add version1
@@ -32,10 +28,10 @@ public class TCModelDecoderImpl implements TCModelDecoder {
             case 2:
                 if (split.length > 1) {
                     String secondPartBase64 = split[1];
-                    BitVector secondPartBitVector = vectorFromString(secondPartBase64);
+                    ByteBitVector secondPartBitVector = vectorFromString(secondPartBase64);
                     if (split.length > 2) {
                         String thirdPartBase64 = split[2];
-                        BitVector thirdPartBitVector = vectorFromString(thirdPartBase64);
+                        ByteBitVector thirdPartBitVector = vectorFromString(thirdPartBase64);
                         return BitVectorTCModelV2.fromBitVector(
                                 bitVector, secondPartBitVector, thirdPartBitVector);
                     } else {
@@ -49,29 +45,10 @@ public class TCModelDecoderImpl implements TCModelDecoder {
         }
     }
 
-    private BitVector vectorFromString(String base64UrlEncodedString) {
+    private ByteBitVector vectorFromString(String base64UrlEncodedString) {
         SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
         InputStream is = DECODER.wrap(sis);
 
-        byte[] bytes = toByteArray(is, base64UrlEncodedString.length());
-
-        return BitVector.from(bytes);
-    }
-
-    private byte[] toByteArray(InputStream is, int lengthHint) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(Math.max(32, lengthHint));
-
-        try {
-            byte[] buffer = new byte[4096];
-            int n = 0;
-
-            while ((n = is.read(buffer)) != -1) {
-                baos.write(buffer, 0, n);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return baos.toByteArray();
+        return new ByteBitVector(is);
     }
 }
