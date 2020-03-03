@@ -47,16 +47,11 @@ public class TCModelDecoderImpl implements TCModelDecoder {
                 throw new UnsupportedOperationException("Version 1 is unsupported yet");
             case 2:
                 if (split.length > 1) {
-                    String secondPartBase64 = split[1];
-                    ByteBitVector secondPartBitVector = vectorFromString(secondPartBase64);
-                    if (split.length > 2) {
-                        String thirdPartBase64 = split[2];
-                        ByteBitVector thirdPartBitVector = vectorFromString(thirdPartBase64);
-                        return BitVectorTCModelV2.fromBitVector(
-                                bitVector, secondPartBitVector, thirdPartBitVector);
-                    } else {
-                        return BitVectorTCModelV2.fromBitVector(bitVector, secondPartBitVector);
+                    ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
+                    for (int i = 1; i < split.length; i++) {
+                        remaining[i -1] = vectorFromString(split[i]);
                     }
+                    return BitVectorTCModelV2.fromBitVector(bitVector, remaining);
                 } else {
                     return BitVectorTCModelV2.fromBitVector(bitVector);
                 }
