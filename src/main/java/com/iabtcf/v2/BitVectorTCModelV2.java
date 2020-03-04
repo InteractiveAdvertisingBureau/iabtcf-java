@@ -29,6 +29,7 @@ import com.iabtcf.v2.Field.Vendors;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import java.util.stream.IntStream;
 
 public class BitVectorTCModelV2 implements TCModelV2 {
 
+    // CoreString
     private final int version;
     private final Instant consentRecordCreated;
     private final Instant consentRecordLastUpdated;
@@ -52,16 +54,20 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     private final Set<Integer> specialFeaturesOptInts;
     private final Set<Integer> purposesConsent;
     private final Set<Integer> purposesLITransparency;
-    private final Set<Integer> vendorConsents;
-    private final Set<Integer> vendorLegitimateInterests;
-    private final List<PublisherRestriction> publisherRestrictions;
+    // Variable Length
+    private final Set<Integer> vendorConsents = new HashSet<>();
+    private final Set<Integer> vendorLegitimateInterests = new HashSet<>();
+    private final Set<PublisherRestriction> publisherRestrictions = new HashSet<>();
 
-    private final Set<Integer> disclosedVendors;
-    private final Set<Integer> allowedVendors;
-    private final Set<Integer> publisherPurposesConsent;
-    private final Set<Integer> publisherPurposesLITransparency;
-    private final Set<Integer> customPurposesConsent;
-    private final Set<Integer> customPurposesLITransparency;
+    // OOB
+    private Set<Integer> disclosedVendors = Collections.emptySet();
+    private Set<Integer> allowedVendors = Collections.emptySet();
+
+    // PublisherTC
+    private Set<Integer> publisherPurposesConsent = Collections.emptySet();
+    private Set<Integer> publisherPurposesLITransparency = Collections.emptySet();
+    private Set<Integer> customPurposesConsent = Collections.emptySet();
+    private Set<Integer> customPurposesLITransparency = Collections.emptySet();
 
     private BitVectorTCModelV2(ByteBitVector bv) {
         this.version = bv.readByte(CoreString.VERSION);
@@ -82,21 +88,10 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         this.publisherCountryCode = readStr2(bv, CoreString.PUBLISHER_CC.getOffset());
 
         int currentPointer = CoreString.PUBLISHER_CC.getOffset() + CoreString.PUBLISHER_CC.getLength(); // publisher cc offset
-        this.vendorConsents = new HashSet<>();
-        currentPointer = this.fetchSet(this.vendorConsents, currentPointer, bv);
+        currentPointer = fetchSet(this.vendorConsents, currentPointer, bv);
+        currentPointer = fetchSet(this.vendorLegitimateInterests, currentPointer, bv);
 
-        this.vendorLegitimateInterests = new HashSet<>();
-        currentPointer = this.fetchSet(this.vendorLegitimateInterests, currentPointer, bv);
-
-        this.publisherRestrictions = new ArrayList<>();
-        this.fillPublisherRestrictions(publisherRestrictions, currentPointer, bv);
-
-        this.disclosedVendors = new HashSet<>();
-        this.allowedVendors = new HashSet<>();
-        this.publisherPurposesConsent = new HashSet<>();
-        this.publisherPurposesLITransparency = new HashSet<>();
-        this.customPurposesConsent = new HashSet<>();
-        this.customPurposesLITransparency = new HashSet<>();
+        fillPublisherRestrictions(publisherRestrictions, currentPointer, bv);
     }
 
     private BitVectorTCModelV2(ByteBitVector coreVector, ByteBitVector... theRest) {
@@ -122,10 +117,12 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         int segmentType = bitVector.readByte(Field.OptionalSegment.SEGMENT_TYPE);
         switch (SegmentType.valueOf(segmentType)) {
             case DISCLOSED_VENDOR:
-                fetchSet(this.disclosedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
+                this.disclosedVendors = new HashSet<>();
+                fetchSet(disclosedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
                 break;
             case ALLOWED_VENDOR:
-                fetchSet(this.allowedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
+                allowedVendors = new HashSet<>();
+                fetchSet(allowedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
                 break;
             case PUBLISHER_TC:
                 fillPublisherPurposesTC(bitVector);
@@ -134,18 +131,18 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     }
 
     private void fillPublisherPurposesTC(final ByteBitVector bv) {
-        this.publisherPurposesConsent.addAll(bv.readSet(PublisherTC.PURPOSE_CONSENT));
+        this.publisherPurposesConsent = bv.readSet(PublisherTC.PURPOSE_CONSENT);
 
-        this.publisherPurposesLITransparency.addAll(bv.readSet(PublisherTC.PURPOSES_LI_TRANSPARENCY));
+        this.publisherPurposesLITransparency = bv.readSet(PublisherTC.PURPOSES_LI_TRANSPARENCY);
 
         int numberOfCustomPurposes = bv.readByte(PublisherTC.NUM_CUSTOM_PURPOSES);
 
-        this.customPurposesConsent.addAll(bv.readSet(
+        this.customPurposesConsent = bv.readSet(
                 PublisherTC.CUSTOM_PURPOSES_CONSENT.getOffset(),
-                numberOfCustomPurposes));
-        this.customPurposesLITransparency.addAll(bv.readSet(
+                numberOfCustomPurposes);
+        this.customPurposesLITransparency = bv.readSet(
                 PublisherTC.CUSTOM_PURPOSES_CONSENT.getOffset() + numberOfCustomPurposes,
-                numberOfCustomPurposes));
+                numberOfCustomPurposes);
     }
 
     @Override
@@ -239,7 +236,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     }
 
     @Override
-    public List<PublisherRestriction> publisherRestrictions() {
+    public Set<PublisherRestriction> publisherRestrictions() {
         return this.publisherRestrictions;
     }
 
@@ -310,7 +307,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         return currentPointer;
     }
 
-    private void fillPublisherRestrictions(List<PublisherRestriction> publisherRestrictions,
+    private void fillPublisherRestrictions(Set<PublisherRestriction> publisherRestrictions,
                                            int currentPointer,
                                            ByteBitVector bitVector) {
         int numberOfPublisherRestrictions = bitVector.readBits12(currentPointer);

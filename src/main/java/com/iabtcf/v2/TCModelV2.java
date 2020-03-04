@@ -20,10 +20,9 @@ package com.iabtcf.v2;
  * #L%
  */
 
-import java.util.List;
-import java.util.Set;
-
 import com.iabtcf.model.TCModel;
+
+import java.util.Set;
 
 public interface TCModelV2 extends TCModel {
     /**
@@ -98,7 +97,7 @@ public interface TCModelV2 extends TCModel {
 
     Set<Integer> vendorLegitimateInterests();
 
-    List<PublisherRestriction> publisherRestrictions();
+    Set<PublisherRestriction> publisherRestrictions();
 
     Set<Integer> disclosedVendors();
 

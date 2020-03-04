@@ -20,18 +20,22 @@ package com.iabtcf.v2;
  * #L%
  */
 
-import static org.junit.Assert.*;
-
 import com.iabtcf.decoder.TCModelDecoder;
+import org.junit.Test;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class BitVectorTCModelV2Test {
 
@@ -143,19 +147,15 @@ public class BitVectorTCModelV2Test {
         String base64CoreString = base64FromBitString(bitString);
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        List<PublisherRestriction> actual = tcModel.publisherRestrictions();
-        List<PublisherRestriction> expected =
-                Arrays.asList(
-                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, Arrays.asList()),
-                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, Arrays.asList()),
+        Set<PublisherRestriction> actual = tcModel.publisherRestrictions();
+        Set<PublisherRestriction> expected =
+                new HashSet<>(Arrays.asList(
+                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, Collections.emptyList()),
+                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, Collections.emptyList()),
                         new PublisherRestriction(
-                                3, RestrictionType.REQUIRE_LEGITIMATE_INTEREST, Arrays.asList()));
+                                3, RestrictionType.REQUIRE_LEGITIMATE_INTEREST, Collections.emptyList())));
 
         assertEquals(expected, actual);
-
-        assertEquals(1, actual.get(0).getPurposeId());
-        assertEquals(RestrictionType.REQUIRE_CONSENT, actual.get(0).getRestrictionType());
-        assertEquals(Arrays.asList(), actual.get(0).getVendorIds());
     }
 
     @Test
