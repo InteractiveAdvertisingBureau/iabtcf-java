@@ -20,45 +20,19 @@ package com.iabtcf.v2;
  * #L%
  */
 
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_ID_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CONSENT_LANGUAGE_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CONSENT_SCREEN_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CREATED_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.IS_SERVICE_SPECIFIC_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.LAST_UPDATED_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PUBLISHER_CC_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSES_CONSENT_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSES_CONSENT_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_LI_TRANSPARENCY_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_LI_TRANSPARENCY_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_ONE_TREATMENT_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_ALLOWED_VENDOR;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_DEFAULT;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_DISCLOSED_VENDOR;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_PUBLISHER_TC;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SPECIAL_FEATURE_OPT_INS_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SPECIAL_FEATURE_OPT_INS_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.TCF_POLICY_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.USE_NON_STANDARD_STACKS_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.VENDOR_LIST_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.Type.CHAR;
-import static com.iabtcf.v2.FieldConstants.Type.MEDIUM;
-import static com.iabtcf.v2.FieldConstants.Type.SHORT;
-import static com.iabtcf.v2.FieldConstants.Type.TINY_INT;
+import com.iabtcf.ByteBitVector;
+import com.iabtcf.v2.Field.CoreString;
+import com.iabtcf.v2.Field.PublisherRestrictions;
+import com.iabtcf.v2.Field.PublisherTC;
+import com.iabtcf.v2.Field.Vendors;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.stream.IntStream;
-
-import com.iabtcf.ByteBitVector;
 
 public class BitVectorTCModelV2 implements TCModelV2 {
 
@@ -90,41 +64,39 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     private final Set<Integer> customPurposesLITransparency;
 
     private BitVectorTCModelV2(ByteBitVector bv) {
-        this.version = bv.readBits6(VERSION_OFFSET);
-        this.consentRecordCreated = Instant.ofEpochMilli(bv.readBits36(CREATED_OFFSET) * 100);
-        this.consentRecordLastUpdated = Instant.ofEpochMilli(bv.readBits36(LAST_UPDATED_OFFSET) * 100);
-        this.consentManagerProviderId = bv.readBits12(CMP_ID_OFFSET);
-        this.consentManagerProviderVersion = bv.readBits12(CMP_VERSION_OFFSET);
-        this.consentScreen = bv.readBits6(CONSENT_SCREEN_OFFSET);
-        this.consentLanguage = readStr2(bv, CONSENT_LANGUAGE_OFFSET);
-        this.vendorListVersion = bv.readBits12(VENDOR_LIST_VERSION_OFFSET);
-        this.policyVersion = bv.readBits6(TCF_POLICY_VERSION_OFFSET);
-        this.isServiceSpecific = bv.readBits1(IS_SERVICE_SPECIFIC_OFFSET);
-        this.useNonStandardStacks = bv.readBits1(USE_NON_STANDARD_STACKS_OFFSET);
-        this.specialFeaturesOptInts =
-                fillSet(SPECIAL_FEATURE_OPT_INS_OFFSET, SPECIAL_FEATURE_OPT_INS_LENGTH, bv);
-        this.purposesConsent = fillSet(PURPOSES_CONSENT_OFFSET, PURPOSES_CONSENT_LENGTH, bv);
-        this.purposesLITransparency =
-                fillSet(PURPOSE_LI_TRANSPARENCY_OFFSET, PURPOSE_LI_TRANSPARENCY_LENGTH, bv);
-        this.isPurposeOneTreatment = bv.readBits1(PURPOSE_ONE_TREATMENT_OFFSET);
-        this.publisherCountryCode = readStr2(bv, PUBLISHER_CC_OFFSET);
+        this.version = bv.readByte(CoreString.VERSION);
+        this.consentRecordCreated = Instant.ofEpochMilli(bv.readBits36(CoreString.CREATED.getOffset()) * 100);
+        this.consentRecordLastUpdated = Instant.ofEpochMilli(bv.readBits36(CoreString.LAST_UPDATED.getOffset()) * 100);
+        this.consentManagerProviderId = bv.readBits12(CoreString.CMP_ID.getOffset());
+        this.consentManagerProviderVersion = bv.readBits12(CoreString.CMP_VERSION.getOffset());
+        this.consentScreen = bv.readByte(CoreString.CONSENT_SCREEN);
+        this.consentLanguage = readStr2(bv, CoreString.CONSENT_LANGUAGE.getOffset());
+        this.vendorListVersion = bv.readBits12(CoreString.VENDOR_LIST_VERSION.getOffset());
+        this.policyVersion = bv.readByte(CoreString.TCF_POLICY_VERSION);
+        this.isServiceSpecific = bv.readBit(CoreString.IS_SERVICE_SPECIFIC);
+        this.useNonStandardStacks = bv.readBit(CoreString.USE_NON_STANDARD_STACKS);
+        this.specialFeaturesOptInts = bv.readSet(CoreString.SPECIAL_FEATURE_OPT_INS);
+        this.purposesConsent = bv.readSet(CoreString.PURPOSES_CONSENT);
+        this.purposesLITransparency = bv.readSet(CoreString.PURPOSE_LI_TRANSPARENCY);
+        this.isPurposeOneTreatment = bv.readBit(CoreString.PURPOSE_ONE_TREATMENT);
+        this.publisherCountryCode = readStr2(bv, CoreString.PUBLISHER_CC.getOffset());
 
-        int currentPointer = PUBLISHER_CC_OFFSET + (CHAR.length() * 2); // publisher cc offset
-        this.vendorConsents = new TreeSet<>();
+        int currentPointer = CoreString.PUBLISHER_CC.getOffset() + CoreString.PUBLISHER_CC.getLength(); // publisher cc offset
+        this.vendorConsents = new HashSet<>();
         currentPointer = this.fetchSet(this.vendorConsents, currentPointer, bv);
 
-        this.vendorLegitimateInterests = new TreeSet<>();
+        this.vendorLegitimateInterests = new HashSet<>();
         currentPointer = this.fetchSet(this.vendorLegitimateInterests, currentPointer, bv);
 
         this.publisherRestrictions = new ArrayList<>();
         this.fillPublisherRestrictions(publisherRestrictions, currentPointer, bv);
 
-        this.disclosedVendors = new TreeSet<>();
-        this.allowedVendors = new TreeSet<>();
-        this.publisherPurposesConsent = new TreeSet<>();
-        this.publisherPurposesLITransparency = new TreeSet<>();
-        this.customPurposesConsent = new TreeSet<>();
-        this.customPurposesLITransparency = new TreeSet<>();
+        this.disclosedVendors = new HashSet<>();
+        this.allowedVendors = new HashSet<>();
+        this.publisherPurposesConsent = new HashSet<>();
+        this.publisherPurposesLITransparency = new HashSet<>();
+        this.customPurposesConsent = new HashSet<>();
+        this.customPurposesLITransparency = new HashSet<>();
     }
 
     private BitVectorTCModelV2(ByteBitVector coreVector, ByteBitVector... theRest) {
@@ -140,50 +112,40 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     }
 
     public static String readStr2(ByteBitVector bv, int offset) {
-        return String
-            .valueOf(new char[] {(char) ('A' + bv.readBits6(offset)), (char) ('A' + bv.readBits6(offset + 6))});
+        return String.valueOf(new char[] {
+                (char) ('A' + bv.readByte(offset, Field.CHAR_LENGTH)),
+                (char) ('A' + bv.readByte(offset + Field.CHAR_LENGTH, Field.CHAR_LENGTH))
+        });
     }
 
-    private int fillRemainingVector(ByteBitVector bitVector) {
-        int currentPointer = 0;
-        int segmentType = bitVector.readBits3(SEGMENT_TYPE_OFFSET);
-        currentPointer += SEGMENT_TYPE_OFFSET + SEGMENT_TYPE_LENGTH;
-        switch (segmentType) {
-            case SEGMENT_TYPE_DEFAULT:
+    private void fillRemainingVector(ByteBitVector bitVector) {
+        int segmentType = bitVector.readByte(Field.OptionalSegment.SEGMENT_TYPE);
+        switch (SegmentType.valueOf(segmentType)) {
+            case DISCLOSED_VENDOR:
+                fetchSet(this.disclosedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
                 break;
-            case SEGMENT_TYPE_DISCLOSED_VENDOR:
-                currentPointer = fetchSet(this.disclosedVendors, currentPointer, bitVector);
+            case ALLOWED_VENDOR:
+                fetchSet(this.allowedVendors, Vendors.MAX_VENDOR_ID.getOffset(), bitVector);
                 break;
-            case SEGMENT_TYPE_ALLOWED_VENDOR:
-                currentPointer = fetchSet(this.allowedVendors, currentPointer, bitVector);
-                break;
-            case SEGMENT_TYPE_PUBLISHER_TC:
-                currentPointer = fillPublisherPurposesTC(currentPointer, bitVector);
+            case PUBLISHER_TC:
+                fillPublisherPurposesTC(bitVector);
                 break;
         }
-        return currentPointer;
     }
 
-    private int fillPublisherPurposesTC(int currentPointer, ByteBitVector bitVector) {
-        this.publisherPurposesConsent.addAll(
-                fillSet(currentPointer, PURPOSES_CONSENT_LENGTH, bitVector));
-        currentPointer += PURPOSES_CONSENT_LENGTH;
+    private void fillPublisherPurposesTC(final ByteBitVector bv) {
+        this.publisherPurposesConsent.addAll(bv.readSet(PublisherTC.PURPOSE_CONSENT));
 
-        this.publisherPurposesLITransparency.addAll(
-                fillSet(currentPointer, PURPOSE_LI_TRANSPARENCY_LENGTH, bitVector));
-        currentPointer += PURPOSE_LI_TRANSPARENCY_LENGTH;
+        this.publisherPurposesLITransparency.addAll(bv.readSet(PublisherTC.PURPOSES_LI_TRANSPARENCY));
 
-        int numberOfCustomPurposes = bitVector.readBits6(currentPointer);
-        currentPointer += TINY_INT.length();
+        int numberOfCustomPurposes = bv.readByte(PublisherTC.NUM_CUSTOM_PURPOSES);
 
-        this.customPurposesConsent.addAll(fillSet(currentPointer, numberOfCustomPurposes, bitVector));
-        currentPointer += numberOfCustomPurposes;
-
-        this.customPurposesLITransparency.addAll(
-                fillSet(currentPointer, numberOfCustomPurposes, bitVector));
-        currentPointer += numberOfCustomPurposes;
-
-        return currentPointer;
+        this.customPurposesConsent.addAll(bv.readSet(
+                PublisherTC.CUSTOM_PURPOSES_CONSENT.getOffset(),
+                numberOfCustomPurposes));
+        this.customPurposesLITransparency.addAll(bv.readSet(
+                PublisherTC.CUSTOM_PURPOSES_CONSENT.getOffset() + numberOfCustomPurposes,
+                numberOfCustomPurposes));
     }
 
     @Override
@@ -313,14 +275,14 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     private int fetchSet(Set<Integer> set, int currentPointer, ByteBitVector bitVector) {
         int maxVendor = bitVector.readBits16(currentPointer);
-        currentPointer += MEDIUM.length();
-        boolean isRangeEncoding = bitVector.readBits1(currentPointer++);
+        currentPointer += Vendors.MAX_VENDOR_ID.getLength();
+        boolean isRangeEncoding = bitVector.readBit(currentPointer++);
 
         if (isRangeEncoding) {
             currentPointer = vendorIdsFromRange(set, bitVector, currentPointer);
         } else {
             for (int i = 0; i < maxVendor; i++) {
-                boolean hasVendorConsent = bitVector.readBits1(currentPointer++);
+                boolean hasVendorConsent = bitVector.readBit(currentPointer++);
                 if (hasVendorConsent) {
                     set.add(i + 1);
                 }
@@ -330,17 +292,16 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         return currentPointer;
     }
 
-    private int vendorIdsFromRange(
-            Collection<Integer> vendorIds, ByteBitVector bitVector, int currentPointer) {
+    private int vendorIdsFromRange(Collection<Integer> vendorIds, ByteBitVector bitVector, int currentPointer) {
         int numberOfVendorEntries = bitVector.readBits12(currentPointer);
-        currentPointer += SHORT.length();
+        currentPointer += Vendors.NUM_ENTRIES.getLength();
         for (int j = 0; j < numberOfVendorEntries; j++) {
-            boolean isRangeEntry = bitVector.readBits1(currentPointer++);
+            boolean isRangeEntry = bitVector.readBit(currentPointer++);
             int startOrOnlyVendorId = bitVector.readBits16(currentPointer);
-            currentPointer += MEDIUM.length();
+            currentPointer += Vendors.START_OR_ONLY_VENDOR_ID.getLength();
             if (isRangeEntry) {
                 int endVendorId = bitVector.readBits16(currentPointer);
-                currentPointer += MEDIUM.length();
+                currentPointer += Vendors.END_VENDOR_ID.getLength();
                 IntStream.rangeClosed(startOrOnlyVendorId, endVendorId).forEach(vendorIds::add);
             } else {
                 vendorIds.add(startOrOnlyVendorId);
@@ -349,37 +310,25 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         return currentPointer;
     }
 
-    private int fillPublisherRestrictions(
-            List<PublisherRestriction> publisherRestrictions, int currentPointer, ByteBitVector bitVector) {
-
+    private void fillPublisherRestrictions(List<PublisherRestriction> publisherRestrictions,
+                                           int currentPointer,
+                                           ByteBitVector bitVector) {
         int numberOfPublisherRestrictions = bitVector.readBits12(currentPointer);
-        currentPointer += SHORT.length();
+        currentPointer += PublisherRestrictions.NUM_PUB_RESTRICTIONS.getLength();
 
         for (int i = 0; i < numberOfPublisherRestrictions; i++) {
-            int purposeId = bitVector.readBits6(currentPointer);
-            currentPointer += TINY_INT.length();
+            int purposeId = bitVector.readByte(currentPointer, PublisherRestrictions.PURPOSE_ID.getLength());
+            currentPointer += PublisherRestrictions.PURPOSE_ID.getLength();
 
-            int restrictionTypeId = bitVector.readBits2(currentPointer);
-            currentPointer += 2;
+            int restrictionTypeId = bitVector.readByte(currentPointer, PublisherRestrictions.RESTRICTION_TYPE.getLength());
+            currentPointer += PublisherRestrictions.RESTRICTION_TYPE.getLength();
             RestrictionType restrictionType = RestrictionType.fromId(restrictionTypeId);
 
             List<Integer> vendorIds = new ArrayList<>();
             currentPointer = vendorIdsFromRange(vendorIds, bitVector, currentPointer);
 
-            PublisherRestriction publisherRestriction =
-                    new PublisherRestriction(purposeId, restrictionType, vendorIds);
+            PublisherRestriction publisherRestriction = new PublisherRestriction(purposeId, restrictionType, vendorIds);
             publisherRestrictions.add(publisherRestriction);
         }
-        return currentPointer;
-    }
-
-    private Set<Integer> fillSet(int offset, int length, ByteBitVector bitVector) {
-        Set<Integer> set = new TreeSet<>();
-        for (int i = 0; i < length; i++) {
-            if (bitVector.readBits1(offset + i)) {
-                set.add(i + 1);
-            }
-        }
-        return set;
     }
 }

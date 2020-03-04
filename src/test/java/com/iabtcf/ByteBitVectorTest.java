@@ -20,20 +20,16 @@ package com.iabtcf;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Base64;
-import java.util.BitSet;
 import java.util.Random;
 
-import org.junit.Test;
-
-import com.iabtcf.ByteBitVector;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ByteBitVectorTest {
     Random r = new Random();
@@ -41,16 +37,16 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits1() {
         ByteBitVector bv = new ByteBitVector(new byte[] {(byte) 0b10000000});
-        assertTrue(bv.readBits1(0));
+        assertTrue(bv.readBit(0));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000001});
-        assertTrue(bv.readBits1(7));
+        assertTrue(bv.readBit(7));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b10000000});
-        assertTrue(bv.readBits1(8));
+        assertTrue(bv.readBit(8));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00000001});
-        assertTrue(bv.readBits1(15));
+        assertTrue(bv.readBit(15));
     }
 
     @Test
@@ -61,7 +57,7 @@ public class ByteBitVectorTest {
         byte[] bytes = Base64.getUrlDecoder().decode(str);
 
         ByteBitVector bv = new ByteBitVector(bytes);
-        assertEquals(1, bv.readBits6(0));
+        assertEquals(1, bv.readByte(0, 6));
 
         ZoneId zoneId = ZoneId.of("America/Los_Angeles");
         ZonedDateTime zdt = Instant.ofEpochMilli(bv.readBits36(6) * 100).atZone(zoneId);
@@ -83,7 +79,7 @@ public class ByteBitVectorTest {
 
         for (int i = 0; i < 10; i++) {
             ByteBitVector bv = new ByteBitVector(g);
-            assertEquals(2, bv.readBits2(i));
+            assertEquals(2, bv.readByte(i, 2));
 
             shift(g);
         }
@@ -95,7 +91,7 @@ public class ByteBitVectorTest {
 
         for (int i = 0; i < 10; i++) {
             ByteBitVector bv = new ByteBitVector(g);
-            assertEquals(5, bv.readBits3(i));
+            assertEquals(5, bv.readByte(i, 3));
 
             shift(g);
         }
@@ -112,7 +108,7 @@ public class ByteBitVectorTest {
 
         ByteBitVector bv = new ByteBitVector(bytes);
         // assertEquals(2, bv.readBits6(0));
-        assertEquals(1, bv.readBits6(0));
+        assertEquals(1, bv.readByte(0, 6));
 
         ZoneId zoneId = ZoneId.of("America/Los_Angeles");
         ZonedDateTime zdt = Instant.ofEpochMilli(bv.readBits36(6) * 100).atZone(zoneId);
@@ -129,80 +125,80 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits6_1() {
         ByteBitVector bv = new ByteBitVector(new byte[] {(byte) 0b00001000, (byte) 0b00000000});
-        assertEquals(2, bv.readBits6(0));
+        assertEquals(2, bv.readByte(0, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000100, (byte) 0b00000000});
-        assertEquals(2, bv.readBits6(1));
+        assertEquals(2, bv.readByte(1, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000010, (byte) 0b00000000});
-        assertEquals(2, bv.readBits6(2));
+        assertEquals(2, bv.readByte(2, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000001, (byte) 0b00000000});
-        assertEquals(2, bv.readBits6(3));
+        assertEquals(2, bv.readByte(3, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b10000000});
-        assertEquals(2, bv.readBits6(4));
+        assertEquals(2, bv.readByte(4, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b01000000});
-        assertEquals(2, bv.readBits6(5));
+        assertEquals(2, bv.readByte(5, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00100000});
-        assertEquals(2, bv.readBits6(6));
+        assertEquals(2, bv.readByte(6, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00010000});
-        assertEquals(2, bv.readBits6(7));
+        assertEquals(2, bv.readByte(7, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00001000});
-        assertEquals(2, bv.readBits6(8));
+        assertEquals(2, bv.readByte(8, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00000100});
-        assertEquals(2, bv.readBits6(9));
+        assertEquals(2, bv.readByte(9, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00000010});
-        assertEquals(2, bv.readBits6(10));
+        assertEquals(2, bv.readByte(10, 6));
     }
 
     @Test
     public void testReadBits6_2() {
         ByteBitVector bv = new ByteBitVector(new byte[] {(byte) 0b10001000, (byte) 0b00000000});
-        assertEquals(34, bv.readBits6(0));
+        assertEquals(34, bv.readByte(0, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b01000100, (byte) 0b00000000});
-        assertEquals(34, bv.readBits6(1));
+        assertEquals(34, bv.readByte(1, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00100010, (byte) 0b00000000});
-        assertEquals(34, bv.readBits6(2));
+        assertEquals(34, bv.readByte(2, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00010001, (byte) 0b00000000});
-        assertEquals(34, bv.readBits6(3));
+        assertEquals(34, bv.readByte(3, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00001000, (byte) 0b10000000});
-        assertEquals(34, bv.readBits6(4));
+        assertEquals(34, bv.readByte(4, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000100, (byte) 0b01000000});
-        assertEquals(34, bv.readBits6(5));
+        assertEquals(34, bv.readByte(5, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000010, (byte) 0b00100000});
-        assertEquals(34, bv.readBits6(6));
+        assertEquals(34, bv.readByte(6, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000001, (byte) 0b00010000});
-        assertEquals(34, bv.readBits6(7));
+        assertEquals(34, bv.readByte(7, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b10001000});
-        assertEquals(34, bv.readBits6(8));
+        assertEquals(34, bv.readByte(8, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b01000100});
-        assertEquals(34, bv.readBits6(9));
+        assertEquals(34, bv.readByte(9, 6));
 
         bv = new ByteBitVector(new byte[] {(byte) 0b00000000, (byte) 0b00100010});
-        assertEquals(34, bv.readBits6(10));
+        assertEquals(34, bv.readByte(10, 6));
     }
 
 
     @Test
     public void testCapacity() {
         ByteBitVector bv = new ByteBitVector(new byte[] {8});
-        assertEquals(2, bv.readBits6(0));
+        assertEquals(2, bv.readByte(0, 6));
     }
 
     @Test
@@ -448,52 +444,6 @@ public class ByteBitVectorTest {
     }
 
     @Test
-    public void testWriteBits6() {
-        byte[] buffer;
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 0, (byte) 2);
-        ByteBitVector bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(0));
-        assertEquals(8, buffer[0]);
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 1, (byte) 2);
-        bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(1));
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 2, (byte) 2);
-        bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(2));
-    }
-
-    @Test
-    public void testWriteBits6MultiByte() {
-        byte[] buffer;
-
-        for (int i = 3; i < 10; i++) {
-            buffer = new byte[2];
-            ByteBitVector.writeBits6(buffer, i, (byte) 2);
-            ByteBitVector bv = new ByteBitVector(buffer);
-            assertEquals(2, bv.readBits6(i));
-        }
-    }
-
-    @Test
-    public void testWriteBits6Random() {
-        for (int j = 0; j < 100; j++) {
-            for (int i = 0; i < 10; i++) {
-                byte[] buffer = new byte[2];
-                r.nextBytes(buffer);
-                ByteBitVector.writeBits6(buffer, i, (byte) 34);
-                ByteBitVector bv = new ByteBitVector(buffer);
-                assertEquals(34, bv.readBits6(i));
-            }
-        }
-    }
-
-    @Test
     public void testReadBits12N_Random() {
         for (int i = 0; i < 1000; i++) {
             _testReadBits12N_Random();
@@ -537,78 +487,6 @@ public class ByteBitVectorTest {
             bv = new ByteBitVector(g);
             assertEquals(String.format("%d", i), expect, bv.readBits16(4 + i));
         }
-    }
-
-    @Test
-    public void testBitset1() {
-        ByteBitVector bv = new ByteBitVector(new byte[] {(byte) 0b11100001});
-
-        BitSet bs = bv.readBitSet(0, 8);
-
-        assertTrue(bs.get(0));
-        assertTrue(bs.get(1));
-        assertTrue(bs.get(2));
-        assertFalse(bs.get(3));
-        assertFalse(bs.get(4));
-        assertFalse(bs.get(5));
-        assertFalse(bs.get(6));
-        assertTrue(bs.get(7));
-    }
-
-    @Test
-    public void testBitset() {
-        byte[] g = new byte[] {(byte) 0b11100001, (byte) 0b11001100, (byte) 0x00, (byte) 0x00};
-
-        for (int i = 0; i < 10; i++) {
-            ByteBitVector bv = new ByteBitVector(g);
-
-            BitSet bs = bv.readBitSet(i, 16);
-
-            assertTrue(bs.get(0));
-            assertTrue(bs.get(1));
-            assertTrue(bs.get(2));
-            assertFalse(bs.get(3));
-            assertFalse(bs.get(4));
-            assertFalse(bs.get(5));
-            assertFalse(bs.get(6));
-            assertTrue(bs.get(7));
-
-            assertTrue(bs.get(8));
-            assertTrue(bs.get(9));
-            assertFalse(bs.get(10));
-            assertFalse(bs.get(11));
-            assertTrue(bs.get(12));
-            assertTrue(bs.get(13));
-            assertFalse(bs.get(14));
-            assertFalse(bs.get(15));
-
-            shift(g);
-        }
-    }
-
-    @Test
-    public void testBitsetVendors() {
-        String str = "BOvalCcOvZ7NaABABBAAABAAAAAAxwkA";
-
-        byte[] bytes = Base64.getUrlDecoder().decode(str);
-
-        ByteBitVector bv = new ByteBitVector(bytes);
-        BitSet bs = bv.readBitSet(173, 12);
-        // 0b11100001 0b00100000
-
-        assertTrue(bs.get(0));
-        assertTrue(bs.get(1));
-        assertTrue(bs.get(2));
-        assertFalse(bs.get(3));
-        assertFalse(bs.get(4));
-        assertFalse(bs.get(5));
-        assertFalse(bs.get(6));
-        assertTrue(bs.get(7));
-
-        assertFalse(bs.get(8));
-        assertFalse(bs.get(9));
-        assertTrue(bs.get(10));
-        assertFalse(bs.get(11));
     }
 
     private static void shift(byte[] buffer) {

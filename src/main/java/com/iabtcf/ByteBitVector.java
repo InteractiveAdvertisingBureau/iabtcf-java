@@ -20,9 +20,12 @@ package com.iabtcf;
  * #L%
  */
 
+import com.iabtcf.v2.Field;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ByteBitVector {
     private byte[] buffer;
@@ -79,7 +82,7 @@ public class ByteBitVector {
         return true;
     }
 
-    public boolean readBits1(int offset) {
+    public boolean readBit(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
 
@@ -88,44 +91,29 @@ public class ByteBitVector {
         return ((buffer[startByte] >>> (7 - bitPos)) & 1) == 1;
     }
 
-    public byte readBits2(int offset) {
-        return readByteBits(offset, 2);
+    public boolean readBit(Field field) {
+        return readBit(field.getOffset());
     }
 
-    public byte readBits3(int offset) {
-        return readByteBits(offset, 3);
-    }
-
-    public byte readBits6(int offset) {
-        int startByte = offset >> 3;
-        int bitPos = offset % 8;
-        int n = 8 - bitPos;
-
-        if (n < 6) {
-            ensureReadable(startByte, 2);
-            return (byte) (unsafeReadLsb(buffer[startByte], 6 - n, n)
-                    | unsafeReadMsb(buffer[startByte + 1], 0, 6 - n));
-        } else {
-            ensureReadable(startByte, 1);
-            return unsafeReadMsb(buffer[startByte], bitPos, 6);
-        }
+    public byte readByte(Field field) {
+        return readByte(field.getOffset(), field.getLength());
     }
 
     /**
-     * When nbits <= 8
+     * When length <= 8
      */
-    private byte readByteBits(int offset, int nbits) {
+    public byte readByte(int offset, int length) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
-        if (n < nbits) {
+        if (n < length) {
             ensureReadable(startByte, 2);
-            return (byte) (unsafeReadLsb(buffer[startByte], nbits - n, n)
-                    | unsafeReadMsb(buffer[startByte + 1], 0, nbits - n));
+            return (byte) (unsafeReadLsb(buffer[startByte], length - n, n)
+                    | unsafeReadMsb(buffer[startByte + 1], 0, length - n));
         } else {
             ensureReadable(startByte, 1);
-            return unsafeReadMsb(buffer[startByte], bitPos, nbits);
+            return unsafeReadMsb(buffer[startByte], bitPos, length);
         }
     }
 
@@ -205,15 +193,18 @@ public class ByteBitVector {
         }
     }
 
-    public BitSet readBitSet(int offset, int length) {
-        // TODO(mk): can we read larger chunks at a time?
-        BitSet bs = new BitSet(length);
+    public Set<Integer> readSet(final Field field) {
+        return readSet(field.getOffset(), field.getLength());
+    }
+
+    public Set<Integer> readSet(final int offset, final int length) {
+        final Set<Integer> set = new HashSet<>();
         for (int i = 0; i < length; i++) {
-            if (readBits1(offset + i)) {
-                bs.set(i);
+            if (readBit(offset + i)) {
+                set.add(i + 1);
             }
         }
-        return bs;
+        return set;
     }
 
     private byte unsafeReadMsb(byte from, int offset, int length) {
@@ -222,29 +213,5 @@ public class ByteBitVector {
 
     private byte unsafeReadLsb(byte from, int offset, int length) {
         return length == 0 ? from : (byte) ((from & ((1 << length) - 1)) << offset);
-    }
-
-    // exploring writing bits...
-    public static void writeBits6(byte[] buffer, int offset, byte value) {
-        int startByte = offset >> 3;
-        int bitPos = offset % 8;
-        int n = 8 - bitPos;
-
-        value &= ((1 << 6) - 1);
-
-        if (n < 6) {
-            byte mask = (byte) ((1 << n) - 1);
-            buffer[startByte] &= ~mask;
-            buffer[startByte] |= (byte) (value >>> (6 - n));
-
-            mask = (byte) (((1 << (6 - n)) - 1) << (8 - (6 - n) - 0));
-            buffer[startByte + 1] &= ~mask;
-            buffer[startByte + 1] |= (byte) ((value & ((1 << (6 - n)) - 1)) << (8 - (6 - n) - 0));
-            return;
-        } else {
-            byte mask = (byte) (((1 << 6) - 1) << (8 - 6 - bitPos));
-            buffer[startByte] &= ~mask;
-            buffer[startByte] |= (byte) (value << (8 - 6 - bitPos));
-        }
     }
 }

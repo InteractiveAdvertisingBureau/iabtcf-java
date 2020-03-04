@@ -39,7 +39,7 @@ public class BitVectorTest {
     public void testCanReadSmallInt() {
         String bitString = "0000 1000 0000 0001";
         ByteBitVector bitVector = fromBitString(bitString);
-        assertEquals(2, bitVector.readBits6(0));
+        assertEquals(2, bitVector.readByte(0, 6));
     }
 
     @Test
@@ -63,9 +63,9 @@ public class BitVectorTest {
         ByteBitVector bitVector = fromBitString(bitString);
         for (int i = 0; i < bitString.length(); i++) {
             if (bitString.charAt(i) == '1') {
-                assertTrue(bitVector.readBits1(i));
+                assertTrue(bitVector.readBit(i));
             } else {
-                assertFalse(bitVector.readBits1(i));
+                assertFalse(bitVector.readBit(i));
             }
         }
     }

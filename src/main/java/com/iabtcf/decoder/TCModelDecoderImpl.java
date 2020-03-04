@@ -20,14 +20,14 @@ package com.iabtcf.decoder;
  * #L%
  */
 
-import java.io.InputStream;
-import java.util.Base64;
-
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.SegmentInputStream;
 import com.iabtcf.model.TCModel;
 import com.iabtcf.v2.BitVectorTCModelV2;
-import com.iabtcf.v2.FieldConstants;
+import com.iabtcf.v2.Field;
+
+import java.io.InputStream;
+import java.util.Base64;
 
 public class TCModelDecoderImpl implements TCModelDecoder {
 
@@ -39,7 +39,7 @@ public class TCModelDecoderImpl implements TCModelDecoder {
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
 
-        int version = bitVector.readBits6(FieldConstants.CoreStringConstants.VERSION_OFFSET);
+        int version = bitVector.readByte(Field.CoreString.VERSION);
 
         switch (version) {
             case 1:
