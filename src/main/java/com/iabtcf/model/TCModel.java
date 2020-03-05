@@ -1,41 +1,85 @@
 package com.iabtcf.model;
 
-/*-
- * #%L
- * IAB TCF Core Library
- * %%
- * Copyright (C) 2020 IAB Technology Laboratory, Inc
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import java.time.Instant;
+import java.util.SortedSet;
+
+import com.iabtcf.model.ConsentLanguage;
+import com.iabtcf.model.PurposeRestriction;
+import com.iabtcf.model.PurposeRestrictionType;
 
 public interface TCModel {
 
-    /**
-     * @return the version of consent string format
-     */
-    int version();
+    ConsentLanguage static getConsentLanguages();
 
     /**
-     * @return the {@link Instant} at which the consent string was created
+     * both of these are populated by decoding takes that value, otherwise creates timestamp of 'now'
      */
-    Instant consentRecordCreated();
+    Instant getCreated();
+    Instant getLastUpdated();
 
     /**
-     * @return the {@link Instant} at which consent string was last updated
+     * Each of these SortedSet<int> represents a bitfield in the TC String.  Keeping the set sorted is essential for
+     * encoding and using the SortedSet sublass of set creates a last() function which will return the highest id
+     * (this corresponds to the maxVendorID)
      */
-    Instant consentRecordLastUpdated();
+    // Global TC Vectors
+    SortedSet<int> getSpecialFeatureOptIns();
+    SortedSet<int> getPurposeConsents();
+    SortedSet<int> getPurposeLegitimateInterests();
+    // Publisher TC
+    SortedSet<int> getPublisherConsents();
+    SortedSet<int> getPublisherLegitimateInterests();
+    // Vendors
+    SortedSet<int> getVendorConsents();
+    SortedSet<int> getVendorLegitimateInterests();
+    // OOB
+    SortedSet<int> getVendorsDisclosed();
+    SortedSet<int> getVendorsAllowed();
+
+    /**
+     *  Publisher Restrictions is a special case because you have a combination of RestrictionType and PurposeId with
+     *  a list of vendors under that restriction.
+     */
+    Map<int, SortedSet<int>> getPublisherRestrictions();
+
+    void setGVL(gvl: GVL);
+    GVL getGVL();
+
+    void setCmpId(int id);
+    int getCmpId();
+
+    void setCmpVersion(int id);
+    int getCmpVersion();
+
+    void setConsentScreen(int id);
+    int getConsentScreen();
+
+    void setConsentLanguage(ConsentLanguage lang);
+    ConsentLanguage getConsentLanguage();
+
+    void setPublisherCountryCode(String country);
+    String getPublisherCountryCode();
+
+    void setVendorListVersion(int id);
+    int getVendorListVersion();
+
+    void setPolicyVersion(int id);
+    int getPolicyVersion();
+
+    // refers to encoding version
+    void setVersion(int id);
+    int getVersion();
+
+    void setUseNonStandardStacks(boolean value);
+    boolean getUseNonStandardStacks();
+
+    // only need a getter because this is interpreted from decoding a string.  A java environment won't need to explicitly set this
+    boolean getSupportOOB();
+
+    void setPurposeOneTreatment(boolean value);
+    boolean getPurposeOneTreatment();
+
+    // sets lastUpdated time to now
+    void update();
+
 }
