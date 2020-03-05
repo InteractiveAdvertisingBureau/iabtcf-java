@@ -42,12 +42,6 @@ public class TCModelDecoderImplTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void shouldFailIfVersionOneStringIsPassed() {
-        String tcString = "BObdrPUOevsguAfDqFENCNAAAAAmeAAA";
-        TCModelDecoder.instance().decode(tcString);
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
     public void shouldFailIfANonSupportedVersionIsPassed() {
         String tcString = Base64.getUrlEncoder().encodeToString(new byte[] { 13 });
         TCModelDecoder.instance().decode(tcString);

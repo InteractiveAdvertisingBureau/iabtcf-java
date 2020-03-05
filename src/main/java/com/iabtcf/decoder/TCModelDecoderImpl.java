@@ -26,6 +26,7 @@ import java.util.Base64;
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.SegmentInputStream;
 import com.iabtcf.model.TCModel;
+import com.iabtcf.v1.BitVectorTCModelV1;
 import com.iabtcf.v2.BitVectorTCModelV2;
 import com.iabtcf.v2.FieldConstants;
 
@@ -43,8 +44,7 @@ public class TCModelDecoderImpl implements TCModelDecoder {
 
         switch (version) {
             case 1:
-                // TODO : add version1
-                throw new UnsupportedOperationException("Version 1 is unsupported yet");
+                return BitVectorTCModelV1.fromBitVector(bitVector);
             case 2:
                 if (split.length > 1) {
                     ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
@@ -61,9 +61,12 @@ public class TCModelDecoderImpl implements TCModelDecoder {
     }
 
     private ByteBitVector vectorFromString(String base64UrlEncodedString) {
-        SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
-        InputStream is = DECODER.wrap(sis);
 
-        return new ByteBitVector(is);
+//        SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
+//        InputStream is = DECODER.wrap(sis);
+//
+//
+        byte[] bytes = Base64.getUrlDecoder().decode(base64UrlEncodedString);
+        return new ByteBitVector(bytes);
     }
 }

@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.iabtcf.utils.ByteBitVectorUtils;
 import org.junit.Test;
 
 import com.iabtcf.v2.BitVectorTCModelV2;
@@ -74,7 +75,7 @@ public class BitVectorTest {
     public void testReadSixBitString() {
         String bitString = "000000 000001";
         ByteBitVector bitVector = fromBitString(bitString);
-        assertEquals("AB", BitVectorTCModelV2.readStr2(bitVector, 0));
+        assertEquals("AB", ByteBitVectorUtils.readStr2(bitVector, 0));
     }
 
     private ByteBitVector fromBitString(String bits) {
