@@ -20,6 +20,8 @@ package com.iabtcf.v2;
  * #L%
  */
 
+import static com.iabtcf.utils.ByteBitVectorUtils.deciSeconds;
+import static com.iabtcf.utils.ByteBitVectorUtils.readStr2;
 import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_ID_OFFSET;
 import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_VERSION_OFFSET;
 import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CONSENT_LANGUAGE_OFFSET;
@@ -59,6 +61,7 @@ import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import com.iabtcf.ByteBitVector;
+import com.iabtcf.utils.ByteBitVectorUtils;
 
 public class BitVectorTCModelV2 implements TCModelV2 {
 
@@ -91,8 +94,8 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     private BitVectorTCModelV2(ByteBitVector bv) {
         this.version = bv.readBits6(VERSION_OFFSET);
-        this.consentRecordCreated = Instant.ofEpochMilli(bv.readBits36(CREATED_OFFSET) * 100);
-        this.consentRecordLastUpdated = Instant.ofEpochMilli(bv.readBits36(LAST_UPDATED_OFFSET) * 100);
+        this.consentRecordCreated = deciSeconds(bv, CREATED_OFFSET);
+        this.consentRecordLastUpdated = deciSeconds(bv, LAST_UPDATED_OFFSET);
         this.consentManagerProviderId = bv.readBits12(CMP_ID_OFFSET);
         this.consentManagerProviderVersion = bv.readBits12(CMP_VERSION_OFFSET);
         this.consentScreen = bv.readBits6(CONSENT_SCREEN_OFFSET);
@@ -139,10 +142,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
         return new BitVectorTCModelV2(coreBitVector, remainingVectors);
     }
 
-    public static String readStr2(ByteBitVector bv, int offset) {
-        return String
-            .valueOf(new char[] {(char) ('A' + bv.readBits6(offset)), (char) ('A' + bv.readBits6(offset + 6))});
-    }
+
 
     private int fillRemainingVector(ByteBitVector bitVector) {
         int currentPointer = 0;
