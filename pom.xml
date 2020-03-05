@@ -25,6 +25,9 @@
         <url>https://github.com/InteractiveAdvertisingBureau/iabtcf-java</url>
     </scm>
     <properties>
+        <maven-checkstyle-plugin-version>2.17</maven-checkstyle-plugin-version>
+        <checkstyle.version>7.1.2</checkstyle.version>
+        <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -41,6 +44,26 @@
         </profile>
     </profiles>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin-version}</version>
+                    <!-- Work-around for JDK8 lambda support https://jira.codehaus.org/browse/MCHECKSTYLE-253 -->
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -82,6 +105,25 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <configLocation>${checkstyle.config.location}</configLocation>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>false</failsOnError>
+                        </configuration>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>
