@@ -106,6 +106,14 @@ public class BitVectorTCModelV2Test {
     }
 
     @Test
+    public void testCanParseAllParts() {
+        String base64CoreString =
+                "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA.cAAAAAAAITg=";
+        TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
+        assertEquals(1, tcModel.publisherPurposesConsent().size());
+    }
+
+    @Test
     public void testPublisherRestrictions() {
         String bitString =
                 "0000100011101011100"
