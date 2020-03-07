@@ -31,8 +31,6 @@ import java.util.stream.Stream;
 import com.iabtcf.utils.ByteBitVectorUtils;
 import org.junit.Test;
 
-import com.iabtcf.v2.BitVectorTCModelV2;
-
 @Deprecated
 public class BitVectorTest {
 
