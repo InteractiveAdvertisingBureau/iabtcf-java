@@ -33,8 +33,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.iabtcf.ByteBitVector;
-
 public class ByteBitVectorTest {
     Random r = new Random();
 
@@ -267,11 +265,11 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits24N_Random() {
         for (int i = 0; i < 1000; i++) {
-            _testReadBits24N_Random();
+            checkTestReadBits24N_Random();
         }
     }
 
-    private void _testReadBits24N_Random() {
+    private void checkTestReadBits24N_Random() {
         byte[] rb = new byte[4];
         r.nextBytes(rb);
 
@@ -427,11 +425,11 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits36N_Random() {
         for (int i = 0; i < 1000; i++) {
-            _testReadBits36N_Random();
+            checkTestReadBits36N_Random();
         }
     }
 
-    private void _testReadBits36N_Random() {
+    private void checkTestReadBits36N_Random() {
         byte[] rb = new byte[6];
         r.nextBytes(rb);
 
@@ -496,11 +494,11 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits12N_Random() {
         for (int i = 0; i < 1000; i++) {
-            _testReadBits12N_Random();
+            checkTestReadBits12N_Random();
         }
     }
 
-    private void _testReadBits12N_Random() {
+    private void checkTestReadBits12N_Random() {
         byte[] rb = new byte[4];
         r.nextBytes(rb);
 
@@ -519,11 +517,11 @@ public class ByteBitVectorTest {
     @Test
     public void testReadBits16N_Random() {
         for (int i = 0; i < 1000; i++) {
-            _testReadBits16N_Random();
+            checkTestReadBits16N_Random();
         }
     }
 
-    private void _testReadBits16N_Random() {
+    private void checkTestReadBits16N_Random() {
         byte[] rb = new byte[4];
         r.nextBytes(rb);
 
