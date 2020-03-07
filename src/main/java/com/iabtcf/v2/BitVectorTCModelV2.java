@@ -61,7 +61,6 @@ import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import com.iabtcf.ByteBitVector;
-import com.iabtcf.utils.ByteBitVectorUtils;
 
 public class BitVectorTCModelV2 implements TCModelV2 {
 
