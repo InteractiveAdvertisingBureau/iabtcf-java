@@ -19,295 +19,352 @@ package com.iabtcf.v2;
  * limitations under the License.
  * #L%
  */
-
-import static com.iabtcf.utils.ByteBitVectorUtils.deciSeconds;
-import static com.iabtcf.utils.ByteBitVectorUtils.readStr2;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_ID_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CMP_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CONSENT_LANGUAGE_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CONSENT_SCREEN_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.CREATED_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.IS_SERVICE_SPECIFIC_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.LAST_UPDATED_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PUBLISHER_CC_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSES_CONSENT_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSES_CONSENT_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_LI_TRANSPARENCY_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_LI_TRANSPARENCY_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.PURPOSE_ONE_TREATMENT_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_ALLOWED_VENDOR;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_DEFAULT;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_DISCLOSED_VENDOR;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SEGMENT_TYPE_PUBLISHER_TC;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SPECIAL_FEATURE_OPT_INS_LENGTH;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.SPECIAL_FEATURE_OPT_INS_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.TCF_POLICY_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.USE_NON_STANDARD_STACKS_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.VENDOR_LIST_VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.CoreStringConstants.VERSION_OFFSET;
-import static com.iabtcf.v2.FieldConstants.Type.CHAR;
+import static com.iabtcf.FieldDefs.CORE_CMP_ID;
+import static com.iabtcf.FieldDefs.CORE_CMP_VERSION;
+import static com.iabtcf.FieldDefs.CORE_CONSENT_LANGUAGE;
+import static com.iabtcf.FieldDefs.CORE_CONSENT_SCREEN;
+import static com.iabtcf.FieldDefs.CORE_CREATED;
+import static com.iabtcf.FieldDefs.CORE_IS_SERVICE_SPECIFIC;
+import static com.iabtcf.FieldDefs.CORE_LAST_UPDATED;
+import static com.iabtcf.FieldDefs.CORE_PUBLISHER_CC;
+import static com.iabtcf.FieldDefs.CORE_PURPOSES_CONSENT;
+import static com.iabtcf.FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY;
+import static com.iabtcf.FieldDefs.CORE_PURPOSE_ONE_TREATMENT;
+import static com.iabtcf.FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS;
+import static com.iabtcf.FieldDefs.CORE_TCF_POLICY_VERSION;
+import static com.iabtcf.FieldDefs.CORE_USE_NON_STANDARD_STOCKS;
+import static com.iabtcf.FieldDefs.CORE_VENDOR_LIST_VERSION;
+import static com.iabtcf.FieldDefs.CORE_VERSION;
 import static com.iabtcf.v2.FieldConstants.Type.MEDIUM;
 import static com.iabtcf.v2.FieldConstants.Type.SHORT;
 import static com.iabtcf.v2.FieldConstants.Type.TINY_INT;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import com.iabtcf.ByteBitVector;
+import com.iabtcf.FieldDefs;
+import com.iabtcf.utils.ByteBitVectorUtils;
 
 public class BitVectorTCModelV2 implements TCModelV2 {
 
-    private final int version;
-    private final Instant consentRecordCreated;
-    private final Instant consentRecordLastUpdated;
-    private final int consentManagerProviderId;
-    private final int consentManagerProviderVersion;
-    private final int consentScreen;
-    private final String consentLanguage;
-    private final int vendorListVersion;
-    private final int policyVersion;
-    private final boolean isServiceSpecific;
-    private final boolean useNonStandardStacks;
-    private final boolean isPurposeOneTreatment;
-    private final String publisherCountryCode;
-    private final Set<Integer> specialFeaturesOptInts;
-    private final Set<Integer> purposesConsent;
-    private final Set<Integer> purposesLITransparency;
-    private final Set<Integer> vendorConsents;
-    private final Set<Integer> vendorLegitimateInterests;
-    private final List<PublisherRestriction> publisherRestrictions;
+    private int version;
+    private Instant consentRecordCreated;
+    private Instant consentRecordLastUpdated;
+    private int consentManagerProviderId;
+    private int consentManagerProviderVersion;
+    private int consentScreen;
+    private String consentLanguage;
+    private int vendorListVersion;
+    private int policyVersion;
+    private boolean isServiceSpecific;
+    private boolean useNonStandardStacks;
+    private Set<Integer> specialFeaturesOptInts;
+    private Set<Integer> purposesConsent;
+    private Set<Integer> purposesLITransparency;
+    private boolean isPurposeOneTreatment;
+    private String publisherCountryCode;
+    private Set<Integer> vendorConsents;
+    private Set<Integer> vendorLegitimateInterests;
+    private List<PublisherRestriction> publisherRestrictions;
+    private Set<Integer> disclosedVendors;
+    private Set<Integer> allowedVendors;
 
-    private final Set<Integer> disclosedVendors;
-    private final Set<Integer> allowedVendors;
-    private final Set<Integer> publisherPurposesConsent;
-    private final Set<Integer> publisherPurposesLITransparency;
-    private final Set<Integer> customPurposesConsent;
-    private final Set<Integer> customPurposesLITransparency;
+    private Set<Integer> publisherPurposesConsent;
+    private Set<Integer> publisherPurposesLITransparency;
+    private Set<Integer> customPurposesConsent;
+    private Set<Integer> customPurposesLITransparency;
 
-    private BitVectorTCModelV2(ByteBitVector bv) {
-        this.version = bv.readBits6(VERSION_OFFSET);
-        this.consentRecordCreated = deciSeconds(bv, CREATED_OFFSET);
-        this.consentRecordLastUpdated = deciSeconds(bv, LAST_UPDATED_OFFSET);
-        this.consentManagerProviderId = bv.readBits12(CMP_ID_OFFSET);
-        this.consentManagerProviderVersion = bv.readBits12(CMP_VERSION_OFFSET);
-        this.consentScreen = bv.readBits6(CONSENT_SCREEN_OFFSET);
-        this.consentLanguage = readStr2(bv, CONSENT_LANGUAGE_OFFSET);
-        this.vendorListVersion = bv.readBits12(VENDOR_LIST_VERSION_OFFSET);
-        this.policyVersion = bv.readBits6(TCF_POLICY_VERSION_OFFSET);
-        this.isServiceSpecific = bv.readBits1(IS_SERVICE_SPECIFIC_OFFSET);
-        this.useNonStandardStacks = bv.readBits1(USE_NON_STANDARD_STACKS_OFFSET);
-        this.specialFeaturesOptInts =
-                fillSet(SPECIAL_FEATURE_OPT_INS_OFFSET, SPECIAL_FEATURE_OPT_INS_LENGTH, bv);
-        this.purposesConsent = fillSet(PURPOSES_CONSENT_OFFSET, PURPOSES_CONSENT_LENGTH, bv);
-        this.purposesLITransparency =
-                fillSet(PURPOSE_LI_TRANSPARENCY_OFFSET, PURPOSE_LI_TRANSPARENCY_LENGTH, bv);
-        this.isPurposeOneTreatment = bv.readBits1(PURPOSE_ONE_TREATMENT_OFFSET);
-        this.publisherCountryCode = readStr2(bv, PUBLISHER_CC_OFFSET);
+    private final EnumSet<FieldDefs> e = EnumSet.noneOf(FieldDefs.class);
+    private final ByteBitVector bbv;
+    private Collection<ByteBitVector> remainingVectors;
 
-        int currentPointer = PUBLISHER_CC_OFFSET + (CHAR.length() * 2); // publisher cc offset
-        this.vendorConsents = new TreeSet<>();
-        currentPointer = this.fetchSet(this.vendorConsents, currentPointer, bv);
-
-        this.vendorLegitimateInterests = new TreeSet<>();
-        currentPointer = this.fetchSet(this.vendorLegitimateInterests, currentPointer, bv);
-
-        this.publisherRestrictions = new ArrayList<>();
-        this.fillPublisherRestrictions(publisherRestrictions, currentPointer, bv);
-
-        this.disclosedVendors = new TreeSet<>();
-        this.allowedVendors = new TreeSet<>();
-        this.publisherPurposesConsent = new TreeSet<>();
-        this.publisherPurposesLITransparency = new TreeSet<>();
-        this.customPurposesConsent = new TreeSet<>();
-        this.customPurposesLITransparency = new TreeSet<>();
+    private BitVectorTCModelV2(ByteBitVector bbv) {
+        this(bbv, new ByteBitVector[] {});
     }
 
-    private BitVectorTCModelV2(ByteBitVector coreVector, ByteBitVector... theRest) {
-        this(coreVector);
-        for (ByteBitVector bitVector : theRest) {
-            fillRemainingVector(bitVector);
-        }
+    private BitVectorTCModelV2(ByteBitVector bbv, ByteBitVector... theRest) {
+        this.bbv = bbv;
+        this.remainingVectors = Arrays.asList(theRest);
     }
 
-    public static BitVectorTCModelV2 fromBitVector(
-            ByteBitVector coreBitVector, ByteBitVector... remainingVectors) {
+    public static BitVectorTCModelV2 fromBitVector(ByteBitVector coreBitVector, ByteBitVector... remainingVectors) {
         return new BitVectorTCModelV2(coreBitVector, remainingVectors);
     }
 
-
-
-    private int fillRemainingVector(ByteBitVector bitVector) {
-        int currentPointer = 0;
-        int segmentType = bitVector.readBits3(SEGMENT_TYPE_OFFSET);
-        currentPointer += SEGMENT_TYPE_OFFSET + SEGMENT_TYPE_LENGTH;
-        switch (segmentType) {
-            case SEGMENT_TYPE_DEFAULT:
-                break;
-            case SEGMENT_TYPE_DISCLOSED_VENDOR:
-                currentPointer = fetchSet(this.disclosedVendors, currentPointer, bitVector);
-                break;
-            case SEGMENT_TYPE_ALLOWED_VENDOR:
-                currentPointer = fetchSet(this.allowedVendors, currentPointer, bitVector);
-                break;
-            case SEGMENT_TYPE_PUBLISHER_TC:
-                currentPointer = fillPublisherPurposesTC(currentPointer, bitVector);
-                break;
+    private ByteBitVector getSegment(SegmentType segmentType) {
+        if (segmentType == SegmentType.DEFAULT) {
+            return bbv;
         }
-        return currentPointer;
-    }
 
-    private int fillPublisherPurposesTC(int currentPointer, ByteBitVector bitVector) {
-        this.publisherPurposesConsent.addAll(
-                fillSet(currentPointer, PURPOSES_CONSENT_LENGTH, bitVector));
-        currentPointer += PURPOSES_CONSENT_LENGTH;
-
-        this.publisherPurposesLITransparency.addAll(
-                fillSet(currentPointer, PURPOSE_LI_TRANSPARENCY_LENGTH, bitVector));
-        currentPointer += PURPOSE_LI_TRANSPARENCY_LENGTH;
-
-        int numberOfCustomPurposes = bitVector.readBits6(currentPointer);
-        currentPointer += TINY_INT.length();
-
-        this.customPurposesConsent.addAll(fillSet(currentPointer, numberOfCustomPurposes, bitVector));
-        currentPointer += numberOfCustomPurposes;
-
-        this.customPurposesLITransparency.addAll(
-                fillSet(currentPointer, numberOfCustomPurposes, bitVector));
-        currentPointer += numberOfCustomPurposes;
-
-        return currentPointer;
+        for (ByteBitVector rbbv : remainingVectors) {
+            int rSegmentType = rbbv.readBits3(FieldDefs.OOB_SEGMENT_TYPE.getOffset(rbbv));
+            if (rSegmentType == segmentType.ordinal()) {
+                return rbbv;
+            }
+        }
+        return null;
     }
 
     @Override
     public int version() {
+        if (e.add(CORE_VERSION)) {
+            this.version = bbv.readBits6(CORE_VERSION.getOffset(bbv));
+        }
         return this.version;
     }
 
     @Override
     public Instant consentRecordCreated() {
-        return this.consentRecordCreated;
+        if (e.add(CORE_CREATED)) {
+            consentRecordCreated = Instant.ofEpochMilli(bbv.readBits36(CORE_CREATED.getOffset(bbv)) * 100);
+        }
+        return consentRecordCreated;
     }
 
     @Override
     public Instant consentRecordLastUpdated() {
-        return this.consentRecordLastUpdated;
+        if (e.add(CORE_LAST_UPDATED)) {
+            consentRecordLastUpdated = Instant.ofEpochMilli(bbv.readBits36(CORE_LAST_UPDATED.getOffset(bbv)) * 100);
+        }
+        return consentRecordLastUpdated;
     }
 
     @Override
     public int consentManagerProviderId() {
-        return this.consentManagerProviderId;
+        if (e.add(CORE_CMP_ID)) {
+            consentManagerProviderId = bbv.readBits12(CORE_CMP_ID.getOffset(bbv));
+        }
+        return consentManagerProviderId;
     }
 
     @Override
     public int consentManagerProviderVersion() {
-        return this.consentManagerProviderVersion;
+        if (e.add(CORE_CMP_VERSION)) {
+            consentManagerProviderVersion = bbv.readBits12(CORE_CMP_VERSION.getOffset(bbv));
+        }
+        return consentManagerProviderVersion;
     }
 
     @Override
     public int consentScreen() {
-        return this.consentScreen;
+        if (e.add(CORE_CONSENT_SCREEN)) {
+            consentScreen = bbv.readBits6(CORE_CONSENT_SCREEN.getOffset(bbv));
+        }
+        return consentScreen;
     }
 
     @Override
     public String consentLanguage() {
-        return this.consentLanguage;
+        if (e.add(CORE_CONSENT_LANGUAGE)) {
+            consentLanguage = ByteBitVectorUtils.readStr2(bbv, CORE_CONSENT_LANGUAGE.getOffset(bbv));
+        }
+        return consentLanguage;
     }
 
     @Override
     public int vendorListVersion() {
-        return this.vendorListVersion;
+        if (e.add(CORE_VENDOR_LIST_VERSION)) {
+            vendorListVersion = bbv.readBits12(CORE_VENDOR_LIST_VERSION.getOffset(bbv));
+        }
+        return vendorListVersion;
     }
 
     @Override
     public int policyVersion() {
-        return this.policyVersion;
+        if (e.add(CORE_TCF_POLICY_VERSION)) {
+            policyVersion = bbv.readBits6(CORE_TCF_POLICY_VERSION.getOffset(bbv));
+        }
+        return policyVersion;
     }
 
     @Override
     public boolean isServiceSpecific() {
-        return this.isServiceSpecific;
+        if (e.add(CORE_IS_SERVICE_SPECIFIC)) {
+            isServiceSpecific = bbv.readBits1(CORE_IS_SERVICE_SPECIFIC.getOffset(bbv));
+        }
+        return isServiceSpecific;
     }
 
     @Override
     public boolean useNonStandardStacks() {
-        return this.useNonStandardStacks;
+        if (e.add(CORE_USE_NON_STANDARD_STOCKS)) {
+            useNonStandardStacks = bbv.readBits1(CORE_USE_NON_STANDARD_STOCKS.getOffset(bbv));
+        }
+        return useNonStandardStacks;
     }
 
     @Override
     public Set<Integer> specialFeatureOptIns() {
-        return this.specialFeaturesOptInts;
+        if (e.add(CORE_SPECIAL_FEATURE_OPT_INS)) {
+            specialFeaturesOptInts = fillSet(
+                    CORE_SPECIAL_FEATURE_OPT_INS.getOffset(bbv),
+                    CORE_SPECIAL_FEATURE_OPT_INS.getLength(bbv),
+                    bbv);
+        }
+        return specialFeaturesOptInts;
     }
 
     @Override
     public Set<Integer> purposesConsent() {
-        return this.purposesConsent;
+        if (e.add(FieldDefs.CORE_PURPOSES_CONSENT)) {
+            purposesConsent = fillSet(
+                    CORE_PURPOSES_CONSENT.getOffset(bbv),
+                    CORE_PURPOSES_CONSENT.getLength(bbv),
+                    bbv);
+        }
+        return purposesConsent;
     }
 
     @Override
     public Set<Integer> purposesLITransparency() {
-        return this.purposesLITransparency;
+        if (e.add(FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY)) {
+            purposesLITransparency = fillSet(
+                    CORE_PURPOSES_LI_TRANSPARENCY.getOffset(bbv),
+                    CORE_PURPOSES_LI_TRANSPARENCY.getLength(bbv),
+                    bbv);
+        }
+        return purposesLITransparency;
     }
 
     @Override
     public boolean isPurposeOneTreatment() {
-        return this.isPurposeOneTreatment;
+        if (e.add(FieldDefs.CORE_PURPOSE_ONE_TREATMENT)) {
+            isPurposeOneTreatment = bbv.readBits1(CORE_PURPOSE_ONE_TREATMENT.getOffset(bbv));
+        }
+        return isPurposeOneTreatment;
     }
 
     @Override
     public String publisherCountryCode() {
-        return this.publisherCountryCode;
+        if (e.add(FieldDefs.CORE_PUBLISHER_CC)) {
+            publisherCountryCode = ByteBitVectorUtils.readStr2(bbv, CORE_PUBLISHER_CC.getOffset(bbv));
+        }
+        return publisherCountryCode;
     }
 
     @Override
     public Set<Integer> vendorConsents() {
-        return this.vendorConsents;
+        if (e.add(FieldDefs.CORE_VENDOR_BITRANGE_FIELD)) {
+            vendorConsents = new TreeSet<>();
+            fetchSet(this.vendorConsents, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID.getOffset(bbv), bbv);
+        }
+        return vendorConsents;
     }
 
     @Override
     public Set<Integer> vendorLegitimateInterests() {
-        return this.vendorLegitimateInterests;
+        if (e.add(FieldDefs.CORE_VENDOR_LI_BITRANGE_FIELD)) {
+            vendorLegitimateInterests = new TreeSet<>();
+            fetchSet(this.vendorLegitimateInterests, FieldDefs.CORE_VENDOR_LI_MAX_VENDOR_ID.getOffset(bbv), bbv);
+        }
+        return vendorLegitimateInterests;
     }
 
     @Override
     public List<PublisherRestriction> publisherRestrictions() {
-        return this.publisherRestrictions;
+        if (e.add(FieldDefs.CORE_PUB_RESTRICTION_ENTRY)) {
+            publisherRestrictions = new ArrayList<>();
+            fillPublisherRestrictions(publisherRestrictions, FieldDefs.CORE_NUM_PUB_RESTRICTION.getOffset(bbv), bbv);
+        }
+        return publisherRestrictions;
     }
 
     @Override
     public Set<Integer> publisherPurposesConsent() {
+        if (e.add(FieldDefs.PPTC_PUB_PURPOSES_CONSENT)) {
+            publisherPurposesConsent = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            if (dvBbv != null) {
+                publisherPurposesConsent = fillSet(
+                        FieldDefs.PPTC_PUB_PURPOSES_CONSENT.getOffset(dvBbv),
+                        FieldDefs.PPTC_PUB_PURPOSES_CONSENT.getLength(dvBbv),
+                        dvBbv);
+            }
+        }
         return this.publisherPurposesConsent;
     }
 
     @Override
     public Set<Integer> publisherPurposesLITransparency() {
+        if (e.add(FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY)) {
+            publisherPurposesLITransparency = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            if (dvBbv != null) {
+                publisherPurposesLITransparency = fillSet(
+                        FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY.getOffset(dvBbv),
+                        FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY.getLength(dvBbv),
+                        dvBbv);
+            }
+        }
         return this.publisherPurposesLITransparency;
     }
 
     @Override
     public Set<Integer> customPurposesConsent() {
-        return this.customPurposesConsent;
+        if (e.add(FieldDefs.PPTC_CUSTOM_PURPOSES_CONSENT)) {
+            customPurposesConsent = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            if (dvBbv != null) {
+                customPurposesConsent = fillSet(
+                        FieldDefs.PPTC_CUSTOM_PURPOSES_CONSENT.getOffset(dvBbv),
+                        FieldDefs.PPTC_CUSTOM_PURPOSES_CONSENT.getLength(dvBbv),
+                        dvBbv);
+            }
+        }
+        return customPurposesConsent;
     }
 
     @Override
     public Set<Integer> customPurposesLITransparency() {
-        return this.customPurposesLITransparency;
+        if (e.add(FieldDefs.PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY)) {
+            customPurposesLITransparency = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            if (dvBbv != null) {
+                customPurposesLITransparency = fillSet(
+                        FieldDefs.PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY.getOffset(dvBbv),
+                        FieldDefs.PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY.getLength(dvBbv),
+                        dvBbv);
+            }
+        }
+        return customPurposesLITransparency;
     }
 
     @Override
     public Set<Integer> disclosedVendors() {
+        if (e.add(FieldDefs.DV_VENDOR_BITRANGE_FIELD)) {
+            disclosedVendors = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.DISCLOSED_VENDOR);
+            if (dvBbv != null) {
+                fetchSet(disclosedVendors, FieldDefs.DV_MAX_VENDOR_ID.getOffset(dvBbv), dvBbv);
+            }
+        }
         return this.disclosedVendors;
     }
 
     @Override
     public Set<Integer> allowedVendors() {
-        return this.allowedVendors;
+        if (e.add(FieldDefs.AV_VENDOR_BITRANGE_FIELD)) {
+            allowedVendors = new TreeSet<>();
+
+            ByteBitVector dvBbv = getSegment(SegmentType.ALLOWED_VENDOR);
+            if (dvBbv != null) {
+                fetchSet(allowedVendors, FieldDefs.AV_MAX_VENDOR_ID.getOffset(dvBbv), dvBbv);
+            }
+        }
+        return allowedVendors;
     }
 
     private int fetchSet(Set<Integer> set, int currentPointer, ByteBitVector bitVector) {

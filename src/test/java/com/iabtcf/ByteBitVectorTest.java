@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,6 +36,27 @@ import org.junit.Test;
 
 public class ByteBitVectorTest {
     Random r = new Random();
+
+    @Test
+    public void testStreamReadBits() {
+        ByteBitVector bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b10000000}));
+        assertTrue(bv.readBits1(0));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000001}));
+        assertTrue(bv.readBits1(7));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b10000000}));
+        assertTrue(bv.readBits1(8));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertTrue(bv.readBits1(15));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertEquals(1, bv.readBits3(8 + 5));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertEquals(1, bv.readBits16(0));
+    }
 
     @Test
     public void testReadBits1() {

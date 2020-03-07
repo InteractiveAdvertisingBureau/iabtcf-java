@@ -28,17 +28,20 @@ public class ByteBitVector {
     private byte[] buffer;
     private int isrpos;
     private final InputStream is;
+    protected LengthOffsetCache cache;
 
     public ByteBitVector(InputStream is) {
         this.buffer = new byte[4096];
         this.is = is;
         this.isrpos = 0;
+        cache = new LengthOffsetCache(this);
     }
 
     public ByteBitVector(byte[] buffer) {
         this.buffer = buffer;
         this.isrpos = buffer.length;
         this.is = null;
+        cache = new LengthOffsetCache(this);
     }
 
     private void ensureCapacity(int length) {
@@ -52,9 +55,9 @@ public class ByteBitVector {
     }
 
     private boolean ensureReadable(int offset, int length) {
-        int rem = length;
         int tlength = offset + length;
         int n;
+        int rem = tlength - isrpos;
 
         if (tlength <= isrpos) {
             return true;
