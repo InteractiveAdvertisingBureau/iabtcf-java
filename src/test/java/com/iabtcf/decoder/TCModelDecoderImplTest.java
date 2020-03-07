@@ -19,8 +19,7 @@ package com.iabtcf.decoder;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Base64;
 

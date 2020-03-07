@@ -23,10 +23,10 @@ package com.iabtcf.decoder;
 import java.util.Base64;
 
 import com.iabtcf.ByteBitVector;
+import com.iabtcf.FieldDefs;
 import com.iabtcf.model.TCModel;
 import com.iabtcf.v1.BitVectorTCModelV1;
 import com.iabtcf.v2.BitVectorTCModelV2;
-import com.iabtcf.v2.FieldConstants;
 
 public class TCModelDecoderImpl implements TCModelDecoder {
 
@@ -38,7 +38,7 @@ public class TCModelDecoderImpl implements TCModelDecoder {
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
 
-        int version = bitVector.readBits6(FieldConstants.CoreStringConstants.VERSION_OFFSET);
+        int version = bitVector.readBits6(FieldDefs.CORE_VERSION.getOffset(bitVector));
 
         switch (version) {
             case 1:
