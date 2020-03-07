@@ -91,8 +91,7 @@ public class FieldDefsTest {
         assertEquals(1, FieldDefs.V1_VENDOR_IS_RANGE_ENCODING.getLength(bitVector));
         assertEquals(172, FieldDefs.V1_VENDOR_IS_RANGE_ENCODING.getOffset(bitVector));
         assertEquals(1, FieldDefs.V1_VENDOR_DEFAULT_CONSENT.getLength(bitVector));
-        assertEquals(173, FieldDefs.V1_VENDOR_DEFAULT_CONSENT.getOffset(bitVector));
-        assertEquals(174, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(bitVector));
+        assertEquals(173, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(bitVector));
         assertEquals(19, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getLength(bitVector));
     }
 
@@ -107,8 +106,7 @@ public class FieldDefsTest {
         ByteBitVector bitVector = new ByteBitVector(is);
 
         assertEquals(1, FieldDefs.V1_VENDOR_DEFAULT_CONSENT.getLength(bitVector));
-        assertEquals(173, FieldDefs.V1_VENDOR_DEFAULT_CONSENT.getOffset(bitVector));
-        assertEquals(174, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(bitVector));
+        assertEquals(173, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(bitVector));
         assertEquals(12 + (17 * (1 + 16)) + (2 * (1 + 16 + 16)),
                 FieldDefs.V1_VENDOR_BITRANGE_FIELD.getLength(bitVector));
     }

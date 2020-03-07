@@ -23,15 +23,20 @@ package com.iabtcf.utils;
 import java.time.Instant;
 
 import com.iabtcf.ByteBitVector;
+import com.iabtcf.FieldDefs;
 
 public class ByteBitVectorUtils {
 
-    public static Instant deciSeconds(ByteBitVector bv, int offset) {
-        return Instant.ofEpochMilli(bv.readBits36(offset) * 100);
+    public static Instant deciSeconds(ByteBitVector bv, FieldDefs field) {
+        return Instant.ofEpochMilli(bv.readBits36(field.getOffset(bv)) * 100);
     }
 
     public static String readStr2(ByteBitVector bv, int offset) {
         return String
                 .valueOf(new char[] {(char) ('A' + bv.readBits6(offset)), (char) ('A' + bv.readBits6(offset + 6))});
+    }
+
+    public static String readStr2(ByteBitVector bv, FieldDefs field) {
+        return readStr2(bv, field.getOffset(bv));
     }
 }

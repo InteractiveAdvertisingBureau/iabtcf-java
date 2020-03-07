@@ -129,8 +129,9 @@ public enum FieldDefs {
     V1_PURPOSES_ALLOW(24),
     V1_VENDOR_MAX_VENDOR_ID(16),
     V1_VENDOR_IS_RANGE_ENCODING(1),
-    V1_VENDOR_DEFAULT_CONSENT(1),
-    V1_VENDOR_BITRANGE_FIELD(BitRangeFieldUtils.lengthSupplierV1());
+    V1_VENDOR_BITRANGE_FIELD(BitRangeFieldUtils.lengthSupplierV1()),
+    V1_VENDOR_DEFAULT_CONSENT(1, V1_VENDOR_IS_RANGE_ENCODING),
+    V1_VENDOR_NUM_ENTRIES(12);
 
     private OffsetSupplier offset;
     private LengthSupplier length;
@@ -192,6 +193,13 @@ public enum FieldDefs {
     }
 
     /**
+     * Returns the offset of the next field.
+     */
+    public int getEnd(ByteBitVector bbv) {
+        return getLength(bbv) + getOffset(bbv);
+    }
+
+    /**
      * The offset of the nth field depends on the length and offset of the nth-1 field. This class
      * is used to cache static fields to avoid querying parent fields.
      * 
@@ -221,6 +229,7 @@ public enum FieldDefs {
 
         private boolean isDynamicPvt() {
             if (!dynamicInitialized) {
+                dynamicInitialized = true;
                 isDynamic = isDynamic();
             }
 
@@ -413,7 +422,7 @@ public enum FieldDefs {
                     if (!t.readBits1(isRangeEncodingOffset)) {
                         return calculateBitLength(t, FieldDefs.V1_VENDOR_MAX_VENDOR_ID.getOffset(t));
                     } else {
-                        return calculateRangelength(t, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(t));
+                        return calculateRangelength(t, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(t));
                     }
                 }
 

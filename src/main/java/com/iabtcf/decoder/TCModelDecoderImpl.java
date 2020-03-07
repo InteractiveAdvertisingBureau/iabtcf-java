@@ -29,16 +29,13 @@ import com.iabtcf.v1.BitVectorTCModelV1;
 import com.iabtcf.v2.BitVectorTCModelV2;
 
 public class TCModelDecoderImpl implements TCModelDecoder {
-
-    private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
-
     @Override
     public TCModel decode(String consentString) {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
 
-        int version = bitVector.readBits6(FieldDefs.CORE_VERSION.getOffset(bitVector));
+        int version = bitVector.readBits6(FieldDefs.CORE_VERSION);
 
         switch (version) {
             case 1:
