@@ -128,8 +128,8 @@ public class BitVectorTCModelV1Test {
 
         Set<Integer> expectedVendorIds =
                 IntStream.concat(IntStream.rangeClosed(1, 25), IntStream.of(30))
-                        .boxed()
-                        .collect(Collectors.toSet());
+                    .boxed()
+                    .collect(Collectors.toSet());
         assertThat(model.allowedVendorIds(), is(expectedVendorIds));
 
         assertFalse(model.isVendorAllowed(26));
@@ -164,8 +164,8 @@ public class BitVectorTCModelV1Test {
 
         Set<Integer> expectedVendorIds =
                 IntStream.concat(IntStream.rangeClosed(2, 24), IntStream.rangeClosed(31, 32))
-                        .boxed()
-                        .collect(Collectors.toSet());
+                    .boxed()
+                    .collect(Collectors.toSet());
         assertThat(model.allowedVendorIds(), is(expectedVendorIds));
 
         // Vendors outside range [1, MaxVendorId] are not allowed
@@ -175,5 +175,13 @@ public class BitVectorTCModelV1Test {
         assertFalse(model.isVendorAllowed(33));
         assertFalse(model.isVendorAllowed(34));
         assertFalse(model.isVendorAllowed(99));
+    }
+
+    @Test
+    public void testVendorIdRange() {
+        String base64 = "BOwBMFeOwBMFeABABBAAABAAAAAAGADgAUACgAHgAPg";
+
+        TCModelV1 model = (TCModelV1) TCModelDecoder.instance().decode(base64);
+        assertTrue(model.allowedVendorIds().contains(15));
     }
 }

@@ -20,18 +20,19 @@ package com.iabtcf.v2;
  * #L%
  */
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
+
+import com.iabtcf.utils.IntIterable;
+import com.iabtcf.utils.IntIterator;
 
 public class PublisherRestriction {
 
     private final int purposeId;
     private final RestrictionType restrictionType;
-    private final List<Integer> vendorIds;
+    private final IntIterable vendorIds;
 
     public PublisherRestriction(
-            int purposeId, RestrictionType restrictionType, List<Integer> vendorIds) {
+            int purposeId, RestrictionType restrictionType, IntIterable vendorIds) {
         Objects.requireNonNull(vendorIds);
         Objects.requireNonNull(restrictionType);
 
@@ -48,19 +49,27 @@ public class PublisherRestriction {
         return restrictionType;
     }
 
-    public List<Integer> getVendorIds() {
+    public IntIterable getVendorIds() {
         return vendorIds;
     }
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (IntIterator i = getVendorIds().intIterator(); i.hasNext();) {
+            sb.append(i.next());
+            if (i.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
         return "PublisherRestriction{"
                 + "purposeId="
                 + purposeId
                 + ", restrictionType="
                 + restrictionType
                 + ", vendorIds="
-                + vendorIds
+                + sb.toString()
                 + '}';
     }
 
@@ -75,7 +84,7 @@ public class PublisherRestriction {
         PublisherRestriction that = (PublisherRestriction) o;
         return purposeId == that.purposeId
                 && restrictionType == that.restrictionType
-                && new HashSet<>(this.vendorIds).equals(new HashSet<>(that.vendorIds));
+                && this.vendorIds.equals(that.vendorIds);
     }
 
     @Override

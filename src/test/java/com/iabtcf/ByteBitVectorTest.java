@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -628,6 +629,41 @@ public class ByteBitVectorTest {
         assertFalse(bs.get(9));
         assertTrue(bs.get(10));
         assertFalse(bs.get(11));
+    }
+
+    /**
+     * Test reading 36 bits with 5 and 6 bytes.
+     */
+    @Test
+    public void testReadBits36_1() {
+        // 5 bytes
+        long largeValue5 = 68_719_476_735L;
+
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(0, largeValue5);
+        byte[] arr5 = buffer.array();
+        ByteBitVector bv = new ByteBitVector(arr5);
+        long result = bv.readBits36(3 * 8 + 4);
+        assertEquals(largeValue5, result);
+
+
+        // 6 bytes
+
+        // remove the least significant byte
+        long largeValue = largeValue5 >> 8;
+
+        buffer = ByteBuffer.allocate(Long.BYTES + Byte.BYTES);
+        buffer.putLong(0, largeValue);
+
+        // write the least significant byte subsequent byte
+        buffer.put(8, (byte) (((1 << 8) - 1) & 0xFF));
+        byte[] arr = buffer.array();
+
+        bv = new ByteBitVector(arr);
+
+        // requires reading 6 bytes
+        result = bv.readBits36(4 * 8 + 4);
+        assertEquals(largeValue5, result);
     }
 
     private static void shift(byte[] buffer) {
