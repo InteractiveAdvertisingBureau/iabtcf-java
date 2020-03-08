@@ -96,7 +96,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
     private Set<Integer> customPurposesConsent;
     private Set<Integer> customPurposesLITransparency;
 
-    private final EnumSet<FieldDefs> e = EnumSet.noneOf(FieldDefs.class);
+    private final EnumSet<FieldDefs> cache = EnumSet.noneOf(FieldDefs.class);
     private final ByteBitVector bbv;
     private final Collection<ByteBitVector> remainingVectors;
 
@@ -120,7 +120,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
         for (ByteBitVector rbbv : remainingVectors) {
             int rSegmentType = rbbv.readBits3(OOB_SEGMENT_TYPE);
-            if (rSegmentType == segmentType.ordinal()) {
+            if (segmentType == SegmentType.from(rSegmentType)) {
                 return rbbv;
             }
         }
@@ -129,7 +129,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int version() {
-        if (e.add(CORE_VERSION)) {
+        if (cache.add(CORE_VERSION)) {
             version = bbv.readBits6(CORE_VERSION);
         }
         return version;
@@ -137,7 +137,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Instant consentRecordCreated() {
-        if (e.add(CORE_CREATED)) {
+        if (cache.add(CORE_CREATED)) {
             consentRecordCreated = Instant.ofEpochMilli(bbv.readBits36(CORE_CREATED) * 100);
         }
         return consentRecordCreated;
@@ -145,7 +145,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Instant consentRecordLastUpdated() {
-        if (e.add(CORE_LAST_UPDATED)) {
+        if (cache.add(CORE_LAST_UPDATED)) {
             consentRecordLastUpdated = Instant.ofEpochMilli(bbv.readBits36(CORE_LAST_UPDATED) * 100);
         }
         return consentRecordLastUpdated;
@@ -153,7 +153,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int consentManagerProviderId() {
-        if (e.add(CORE_CMP_ID)) {
+        if (cache.add(CORE_CMP_ID)) {
             consentManagerProviderId = bbv.readBits12(CORE_CMP_ID);
         }
         return consentManagerProviderId;
@@ -161,7 +161,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int consentManagerProviderVersion() {
-        if (e.add(CORE_CMP_VERSION)) {
+        if (cache.add(CORE_CMP_VERSION)) {
             consentManagerProviderVersion = bbv.readBits12(CORE_CMP_VERSION);
         }
         return consentManagerProviderVersion;
@@ -169,7 +169,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int consentScreen() {
-        if (e.add(CORE_CONSENT_SCREEN)) {
+        if (cache.add(CORE_CONSENT_SCREEN)) {
             consentScreen = bbv.readBits6(CORE_CONSENT_SCREEN);
         }
         return consentScreen;
@@ -177,7 +177,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public String consentLanguage() {
-        if (e.add(CORE_CONSENT_LANGUAGE)) {
+        if (cache.add(CORE_CONSENT_LANGUAGE)) {
             consentLanguage = ByteBitVectorUtils.readStr2(bbv, CORE_CONSENT_LANGUAGE);
         }
         return consentLanguage;
@@ -185,7 +185,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int vendorListVersion() {
-        if (e.add(CORE_VENDOR_LIST_VERSION)) {
+        if (cache.add(CORE_VENDOR_LIST_VERSION)) {
             vendorListVersion = bbv.readBits12(CORE_VENDOR_LIST_VERSION);
         }
         return vendorListVersion;
@@ -193,7 +193,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public int policyVersion() {
-        if (e.add(CORE_TCF_POLICY_VERSION)) {
+        if (cache.add(CORE_TCF_POLICY_VERSION)) {
             policyVersion = bbv.readBits6(CORE_TCF_POLICY_VERSION);
         }
         return policyVersion;
@@ -201,7 +201,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public boolean isServiceSpecific() {
-        if (e.add(CORE_IS_SERVICE_SPECIFIC)) {
+        if (cache.add(CORE_IS_SERVICE_SPECIFIC)) {
             isServiceSpecific = bbv.readBits1(CORE_IS_SERVICE_SPECIFIC);
         }
         return isServiceSpecific;
@@ -209,7 +209,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public boolean useNonStandardStacks() {
-        if (e.add(CORE_USE_NON_STANDARD_STOCKS)) {
+        if (cache.add(CORE_USE_NON_STANDARD_STOCKS)) {
             useNonStandardStacks = bbv.readBits1(CORE_USE_NON_STANDARD_STOCKS);
         }
         return useNonStandardStacks;
@@ -217,7 +217,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> specialFeatureOptIns() {
-        if (e.add(CORE_SPECIAL_FEATURE_OPT_INS)) {
+        if (cache.add(CORE_SPECIAL_FEATURE_OPT_INS)) {
             specialFeaturesOptInts = fillSet(
                     CORE_SPECIAL_FEATURE_OPT_INS.getOffset(bbv),
                     CORE_SPECIAL_FEATURE_OPT_INS.getLength(bbv),
@@ -228,7 +228,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> purposesConsent() {
-        if (e.add(CORE_PURPOSES_CONSENT)) {
+        if (cache.add(CORE_PURPOSES_CONSENT)) {
             purposesConsent = fillSet(
                     CORE_PURPOSES_CONSENT.getOffset(bbv),
                     CORE_PURPOSES_CONSENT.getLength(bbv),
@@ -239,7 +239,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> purposesLITransparency() {
-        if (e.add(CORE_PURPOSES_LI_TRANSPARENCY)) {
+        if (cache.add(CORE_PURPOSES_LI_TRANSPARENCY)) {
             purposesLITransparency = fillSet(
                     CORE_PURPOSES_LI_TRANSPARENCY.getOffset(bbv),
                     CORE_PURPOSES_LI_TRANSPARENCY.getLength(bbv),
@@ -250,7 +250,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public boolean isPurposeOneTreatment() {
-        if (e.add(CORE_PURPOSE_ONE_TREATMENT)) {
+        if (cache.add(CORE_PURPOSE_ONE_TREATMENT)) {
             isPurposeOneTreatment = bbv.readBits1(CORE_PURPOSE_ONE_TREATMENT);
         }
         return isPurposeOneTreatment;
@@ -258,7 +258,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public String publisherCountryCode() {
-        if (e.add(CORE_PUBLISHER_CC)) {
+        if (cache.add(CORE_PUBLISHER_CC)) {
             publisherCountryCode = ByteBitVectorUtils.readStr2(bbv, CORE_PUBLISHER_CC);
         }
         return publisherCountryCode;
@@ -266,7 +266,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> vendorConsents() {
-        if (e.add(CORE_VENDOR_BITRANGE_FIELD)) {
+        if (cache.add(CORE_VENDOR_BITRANGE_FIELD)) {
             vendorConsents = new TreeSet<>();
             fetchSet(vendorConsents, CORE_VENDOR_MAX_VENDOR_ID.getOffset(bbv), bbv);
         }
@@ -275,7 +275,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> vendorLegitimateInterests() {
-        if (e.add(CORE_VENDOR_LI_BITRANGE_FIELD)) {
+        if (cache.add(CORE_VENDOR_LI_BITRANGE_FIELD)) {
             vendorLegitimateInterests = new TreeSet<>();
             fetchSet(vendorLegitimateInterests, CORE_VENDOR_LI_MAX_VENDOR_ID.getOffset(bbv), bbv);
         }
@@ -284,7 +284,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public List<PublisherRestriction> publisherRestrictions() {
-        if (e.add(CORE_PUB_RESTRICTION_ENTRY)) {
+        if (cache.add(CORE_PUB_RESTRICTION_ENTRY)) {
             publisherRestrictions = new ArrayList<>();
             fillPublisherRestrictions(publisherRestrictions, CORE_NUM_PUB_RESTRICTION.getOffset(bbv), bbv);
         }
@@ -293,7 +293,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> publisherPurposesConsent() {
-        if (e.add(PPTC_PUB_PURPOSES_CONSENT)) {
+        if (cache.add(PPTC_PUB_PURPOSES_CONSENT)) {
             publisherPurposesConsent = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
@@ -309,7 +309,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> publisherPurposesLITransparency() {
-        if (e.add(PPTC_PUB_PURPOSES_LI_TRANSPARENCY)) {
+        if (cache.add(PPTC_PUB_PURPOSES_LI_TRANSPARENCY)) {
             publisherPurposesLITransparency = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
@@ -325,7 +325,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> customPurposesConsent() {
-        if (e.add(PPTC_CUSTOM_PURPOSES_CONSENT)) {
+        if (cache.add(PPTC_CUSTOM_PURPOSES_CONSENT)) {
             customPurposesConsent = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
@@ -341,7 +341,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> customPurposesLITransparency() {
-        if (e.add(PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY)) {
+        if (cache.add(PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY)) {
             customPurposesLITransparency = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
@@ -357,7 +357,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> disclosedVendors() {
-        if (e.add(DV_VENDOR_BITRANGE_FIELD)) {
+        if (cache.add(DV_VENDOR_BITRANGE_FIELD)) {
             disclosedVendors = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.DISCLOSED_VENDOR);
@@ -370,7 +370,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
     @Override
     public Set<Integer> allowedVendors() {
-        if (e.add(AV_VENDOR_BITRANGE_FIELD)) {
+        if (cache.add(AV_VENDOR_BITRANGE_FIELD)) {
             allowedVendors = new TreeSet<>();
 
             ByteBitVector dvBbv = getSegment(SegmentType.ALLOWED_VENDOR);
@@ -431,7 +431,7 @@ public class BitVectorTCModelV2 implements TCModelV2 {
 
             int restrictionTypeId = bitVector.readBits2(currentPointer);
             currentPointer += 2;
-            RestrictionType restrictionType = RestrictionType.fromId(restrictionTypeId);
+            RestrictionType restrictionType = RestrictionType.from(restrictionTypeId);
 
             List<Integer> vendorIds = new ArrayList<>();
             currentPointer = vendorIdsFromRange(vendorIds, bitVector, currentPointer);

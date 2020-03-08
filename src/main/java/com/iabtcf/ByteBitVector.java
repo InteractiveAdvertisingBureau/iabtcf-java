@@ -28,7 +28,7 @@ public class ByteBitVector {
     private byte[] buffer;
     private int isrpos;
     private final InputStream is;
-    protected LengthOffsetCache cache;
+    final LengthOffsetCache cache;
 
     public ByteBitVector(InputStream is) {
         this.buffer = new byte[4096];

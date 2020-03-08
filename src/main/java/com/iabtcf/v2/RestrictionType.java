@@ -26,8 +26,10 @@ public enum RestrictionType {
     REQUIRE_LEGITIMATE_INTEREST,
     UNDEFINED;
 
-    public static RestrictionType fromId(int id) {
+    public static RestrictionType from(int id) {
         switch (id) {
+            case 0:
+                return NOT_ALLOWED;
             case 1:
                 return REQUIRE_CONSENT;
             case 2:

@@ -24,5 +24,21 @@ public enum SegmentType {
     DEFAULT,
     DISCLOSED_VENDOR,
     ALLOWED_VENDOR,
-    PUBLISHER_TC;
+    PUBLISHER_TC,
+    INVALID;
+
+    public static SegmentType from(int id) {
+        switch (id) {
+            case 0:
+                return DEFAULT;
+            case 1:
+                return DISCLOSED_VENDOR;
+            case 2:
+                return ALLOWED_VENDOR;
+            case 3:
+                return PUBLISHER_TC;
+            default:
+                return INVALID;
+        }
+    }
 }

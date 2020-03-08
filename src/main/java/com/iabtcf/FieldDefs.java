@@ -348,7 +348,7 @@ public enum FieldDefs {
 
             for (int i = 0; i < numPubRestrictions; i++) {
                 cptr += (PURPOSE_ID.getLength(t) + RESTRICTION_TYPE.getLength(t));
-                cptr += BitRangeFieldUtils.calculateRangelength(t, cptr);
+                cptr += BitRangeFieldUtils.calculateRangeLength(t, cptr);
             }
 
             return cptr - numPubRestrictionsOffset;
@@ -373,7 +373,7 @@ public enum FieldDefs {
      * Utility class to handle bit / range fields.
      */
     private static class BitRangeFieldUtils {
-        public static int calculateRangelength(ByteBitVector t, int numEntriesOffset) {
+        public static int calculateRangeLength(ByteBitVector t, int numEntriesOffset) {
             int cptr = numEntriesOffset;
             int numEntries = t.readBits12(cptr);
             cptr += NUM_ENTRIES.getLength(t);
@@ -391,12 +391,12 @@ public enum FieldDefs {
             return t.readBits16(maxVendorIdOffset);
         }
 
-        public static int calculateBitRangelength(ByteBitVector t, int isRangeEncodingOffset, int maxVendorIdOffset) {
+        public static int calculateBitRangeLength(ByteBitVector t, int isRangeEncodingOffset, int maxVendorIdOffset) {
             boolean isRangeEncoding = t.readBits1(isRangeEncodingOffset);
             if (!isRangeEncoding) {
                 return calculateBitLength(t, maxVendorIdOffset);
             } else {
-                return calculateRangelength(t, isRangeEncodingOffset++);
+                return calculateRangeLength(t, isRangeEncodingOffset++);
             }
         }
 
@@ -404,7 +404,7 @@ public enum FieldDefs {
             return new LengthSupplier() {
                 @Override
                 public Integer apply(ByteBitVector t) {
-                    return calculateBitRangelength(t, isRangeEncoding.getOffset(t), maxVendorId.getOffset(t));
+                    return calculateBitRangeLength(t, isRangeEncoding.getOffset(t), maxVendorId.getOffset(t));
                 }
 
                 @Override
@@ -422,7 +422,7 @@ public enum FieldDefs {
                     if (!t.readBits1(isRangeEncodingOffset)) {
                         return calculateBitLength(t, FieldDefs.V1_VENDOR_MAX_VENDOR_ID.getOffset(t));
                     } else {
-                        return calculateRangelength(t, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(t));
+                        return calculateRangeLength(t, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(t));
                     }
                 }
 
