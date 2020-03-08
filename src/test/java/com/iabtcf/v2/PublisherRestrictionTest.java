@@ -46,7 +46,7 @@ public class PublisherRestrictionTest {
 
         assertEquals(pub1, pub2);
         assertEquals(pub1, pub1);
-        assertFalse(pub1.equals(null));
+        assertNotNull(pub1);
     }
 
     @Test

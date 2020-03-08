@@ -26,10 +26,8 @@ import com.iabtcf.decoder.TCModelDecoder;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -64,8 +62,8 @@ public class BitVectorTCModelV2Test {
         assertEquals(2, tcModel.version());
         assertEquals(Instant.parse("2020-01-26T17:01:00Z"), tcModel.consentRecordCreated());
         assertEquals(Instant.parse("2021-02-02T17:01:00Z"), tcModel.consentRecordLastUpdated());
-        assertEquals(675, tcModel.consentManagerProviderId());
-        assertEquals(2, tcModel.consentManagerProviderVersion());
+        assertEquals(675, tcModel.cmpId());
+        assertEquals(2, tcModel.cmpVersion());
         assertEquals(1, tcModel.consentScreen());
         assertEquals(15, tcModel.vendorListVersion());
         assertEquals(2, tcModel.policyVersion());
@@ -75,9 +73,11 @@ public class BitVectorTCModelV2Test {
         assertTrue(tcModel.isPurposeOneTreatment());
         assertFalse(tcModel.useNonStandardStacks());
 
-        assertEquals(new TreeSet<>(Arrays.asList(1)), tcModel.specialFeatureOptIns());
-        assertEquals(new TreeSet<>(Arrays.asList(2, 10)), tcModel.purposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(2, 9)), tcModel.purposesLITransparency());
+        assertTrue(tcModel.isSpecialFeatureOptedIn(1));
+        assertTrue(tcModel.isPurposeConsented(2));
+        assertTrue(tcModel.isPurposeConsented(10));
+        assertTrue(tcModel.isPurposeLegitimateInterest(2));
+        assertTrue(tcModel.isPurposeLegitimateInterest(9));
     }
 
     @Test
@@ -86,12 +86,26 @@ public class BitVectorTCModelV2Test {
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(3, 4, 5, 6, 7, 8, 9)), tcModel.purposesConsent());
-        assertEquals(
-                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98)), tcModel.vendorConsents());
-        assertEquals(
-                new TreeSet<>(Arrays.asList(37, 47, 48, 53, 65, 98, 129)),
-                tcModel.vendorLegitimateInterests());
+        assertTrue(tcModel.isPurposeConsented(3));
+        assertTrue(tcModel.isPurposeConsented(4));
+        assertTrue(tcModel.isPurposeConsented(5));
+        assertTrue(tcModel.isPurposeConsented(6));
+        assertTrue(tcModel.isPurposeConsented(7));
+        assertTrue(tcModel.isPurposeConsented(8));
+        assertTrue(tcModel.isPurposeConsented(9));
+        assertTrue(tcModel.isVendorConsented(23));
+        assertTrue(tcModel.isVendorConsented(37));
+        assertTrue(tcModel.isVendorConsented(47));
+        assertTrue(tcModel.isVendorConsented(48));
+        assertTrue(tcModel.isVendorConsented(53));
+        assertTrue(tcModel.isVendorConsented(65));
+        assertTrue(tcModel.isVendorConsented(98));
+        assertTrue(tcModel.isVendorLegitimateInterest(37));
+        assertTrue(tcModel.isVendorLegitimateInterest(47));
+        assertTrue(tcModel.isVendorLegitimateInterest(53));
+        assertTrue(tcModel.isVendorLegitimateInterest(65));
+        assertTrue(tcModel.isVendorLegitimateInterest(98));
+        assertTrue(tcModel.isVendorLegitimateInterest(129));
     }
 
     @Test
@@ -100,9 +114,20 @@ public class BitVectorTCModelV2Test {
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(12, 23, 37, 47, 48, 53)), tcModel.allowedVendors());
-        assertEquals(
-                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98, 129)), tcModel.disclosedVendors());
+        assertTrue(tcModel.isOOBAllowedVendor(12));
+        assertTrue(tcModel.isOOBAllowedVendor(23));
+        assertTrue(tcModel.isOOBAllowedVendor(37));
+        assertTrue(tcModel.isOOBAllowedVendor(47));
+        assertTrue(tcModel.isOOBAllowedVendor(48));
+        assertTrue(tcModel.isOOBAllowedVendor(53));
+        assertTrue(tcModel.isOOBDisclosedVendor(23));
+        assertTrue(tcModel.isOOBDisclosedVendor(37));
+        assertTrue(tcModel.isOOBDisclosedVendor(47));
+        assertTrue(tcModel.isOOBDisclosedVendor(48));
+        assertTrue(tcModel.isOOBDisclosedVendor(53));
+        assertTrue(tcModel.isOOBDisclosedVendor(65));
+        assertTrue(tcModel.isOOBDisclosedVendor(98));
+        assertTrue(tcModel.isOOBDisclosedVendor(129));
     }
 
     @Test
@@ -110,60 +135,49 @@ public class BitVectorTCModelV2Test {
         String base64CoreString =
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA.cAAAAAAAITg=";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
-        assertEquals(1, tcModel.publisherPurposesConsent().size());
+        assertTrue(tcModel.isPublisherPurposeConsented(1));
     }
 
     @Test
     public void testPublisherRestrictions() {
         String bitString =
-                "0000100011101011100"
-                        + "1000000000000001010"
-                        + "0000001110101110010"
-                        + "0000000000000101000"
-                        + "0000110011111000000"
-                        + "0000000000000000100"
-                        + "0011010000000011110"
-                        + "0001000000000000000"
-                        + "0000000000000000000"
-                        + "0000000000000000000"
-                        + "0000000000000000000"
-                        + "0000000000000000000"
-                        + "0000000000000000000"
-                        + "000000000011"
-                        + // NumPubRestrictions (1)
-                        "000001"
-                        + // PurposeId
-                        "01"
-                        + // restriction type Require Consent
-                        "000000000000"
-                        + "000010"
-                        + // PurposeId
-                        "00"
-                        + // restriction type Not Allowed
-                        "000000000000"
-                        + "000011"
-                        + // PurposeId
-                        "10"
-                        + // restriction REQUIRE_LEGITIMATE_INTEREST
-                        "000000000000"
-                        + "0"; // padding
+                "0000100011101011100" +
+                        "1000000000000001010" +
+                        "0000001110101110010" +
+                        "0000000000000101000" +
+                        "0000110011111000000" +
+                        "0000000000000000100" +
+                        "0011010000000011110" +
+                        "0001000000000000000" +
+                        "0000000000000000000" +
+                        "0000000000000000000" +
+                        "0000000000000000000" +
+                        "0000000000000000000" +
+                        "0000000000000000000" +
+                        "000000000011" + // NumPubRestrictions (3)
+                        "000001" + // PurposeId
+                        "01" + // restriction type Require Consent
+                        "000000000001" + // num entries
+                        "0" + // range encoding
+                        "0000000000000001" + // range encoding
+                        "000010" + // PurposeId
+                        "00" + // restriction type Not Allowed
+                        "000000000001" + // num entries
+                        "0" + // range encoding
+                        "0000000000000010" + // range encoding
+                        "000011" + // PurposeId
+                        "10" + // restriction REQUIRE_LEGITIMATE_INTEREST
+                        "000000000001" + // num entries
+                        "0" + // range encoding
+                        "0000000000000011" + // range encoding
+                        "0000000"; // padding
 
         String base64CoreString = base64FromBitString(bitString);
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        List<PublisherRestriction> actual = tcModel.publisherRestrictions();
-        List<PublisherRestriction> expected =
-                Arrays.asList(
-                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, Arrays.asList()),
-                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, Arrays.asList()),
-                        new PublisherRestriction(
-                                3, RestrictionType.REQUIRE_LEGITIMATE_INTEREST, Arrays.asList()));
-
-        assertEquals(expected, actual);
-
-        assertEquals(1, actual.get(0).getPurposeId());
-        assertEquals(RestrictionType.REQUIRE_CONSENT, actual.get(0).getRestrictionType());
-        assertEquals(Arrays.asList(), actual.get(0).getVendorIds());
+        assertEquals(RestrictionType.REQUIRE_CONSENT, tcModel.getVendorRestrictionType(1, 1));
+        assertEquals(RestrictionType.NOT_ALLOWED, tcModel.getVendorRestrictionType(2, 2));
+        assertEquals(RestrictionType.REQUIRE_LEGITIMATE_INTEREST, tcModel.getVendorRestrictionType(3, 3));
     }
 
     @Test
@@ -187,19 +201,10 @@ public class BitVectorTCModelV2Test {
 
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(1)), tcModel.publisherPurposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(24)), tcModel.publisherPurposesLITransparency());
-        assertEquals(new TreeSet<>(Arrays.asList(2)), tcModel.customPurposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(1, 2)), tcModel.customPurposesLITransparency());
-    }
-
-    @Test
-    public void testDefaultSegmentType() {
-        String base64CoreString = "COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA";
-        String publisherPurposes = "00000000"; // segment type
-        base64CoreString += "." + base64FromBitString(publisherPurposes);
-
-        TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
-        assertTrue(tcModel.customPurposesConsent().isEmpty());
+        assertTrue(tcModel.isPublisherPurposeConsented(1));
+        assertTrue(tcModel.isPublisherPurposeLegitimateInterest(24));
+        assertTrue(tcModel.isCustomPublisherPurposeConsented(2));
+        assertTrue(tcModel.isCustomPublisherPurposeLegitimateInterest(1));
+        assertTrue(tcModel.isCustomPublisherPurposeLegitimateInterest(2));
     }
 }
