@@ -20,24 +20,25 @@ package com.iabtcf.v2;
  * #L%
  */
 
-public enum RestrictionType {
-    NOT_ALLOWED,
-    REQUIRE_CONSENT,
-    REQUIRE_LEGITIMATE_INTEREST,
-    UNDEFINED;
+public enum SegmentType {
+    DEFAULT,
+    DISCLOSED_VENDOR,
+    ALLOWED_VENDOR,
+    PUBLISHER_TC,
+    INVALID;
 
-    public static RestrictionType from(int id) {
+    public static SegmentType from(int id) {
         switch (id) {
             case 0:
-                return NOT_ALLOWED;
+                return DEFAULT;
             case 1:
-                return REQUIRE_CONSENT;
+                return DISCLOSED_VENDOR;
             case 2:
-                return REQUIRE_LEGITIMATE_INTEREST;
+                return ALLOWED_VENDOR;
             case 3:
-                return UNDEFINED;
+                return PUBLISHER_TC;
             default:
-                return NOT_ALLOWED;
+                return INVALID;
         }
     }
 }

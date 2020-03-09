@@ -101,9 +101,9 @@
       <property name="severity" value="error"/>
     </module>
 
-    <!-- Cyclomatic complexity limit of 7. -->
+    <!-- Cyclomatic complexity limit of 8. -->
     <module name="CyclomaticComplexity">
-      <property name="max" value="7"/>
+      <property name="max" value="8"/>
       <property name="severity" value="warning"/>
     </module>
 

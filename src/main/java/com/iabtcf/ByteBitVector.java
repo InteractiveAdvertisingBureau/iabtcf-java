@@ -28,17 +28,20 @@ public class ByteBitVector {
     private byte[] buffer;
     private int isrpos;
     private final InputStream is;
+    final LengthOffsetCache cache;
 
     public ByteBitVector(InputStream is) {
         this.buffer = new byte[4096];
         this.is = is;
         this.isrpos = 0;
+        cache = new LengthOffsetCache(this);
     }
 
     public ByteBitVector(byte[] buffer) {
         this.buffer = buffer;
         this.isrpos = buffer.length;
         this.is = null;
+        cache = new LengthOffsetCache(this);
     }
 
     private void ensureCapacity(int length) {
@@ -52,9 +55,9 @@ public class ByteBitVector {
     }
 
     private boolean ensureReadable(int offset, int length) {
-        int rem = length;
         int tlength = offset + length;
         int n;
+        int rem = tlength - isrpos;
 
         if (tlength <= isrpos) {
             return true;
@@ -79,6 +82,11 @@ public class ByteBitVector {
         return true;
     }
 
+    public boolean readBits1(FieldDefs field) {
+        assert field.getLength(this) == 1;
+        return readBits1(field.getOffset(this));
+    }
+
     public boolean readBits1(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -88,12 +96,27 @@ public class ByteBitVector {
         return ((buffer[startByte] >>> (7 - bitPos)) & 1) == 1;
     }
 
+    public byte readBits2(FieldDefs field) {
+        assert field.getLength(this) == 2;
+        return readBits2(field.getOffset(this));
+    }
+
     public byte readBits2(int offset) {
         return readByteBits(offset, 2);
     }
 
+    public byte readBits3(FieldDefs field) {
+        assert field.getLength(this) == 3;
+        return readBits3(field.getOffset(this));
+    }
+
     public byte readBits3(int offset) {
         return readByteBits(offset, 3);
+    }
+
+    public byte readBits6(FieldDefs field) {
+        assert field.getLength(this) == 6;
+        return readBits6(field.getOffset(this));
     }
 
     public byte readBits6(int offset) {
@@ -129,6 +152,11 @@ public class ByteBitVector {
         }
     }
 
+    public int readBits12(FieldDefs field) {
+        assert field.getLength(this) == 12;
+        return readBits12(field.getOffset(this));
+    }
+
     public int readBits12(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -144,6 +172,11 @@ public class ByteBitVector {
             return (unsafeReadLsb(buffer[startByte], bitPos, n) & 0xFF) << 4
                     | (unsafeReadMsb(buffer[startByte + 1], 0, 4 + bitPos) & 0xFF);
         }
+    }
+
+    public int readBits16(FieldDefs field) {
+        assert field.getLength(this) == 16;
+        return readBits16(field.getOffset(this));
     }
 
     public int readBits16(int offset) {
@@ -163,6 +196,11 @@ public class ByteBitVector {
         }
     }
 
+    public int readBits24(FieldDefs field) {
+        assert field.getLength(this) == 24;
+        return readBits24(field.getOffset(this));
+    }
+
     public int readBits24(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -180,6 +218,11 @@ public class ByteBitVector {
                     | (buffer[startByte + 1] & 0xFF) << 8
                     | (buffer[startByte + 2] & 0xFF);
         }
+    }
+
+    public long readBits36(FieldDefs field) {
+        assert field.getLength(this) == 36;
+        return readBits36(field.getOffset(this));
     }
 
     public long readBits36(int offset) {

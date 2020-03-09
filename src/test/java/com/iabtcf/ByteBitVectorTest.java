@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,6 +36,33 @@ import org.junit.Test;
 
 public class ByteBitVectorTest {
     Random r = new Random();
+
+    @Test(expected = java.lang.AssertionError.class)
+    public void testAssert() {
+        ByteBitVector bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b10000000}));
+        assertTrue(bv.readBits1(FieldDefs.CORE_VERSION));
+    }
+
+    @Test
+    public void testStreamReadBits() {
+        ByteBitVector bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b10000000}));
+        assertTrue(bv.readBits1(0));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000001}));
+        assertTrue(bv.readBits1(7));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b10000000}));
+        assertTrue(bv.readBits1(8));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertTrue(bv.readBits1(15));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertEquals(1, bv.readBits3(8 + 5));
+
+        bv = new ByteBitVector(new ByteArrayInputStream(new byte[] {(byte) 0b00000000, (byte) 0b00000001}));
+        assertEquals(1, bv.readBits16(0));
+    }
 
     @Test
     public void testReadBits1() {
@@ -101,26 +129,19 @@ public class ByteBitVectorTest {
 
     @Test
     public void testReadBits6VersionField() {
-        // String str =
-        // "COvdT_XOvdT_XEbAAAENAPCAAAAAAAAAAAAAAAAAAAAA";
         String str = "BOvalCcOvZ7NhABABBAAABAAAAAAEA";
 
         byte[] bytes = Base64.getUrlDecoder().decode(str);
-        // assertEquals(2, (bytes[0] & 0xFF) >> 2);
 
         ByteBitVector bv = new ByteBitVector(bytes);
-        // assertEquals(2, bv.readBits6(0));
         assertEquals(1, bv.readBits6(0));
 
         ZoneId zoneId = ZoneId.of("America/Los_Angeles");
         ZonedDateTime zdt = Instant.ofEpochMilli(bv.readBits36(6) * 100).atZone(zoneId);
-        // assertEquals(ZonedDateTime.parse("2020-02-27T19:17:54-08:00[America/Los_Angeles]"), zdt);
         assertEquals(ZonedDateTime.parse("2020-02-26T23:23:34-08:00[America/Los_Angeles]"), zdt);
 
         zdt = Instant.ofEpochMilli(bv.readBits36(6 + 36) * 100).atZone(zoneId);
-        // assertEquals(ZonedDateTime.parse("2020-02-27T19:17:54-08:00[America/Los_Angeles]"), zdt);
 
-        // assertEquals(283, bv.readBits12(6 + 36 + 36));
         assertEquals(1, bv.readBits12(6 + 36 + 36));
     }
 

@@ -20,27 +20,22 @@ package com.iabtcf.decoder;
  * #L%
  */
 
-import java.io.InputStream;
 import java.util.Base64;
 
 import com.iabtcf.ByteBitVector;
-import com.iabtcf.SegmentInputStream;
+import com.iabtcf.FieldDefs;
 import com.iabtcf.model.TCModel;
 import com.iabtcf.v1.BitVectorTCModelV1;
 import com.iabtcf.v2.BitVectorTCModelV2;
-import com.iabtcf.v2.FieldConstants;
 
 public class TCModelDecoderImpl implements TCModelDecoder {
-
-    private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
-
     @Override
     public TCModel decode(String consentString) {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
 
-        int version = bitVector.readBits6(FieldConstants.CoreStringConstants.VERSION_OFFSET);
+        int version = bitVector.readBits6(FieldDefs.CORE_VERSION);
 
         switch (version) {
             case 1:
@@ -49,7 +44,7 @@ public class TCModelDecoderImpl implements TCModelDecoder {
                 if (split.length > 1) {
                     ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
-                        remaining[i -1] = vectorFromString(split[i]);
+                        remaining[i - 1] = vectorFromString(split[i]);
                     }
                     return BitVectorTCModelV2.fromBitVector(bitVector, remaining);
                 } else {

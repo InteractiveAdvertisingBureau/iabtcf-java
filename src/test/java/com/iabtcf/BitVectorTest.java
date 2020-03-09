@@ -28,14 +28,12 @@ import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.iabtcf.utils.ByteBitVectorUtils;
 import org.junit.Test;
 
-import com.iabtcf.v2.BitVectorTCModelV2;
+import com.iabtcf.utils.ByteBitVectorUtils;
 
 @Deprecated
 public class BitVectorTest {
-
     @Test
     public void testCanReadSmallInt() {
         String bitString = "0000 1000 0000 0001";
