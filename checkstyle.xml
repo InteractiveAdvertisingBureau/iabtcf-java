@@ -149,6 +149,8 @@
       <property name="severity" value="ignore"/>
     </module>
 
+    <!-- Checks that there are no import statements that use the * notation.  -->
+    <module name="AvoidStarImport"/>
   </module>
 
 </module>

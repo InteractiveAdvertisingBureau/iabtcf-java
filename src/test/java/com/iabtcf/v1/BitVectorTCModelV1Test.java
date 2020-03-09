@@ -19,6 +19,18 @@ package com.iabtcf.v1;
  * #L%
  */
 
+import static com.iabtcf.v1.Purpose.AD_SELECTION;
+import static com.iabtcf.v1.Purpose.CONTENT_DELIVERY;
+import static com.iabtcf.v1.Purpose.MEASUREMENT;
+import static com.iabtcf.v1.Purpose.PERSONALIZATION;
+import static com.iabtcf.v1.Purpose.STORAGE_AND_ACCESS;
+import static com.iabtcf.v1.Purpose.UNDEFINED;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,13 +38,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.iabtcf.decoder.TCModelDecoder;
-import com.iabtcf.model.TCModel;
 import org.junit.Test;
 
-import static com.iabtcf.v1.Purpose.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.is;
+import com.iabtcf.decoder.TCModelDecoder;
+import com.iabtcf.model.TCModel;
 
 public class BitVectorTCModelV1Test {
 

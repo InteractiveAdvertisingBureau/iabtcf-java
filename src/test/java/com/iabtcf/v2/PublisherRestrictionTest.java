@@ -19,8 +19,8 @@ package com.iabtcf.v2;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.BitSet;
 
