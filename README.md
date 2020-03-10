@@ -1,5 +1,7 @@
 # iabtcf-java
 
+This library is currently in alpha release. 
+
 Encode consent information with the IAB EU's GDPR Transparency and Consent Framework v2.0.
 
 The IAB specification for the consent string format is available on the [IAB Github](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/tree/master/TCFv2).
