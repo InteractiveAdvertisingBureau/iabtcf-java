@@ -396,7 +396,7 @@ public enum FieldDefs {
             if (!isRangeEncoding) {
                 return calculateBitLength(t, maxVendorIdOffset);
             } else {
-                return calculateRangeLength(t, isRangeEncodingOffset++);
+                return calculateRangeLength(t, isRangeEncodingOffset + 1);
             }
         }
 
