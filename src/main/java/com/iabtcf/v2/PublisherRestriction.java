@@ -21,6 +21,7 @@ package com.iabtcf.v2;
  */
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
@@ -55,21 +56,17 @@ public class PublisherRestriction {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
         for (IntIterator i = getVendorIds().intIterator(); i.hasNext();) {
-            sb.append(i.next());
-            if (i.hasNext()) {
-                sb.append(", ");
-            }
+            sj.add(i.next().toString());
         }
-        sb.append("]");
         return "PublisherRestriction{"
                 + "purposeId="
                 + purposeId
                 + ", restrictionType="
                 + restrictionType
                 + ", vendorIds="
-                + sb.toString()
+                + sj.toString()
                 + '}';
     }
 

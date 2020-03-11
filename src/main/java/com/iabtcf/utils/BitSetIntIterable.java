@@ -98,7 +98,7 @@ public class BitSetIntIterable implements IntIterable {
 
             @Override
             public Integer next() {
-                return Integer.valueOf(internal.next());
+                return internal.next();
             }
         };
     }
@@ -131,5 +131,10 @@ public class BitSetIntIterable implements IntIterable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return bs.toString();
     }
 }

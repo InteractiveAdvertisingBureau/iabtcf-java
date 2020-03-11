@@ -1,5 +1,7 @@
 package com.iabtcf.utils;
 
+import java.util.HashSet;
+
 /*-
  * #%L
  * IAB TCF Core Library
@@ -23,7 +25,6 @@ package com.iabtcf.utils;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.TreeSet;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
@@ -33,7 +34,7 @@ public class IntIterableUtils {
      * Returns a set representation of the IntIterable.
      */
     public static Set<Integer> toSet(IntIterable it) {
-        TreeSet<Integer> ts = new TreeSet<>();
+        Set<Integer> ts = new HashSet<>();
 
         for (IntIterator bit = it.intIterator(); bit.hasNext();) {
             ts.add(bit.next());
