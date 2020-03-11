@@ -37,8 +37,17 @@ public class BitSetIntIterable implements IntIterable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return bs.isEmpty();
+    }
+
+    @Override
     public boolean contains(int value) {
-        return bs.get(value);
+        try {
+            return bs.get(value);
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
     }
 
     @Override

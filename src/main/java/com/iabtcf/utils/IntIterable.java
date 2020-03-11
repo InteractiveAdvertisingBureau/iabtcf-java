@@ -24,6 +24,8 @@ package com.iabtcf.utils;
  * An int primitive memory optimized iterable.
  */
 public interface IntIterable extends Iterable<Integer> {
+    boolean isEmpty();
+
     boolean contains(int value);
 
     boolean containsAll(int... source);

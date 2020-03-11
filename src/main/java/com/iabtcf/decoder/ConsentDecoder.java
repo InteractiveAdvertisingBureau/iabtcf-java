@@ -24,13 +24,18 @@ import java.util.Base64;
 
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.FieldDefs;
-import com.iabtcf.model.TCModel;
-import com.iabtcf.v1.BitVectorTCModelV1;
-import com.iabtcf.v2.BitVectorTCModelV2;
 
-public class TCModelDecoderImpl implements TCModelDecoder {
-    @Override
-    public TCModel decode(String consentString) {
+class ConsentDecoder {
+    static ByteBitVector vectorFromString(String base64UrlEncodedString) {
+        // SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
+        // InputStream is = DECODER.wrap(sis);
+        //
+        //
+        byte[] bytes = Base64.getUrlDecoder().decode(base64UrlEncodedString);
+        return new ByteBitVector(bytes);
+    }
+
+    public static ConsentParser parse(String consentString) {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
@@ -39,29 +44,19 @@ public class TCModelDecoderImpl implements TCModelDecoder {
 
         switch (version) {
             case 1:
-                return BitVectorTCModelV1.fromBitVector(bitVector);
+                return ConsentParserV1.fromBitVector(bitVector);
             case 2:
                 if (split.length > 1) {
                     ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
                         remaining[i - 1] = vectorFromString(split[i]);
                     }
-                    return BitVectorTCModelV2.fromBitVector(bitVector, remaining);
+                    return ConsentParserV2.fromBitVector(bitVector, remaining);
                 } else {
-                    return BitVectorTCModelV2.fromBitVector(bitVector);
+                    return ConsentParserV2.fromBitVector(bitVector);
                 }
             default:
                 throw new UnsupportedOperationException("Version " + version + "is unsupported yet");
         }
-    }
-
-    private ByteBitVector vectorFromString(String base64UrlEncodedString) {
-
-//        SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
-//        InputStream is = DECODER.wrap(sis);
-//
-//
-        byte[] bytes = Base64.getUrlDecoder().decode(base64UrlEncodedString);
-        return new ByteBitVector(bytes);
     }
 }

@@ -25,24 +25,24 @@ import java.util.Base64;
 
 import org.junit.Test;
 
-public class TCModelDecoderImplTest {
+public class ConsentDecoderTest {
 
     @Test
     public void testCanCreateModelFromTwoPartsString() {
         String tcString =
                 "COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
-        assertNotNull(TCModelDecoder.instance().decode(tcString));
+        assertNotNull(ConsentDecoder.parse(tcString));
     }
 
     @Test
     public void testCanCreateModelOnePartString() {
         String tcString = "COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA";
-        assertNotNull(TCModelDecoder.instance().decode(tcString));
+        assertNotNull(ConsentDecoder.parse(tcString));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFailIfANonSupportedVersionIsPassed() {
         String tcString = Base64.getUrlEncoder().encodeToString(new byte[] { 13 });
-        TCModelDecoder.instance().decode(tcString);
+        ConsentDecoder.parse(tcString);
     }
 }
