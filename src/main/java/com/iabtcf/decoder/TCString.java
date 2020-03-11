@@ -26,9 +26,9 @@ import java.util.List;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 
-public interface ConsentParser {
-    public static ConsentParser parse(String consentString) {
-        return ConsentDecoder.parse(consentString);
+public interface TCString {
+    public static TCString decode(String consentString) {
+        return TCStringDecoder.decode(consentString);
     }
 
     /**
@@ -37,7 +37,7 @@ public interface ConsentParser {
      * @since 1.0
      * @return the version number
      */
-    byte getVersion();
+    int getVersion();
 
     /**
      * Epoch deciseconds (0.1 of a second) when this TC String was first created
@@ -61,7 +61,7 @@ public interface ConsentParser {
      * @since 1.0
      * @return the Consent Management Platform ID
      */
-    short getCmpId();
+    int getCmpId();
 
     /**
      * Consent Management Platform version of the CMP that last updated this TC String
@@ -69,7 +69,7 @@ public interface ConsentParser {
      * @since 1.0
      * @return version of the Consent Management Platform that updated this record
      */
-    short getCmpVersion();
+    int getCmpVersion();
 
     /**
      * 
@@ -82,7 +82,7 @@ public interface ConsentParser {
      * @since 1.0
      * @return the screen number identifier
      */
-    byte getConsentScreen();
+    int getConsentScreen();
 
     /**
      * Two-letter ISO 639-1 language code in which the CMP UI was presented.
@@ -99,27 +99,18 @@ public interface ConsentParser {
      * @since 1.0
      * @return the version number
      */
-    short getVendorListVersion();
+    int getVendorListVersion();
 
     /**
      * The user’s consent value for each Purpose established on the legal basis of consent. The
      * Purposes are numerically identified and published in the Global Vendor List.
+     * 
+     * An alias for PurposesAllowed
      * 
      * @since 1.0
      * @return The integer values for each established Purpose.
      */
     IntIterable getPurposesConsent();
-
-    /**
-     * The user’s consent value for each Purpose established on the legal basis of consent. The
-     * Purposes are numerically identified and published in the Global Vendor List.
-     * 
-     * An alias for PurposesConsent
-     * 
-     * @since 2.0
-     * @return The integer values for each established Purpose.
-     */
-    IntIterable getPurposesAllowed();
 
     /**
      * The vendor identifiers that have consent to process this users personal data. The vendor
@@ -150,7 +141,7 @@ public interface ConsentParser {
      * @since 2.0
      * @return version of policy used within GVL
      */
-    byte getTcfPolicyVersion();
+    int getTcfPolicyVersion();
 
     /**
      * Whether the signals encoded in this TC String were from service-specific storage versus
@@ -159,7 +150,7 @@ public interface ConsentParser {
      * @since 2.0
      * @return if signals are service-specific or global
      */
-    boolean getIsServiceSpecific();
+    boolean isServiceSpecific();
 
     /**
      * Setting this to field to true means that a publisher-run CMP – that is still IAB Europe

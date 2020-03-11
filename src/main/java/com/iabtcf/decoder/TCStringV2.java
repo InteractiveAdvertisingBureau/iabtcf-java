@@ -69,17 +69,17 @@ import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
 import com.iabtcf.v2.SegmentType;
 
-class ConsentParserV2 implements ConsentParser {
+class TCStringV2 implements TCString {
 
-    private byte version;
+    private int version;
     private Instant consentRecordCreated;
     private Instant consentRecordLastUpdated;
-    private short consentManagerProviderId;
-    private short consentManagerProviderVersion;
-    private byte consentScreen;
+    private int consentManagerProviderId;
+    private int consentManagerProviderVersion;
+    private int consentScreen;
     private String consentLanguage;
-    private short vendorListVersion;
-    private byte policyVersion;
+    private int vendorListVersion;
+    private int policyVersion;
     private boolean isServiceSpecific;
     private boolean useNonStandardStacks;
     private IntIterable specialFeaturesOptInts;
@@ -101,17 +101,17 @@ class ConsentParserV2 implements ConsentParser {
     private final ByteBitVector bbv;
     private final Collection<ByteBitVector> remainingVectors;
 
-    private ConsentParserV2(ByteBitVector bbv) {
+    private TCStringV2(ByteBitVector bbv) {
         this(bbv, new ByteBitVector[] {});
     }
 
-    private ConsentParserV2(ByteBitVector bbv, ByteBitVector... theRest) {
+    private TCStringV2(ByteBitVector bbv, ByteBitVector... theRest) {
         this.bbv = bbv;
         this.remainingVectors = Arrays.asList(theRest);
     }
 
-    public static ConsentParserV2 fromBitVector(ByteBitVector coreBitVector, ByteBitVector... remainingVectors) {
-        return new ConsentParserV2(coreBitVector, remainingVectors);
+    public static TCStringV2 fromBitVector(ByteBitVector coreBitVector, ByteBitVector... remainingVectors) {
+        return new TCStringV2(coreBitVector, remainingVectors);
     }
 
     private ByteBitVector getSegment(SegmentType segmentType) {
@@ -224,7 +224,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public byte getVersion() {
+    public int getVersion() {
         if (cache.add(CORE_VERSION)) {
             version = bbv.readBits6(CORE_VERSION);
         }
@@ -248,7 +248,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public short getCmpId() {
+    public int getCmpId() {
         if (cache.add(CORE_CMP_ID)) {
             consentManagerProviderId = (short) bbv.readBits12(CORE_CMP_ID);
         }
@@ -256,7 +256,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public short getCmpVersion() {
+    public int getCmpVersion() {
         if (cache.add(CORE_CMP_VERSION)) {
             consentManagerProviderVersion = (short) bbv.readBits12(CORE_CMP_VERSION);
         }
@@ -264,7 +264,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public byte getConsentScreen() {
+    public int getConsentScreen() {
         if (cache.add(CORE_CONSENT_SCREEN)) {
             consentScreen = bbv.readBits6(CORE_CONSENT_SCREEN);
         }
@@ -280,16 +280,11 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public short getVendorListVersion() {
+    public int getVendorListVersion() {
         if (cache.add(CORE_VENDOR_LIST_VERSION)) {
             vendorListVersion = (short) bbv.readBits12(CORE_VENDOR_LIST_VERSION);
         }
         return vendorListVersion;
-    }
-
-    @Override
-    public IntIterable getPurposesAllowed() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -314,7 +309,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public byte getTcfPolicyVersion() {
+    public int getTcfPolicyVersion() {
         if (cache.add(CORE_TCF_POLICY_VERSION)) {
             policyVersion = bbv.readBits6(CORE_TCF_POLICY_VERSION);
         }
@@ -322,7 +317,7 @@ class ConsentParserV2 implements ConsentParser {
     }
 
     @Override
-    public boolean getIsServiceSpecific() {
+    public boolean isServiceSpecific() {
         if (cache.add(CORE_IS_SERVICE_SPECIFIC)) {
             isServiceSpecific = bbv.readBits1(CORE_IS_SERVICE_SPECIFIC);
         }

@@ -38,10 +38,10 @@ import com.iabtcf.utils.IntIterableUtils;
 import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
 
-public class ConsentParserV2Test {
-    private static ConsentParser parse(String consentString) {
-        ConsentParser model = ConsentParser.parse(consentString);
-        assertTrue(model instanceof ConsentParserV2);
+public class TCStringV2Test {
+    private static TCString parse(String consentString) {
+        TCString model = TCString.decode(consentString);
+        assertTrue(model instanceof TCStringV2);
         assertEquals(2, model.getVersion());
 
         return model;
@@ -70,7 +70,7 @@ public class ConsentParserV2Test {
      */
     @Test
     public void testCanConstructTCModelFromBase64String() {
-        ConsentParser tcModel = parse("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA");
+        TCString tcModel = parse("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA");
 
         assertEquals(2, tcModel.getVersion());
         assertEquals(Instant.parse("2020-01-26T17:01:00Z"), tcModel.getCreated());
@@ -82,7 +82,7 @@ public class ConsentParserV2Test {
         assertEquals(2, tcModel.getTcfPolicyVersion());
         assertEquals("EN", tcModel.getConsentLanguage());
         assertEquals("AA", tcModel.getPublisherCC());
-        assertFalse(tcModel.getIsServiceSpecific());
+        assertFalse(tcModel.isServiceSpecific());
         assertTrue(tcModel.getPurposeOneTreatment());
         assertFalse(tcModel.getUseNonStandardStacks());
 
@@ -93,7 +93,7 @@ public class ConsentParserV2Test {
 
     @Test
     public void testConstructConsentsFromBitFields() {
-        ConsentParser tcModel =
+        TCString tcModel =
                 parse("COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA");
 
         assertThat(tcModel.getPurposesConsent(), matchInts(3, 4, 5, 6, 7, 8, 9));
@@ -103,7 +103,7 @@ public class ConsentParserV2Test {
 
     @Test
     public void testCanParseDisclosedAndAllowedVendors() {
-        ConsentParser tcModel =
+        TCString tcModel =
                 parse("COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA");
 
         assertThat(tcModel.getAllowedVendors(), matchInts(12, 23, 37, 47, 48, 53));
@@ -112,7 +112,7 @@ public class ConsentParserV2Test {
 
     @Test
     public void testCanParseAllParts() {
-        ConsentParser tcModel =
+        TCString tcModel =
                 parse("COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA.cAAAAAAAITg=");
         assertEquals(1, IntIterableUtils.toStream(tcModel.getPubPurposesConsent()).count());
     }
@@ -152,7 +152,7 @@ public class ConsentParserV2Test {
                         "000000000000"
                         + "0"; // padding
 
-        ConsentParser tcModel = parse(base64FromBitString(bitString));
+        TCString tcModel = parse(base64FromBitString(bitString));
 
         List<PublisherRestriction> actual = tcModel.getPublisherRestrictions();
         List<PublisherRestriction> expected =
@@ -190,7 +190,7 @@ public class ConsentParserV2Test {
                         "000"; // just padding
         base64CoreString += "." + base64FromBitString(publisherPurposes);
 
-        ConsentParser tcModel = parse(base64CoreString);
+        TCString tcModel = parse(base64CoreString);
 
         assertThat(tcModel.getPubPurposesConsent(), matchInts(1));
         assertThat(tcModel.getPubPurposesLITransparency(), matchInts(24));
@@ -204,7 +204,7 @@ public class ConsentParserV2Test {
         String publisherPurposes = "00000000"; // segment type
         base64CoreString += "." + base64FromBitString(publisherPurposes);
 
-        ConsentParser tcModel = parse(base64CoreString);
+        TCString tcModel = parse(base64CoreString);
         assertFalse(tcModel.getCustomPurposesConsent().iterator().hasNext());
         assertTrue(tcModel.getCustomPurposesConsent().isEmpty());
     }
@@ -216,7 +216,7 @@ public class ConsentParserV2Test {
         String base64CoreString1Range =
                 "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
 
-        ConsentParser tcModel = parse(base64CoreString2Range);
+        TCString tcModel = parse(base64CoreString2Range);
         assertThat(tcModel.getVendorConsent(), matchInts(702, 703));
 
         tcModel = parse(base64CoreString1Range);

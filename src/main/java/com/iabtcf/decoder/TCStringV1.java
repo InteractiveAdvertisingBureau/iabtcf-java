@@ -44,20 +44,20 @@ import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 
-class ConsentParserV1 implements ConsentParser {
+class TCStringV1 implements TCString {
 
     private final ByteBitVector bbv;
 
-    private ConsentParserV1(ByteBitVector bitVector) {
+    private TCStringV1(ByteBitVector bitVector) {
         this.bbv = bitVector;
     }
 
-    public static ConsentParserV1 fromBitVector(ByteBitVector bitVector) {
-        return new ConsentParserV1(bitVector);
+    public static TCStringV1 fromBitVector(ByteBitVector bitVector) {
+        return new TCStringV1(bitVector);
     }
 
     @Override
-    public byte getVersion() {
+    public int getVersion() {
         return bbv.readBits6(V1_VERSION);
     }
 
@@ -72,17 +72,17 @@ class ConsentParserV1 implements ConsentParser {
     }
 
     @Override
-    public short getCmpId() {
-        return (short) bbv.readBits12(V1_CMP_ID);
+    public int getCmpId() {
+        return bbv.readBits12(V1_CMP_ID);
     }
 
     @Override
-    public short getCmpVersion() {
-        return (short) bbv.readBits12(V1_CMP_VERSION);
+    public int getCmpVersion() {
+        return bbv.readBits12(V1_CMP_VERSION);
     }
 
     @Override
-    public byte getConsentScreen() {
+    public int getConsentScreen() {
         return bbv.readBits6(V1_CONSENT_SCREEN);
     }
 
@@ -92,13 +92,8 @@ class ConsentParserV1 implements ConsentParser {
     }
 
     @Override
-    public short getVendorListVersion() {
-        return (short) bbv.readBits12(V1_VENDOR_LIST_VERSION);
-    }
-
-    @Override
-    public IntIterable getPurposesAllowed() {
-        return ConsentParserV2.fillBitSet(bbv, V1_PURPOSES_ALLOW);
+    public int getVendorListVersion() {
+        return bbv.readBits12(V1_VENDOR_LIST_VERSION);
     }
 
     @Override
@@ -114,16 +109,16 @@ class ConsentParserV1 implements ConsentParser {
 
     @Override
     public IntIterable getPurposesConsent() {
+        return TCStringV2.fillBitSet(bbv, V1_PURPOSES_ALLOW);
+    }
+
+    @Override
+    public int getTcfPolicyVersion() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public byte getTcfPolicyVersion() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean getIsServiceSpecific() {
+    public boolean isServiceSpecific() {
         throw new UnsupportedOperationException();
     }
 
@@ -200,7 +195,7 @@ class ConsentParserV1 implements ConsentParser {
 
         if (isRangeEncoding) {
             boolean defaultConsent = bbv.readBits1(FieldDefs.V1_VENDOR_DEFAULT_CONSENT);
-            ConsentParserV2.vendorIdsFromRange(bbv, bs, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(bbv));
+            TCStringV2.vendorIdsFromRange(bbv, bs, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(bbv));
 
             if (defaultConsent) {
                 bs.flip(1, maxV + 1);

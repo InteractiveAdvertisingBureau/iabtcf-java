@@ -37,11 +37,11 @@ import java.util.stream.IntStream;
 
 import org.junit.Test;
 
-public class ConsentParserV1Test {
+public class TCStringV1Test {
 
-    private static ConsentParser parse(String consentString) {
-        ConsentParser model = ConsentParser.parse(consentString);
-        assertTrue(model instanceof ConsentParserV1);
+    private static TCString parse(String consentString) {
+        TCString model = TCString.decode(consentString);
+        assertTrue(model instanceof TCStringV1);
         assertEquals(1, model.getVersion());
 
         return model;
@@ -49,14 +49,14 @@ public class ConsentParserV1Test {
 
     @Test
     public void testDecodeCanDetectVersion1() {
-        ConsentParser model = ConsentParser.parse("BObdrPUOevsguAfDqFENCNAAAAAmeAAA");
-        assertTrue(model instanceof ConsentParserV1);
+        TCString model = TCString.decode("BObdrPUOevsguAfDqFENCNAAAAAmeAAA");
+        assertTrue(model instanceof TCStringV1);
         assertEquals(1, model.getVersion());
     }
 
     @Test
     public void testCanConstructV1Properties() {
-        ConsentParser model = parse("BObdrPUOevsguAfDqFENCNAAAAAmeAAA");
+        TCString model = parse("BObdrPUOevsguAfDqFENCNAAAAAmeAAA");
         assertEquals(1, model.getVersion());
         assertEquals(31, model.getCmpId());
         assertEquals(234, model.getCmpVersion());
@@ -65,40 +65,32 @@ public class ConsentParserV1Test {
         assertEquals(Instant.parse("2019-02-04T21:16:05.200Z"), model.getCreated());
         assertEquals(Instant.parse("2019-04-09T14:35:10.200Z"), model.getLastUpdated());
         assertEquals(141, model.getVendorListVersion());
-        assertTrue(model.getPurposesAllowed().isEmpty());
-        assertFalse(model.getPurposesAllowed().contains(1));
+        assertTrue(model.getPurposesConsent().isEmpty());
+        assertFalse(model.getPurposesConsent().contains(1));
         assertFalse(model.getVendorConsent().contains(1));
     }
 
     @Test
     public void testAllowedPurposes() {
-        ConsentParser model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBA=");
-        assertThat(model.getPurposesAllowed(), matchInts(1, 2, 3, 4, 5, 15, 24));
-        assertTrue(model.getPurposesAllowed().contains(1));
-        assertTrue(model.getPurposesAllowed().contains(STORAGE_AND_ACCESS.getId()));
-        assertTrue(model.getPurposesAllowed().contains(2));
-        assertTrue(model.getPurposesAllowed().contains(PERSONALIZATION.getId()));
-        assertTrue(model.getPurposesAllowed().contains(3));
-        assertTrue(model.getPurposesAllowed().contains(AD_SELECTION.getId()));
-        assertTrue(model.getPurposesAllowed().contains(4));
-        assertTrue(model.getPurposesAllowed().contains(CONTENT_DELIVERY.getId()));
-        assertTrue(model.getPurposesAllowed().contains(5));
-        assertTrue(model.getPurposesAllowed().contains(MEASUREMENT.getId()));
-        assertTrue(model.getPurposesAllowed().contains(15));
-        assertTrue(model.getPurposesAllowed().contains(24));
-    }
-
-    @Test
-    public void testXor() {
-        assertFalse(true ^ true);
-        assertTrue(true ^ false);
-        assertTrue(false ^ true);
-        assertFalse(false ^ false);
+        TCString model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBA=");
+        assertThat(model.getPurposesConsent(), matchInts(1, 2, 3, 4, 5, 15, 24));
+        assertTrue(model.getPurposesConsent().contains(1));
+        assertTrue(model.getPurposesConsent().contains(STORAGE_AND_ACCESS.getId()));
+        assertTrue(model.getPurposesConsent().contains(2));
+        assertTrue(model.getPurposesConsent().contains(PERSONALIZATION.getId()));
+        assertTrue(model.getPurposesConsent().contains(3));
+        assertTrue(model.getPurposesConsent().contains(AD_SELECTION.getId()));
+        assertTrue(model.getPurposesConsent().contains(4));
+        assertTrue(model.getPurposesConsent().contains(CONTENT_DELIVERY.getId()));
+        assertTrue(model.getPurposesConsent().contains(5));
+        assertTrue(model.getPurposesConsent().contains(MEASUREMENT.getId()));
+        assertTrue(model.getPurposesConsent().contains(15));
+        assertTrue(model.getPurposesConsent().contains(24));
     }
 
     @Test
     public void testBitFieldEncoding() {
-        ConsentParser model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACBAAABCA=");
+        TCString model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACBAAABCA=");
         assertTrue(model.getVendorConsent().contains(1));
         assertTrue(model.getVendorConsent().contains(25));
         assertTrue(model.getVendorConsent().contains(30));
@@ -119,7 +111,7 @@ public class ConsentParserV1Test {
 
     @Test
     public void testRangeEncodingDefaultFalse() {
-        ConsentParser model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACCACgACADIAHg");
+        TCString model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACCACgACADIAHg");
 
         // Then: correct vendor IDs are allowed
         assertTrue(model.getVendorConsent().contains(1));
@@ -149,7 +141,7 @@ public class ConsentParserV1Test {
 
     @Test
     public void testRangeEncodingDefaultTrue() {
-        ConsentParser model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACDACAADABkAHg");
+        TCString model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBACDACAADABkAHg");
 
         // Then: correct vendor IDs are allowed
         assertFalse(model.getVendorConsent().contains(1));
@@ -179,7 +171,7 @@ public class ConsentParserV1Test {
 
     @Test
     public void testVendorIdRange() {
-        ConsentParser model = parse("BOwBMFeOwBMFeABABBAAABAAAAAAGADgAUACgAHgAPg");
+        TCString model = parse("BOwBMFeOwBMFeABABBAAABAAAAAAGADgAUACgAHgAPg");
         assertTrue(model.getVendorConsent().contains(15));
     }
 }

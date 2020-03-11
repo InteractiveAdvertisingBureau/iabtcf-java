@@ -25,7 +25,7 @@ import java.util.Base64;
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.FieldDefs;
 
-class ConsentDecoder {
+class TCStringDecoder {
     static ByteBitVector vectorFromString(String base64UrlEncodedString) {
         // SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
         // InputStream is = DECODER.wrap(sis);
@@ -35,7 +35,7 @@ class ConsentDecoder {
         return new ByteBitVector(bytes);
     }
 
-    public static ConsentParser parse(String consentString) {
+    public static TCString decode(String consentString) {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
@@ -44,16 +44,16 @@ class ConsentDecoder {
 
         switch (version) {
             case 1:
-                return ConsentParserV1.fromBitVector(bitVector);
+                return TCStringV1.fromBitVector(bitVector);
             case 2:
                 if (split.length > 1) {
                     ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
                         remaining[i - 1] = vectorFromString(split[i]);
                     }
-                    return ConsentParserV2.fromBitVector(bitVector, remaining);
+                    return TCStringV2.fromBitVector(bitVector, remaining);
                 } else {
-                    return ConsentParserV2.fromBitVector(bitVector);
+                    return TCStringV2.fromBitVector(bitVector);
                 }
             default:
                 throw new UnsupportedOperationException("Version " + version + "is unsupported yet");
