@@ -2,3 +2,8 @@
 target
 /.idea/
 /iabtcf-core.iml
+*~
+.checkstyle
+.classpath
+.project
+.settings

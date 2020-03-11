@@ -21,9 +21,9 @@ package com.iabtcf.v2;
  */
 
 import java.util.List;
-import java.util.Set;
 
 import com.iabtcf.model.TCModel;
+import com.iabtcf.utils.IntIterable;
 
 public interface TCModelV2 extends TCModel {
     /**
@@ -70,17 +70,17 @@ public interface TCModelV2 extends TCModel {
     /**
      * @return a set of special features opt ins
      */
-    Set<Integer> specialFeatureOptIns();
+    IntIterable specialFeatureOptIns();
 
     /**
      * @return a set of purposes consent
      */
-    Set<Integer> purposesConsent();
+    IntIterable purposesConsent();
 
     /**
      * @return a set purposes legitimate interest
      */
-    Set<Integer> purposesLITransparency();
+    IntIterable purposesLITransparency();
 
     /**
      * @return true if Purpose 1 was NOT disclosed at all
@@ -94,21 +94,21 @@ public interface TCModelV2 extends TCModel {
      */
     String publisherCountryCode();
 
-    Set<Integer> vendorConsents();
+    IntIterable vendorConsents();
 
-    Set<Integer> vendorLegitimateInterests();
+    IntIterable vendorLegitimateInterests();
 
     List<PublisherRestriction> publisherRestrictions();
 
-    Set<Integer> disclosedVendors();
+    IntIterable disclosedVendors();
 
-    Set<Integer> allowedVendors();
+    IntIterable allowedVendors();
 
-    Set<Integer> publisherPurposesConsent();
+    IntIterable publisherPurposesConsent();
 
-    Set<Integer> publisherPurposesLITransparency();
+    IntIterable publisherPurposesLITransparency();
 
-    Set<Integer> customPurposesConsent();
+    IntIterable customPurposesConsent();
 
-    Set<Integer> customPurposesLITransparency();
+    IntIterable customPurposesLITransparency();
 }

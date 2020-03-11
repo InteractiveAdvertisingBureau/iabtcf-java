@@ -19,6 +19,18 @@ package com.iabtcf.v1;
  * #L%
  */
 
+import static com.iabtcf.v1.Purpose.AD_SELECTION;
+import static com.iabtcf.v1.Purpose.CONTENT_DELIVERY;
+import static com.iabtcf.v1.Purpose.MEASUREMENT;
+import static com.iabtcf.v1.Purpose.PERSONALIZATION;
+import static com.iabtcf.v1.Purpose.STORAGE_AND_ACCESS;
+import static com.iabtcf.v1.Purpose.UNDEFINED;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,13 +38,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.iabtcf.decoder.TCModelDecoder;
-import com.iabtcf.model.TCModel;
 import org.junit.Test;
 
-import static com.iabtcf.v1.Purpose.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.is;
+import com.iabtcf.decoder.TCModelDecoder;
+import com.iabtcf.model.TCModel;
 
 public class BitVectorTCModelV1Test {
 
@@ -128,8 +137,8 @@ public class BitVectorTCModelV1Test {
 
         Set<Integer> expectedVendorIds =
                 IntStream.concat(IntStream.rangeClosed(1, 25), IntStream.of(30))
-                        .boxed()
-                        .collect(Collectors.toSet());
+                    .boxed()
+                    .collect(Collectors.toSet());
         assertThat(model.allowedVendorIds(), is(expectedVendorIds));
 
         assertFalse(model.isVendorAllowed(26));
@@ -164,8 +173,8 @@ public class BitVectorTCModelV1Test {
 
         Set<Integer> expectedVendorIds =
                 IntStream.concat(IntStream.rangeClosed(2, 24), IntStream.rangeClosed(31, 32))
-                        .boxed()
-                        .collect(Collectors.toSet());
+                    .boxed()
+                    .collect(Collectors.toSet());
         assertThat(model.allowedVendorIds(), is(expectedVendorIds));
 
         // Vendors outside range [1, MaxVendorId] are not allowed
@@ -175,5 +184,13 @@ public class BitVectorTCModelV1Test {
         assertFalse(model.isVendorAllowed(33));
         assertFalse(model.isVendorAllowed(34));
         assertFalse(model.isVendorAllowed(99));
+    }
+
+    @Test
+    public void testVendorIdRange() {
+        String base64 = "BOwBMFeOwBMFeABABBAAABAAAAAAGADgAUACgAHgAPg";
+
+        TCModelV1 model = (TCModelV1) TCModelDecoder.instance().decode(base64);
+        assertTrue(model.allowedVendorIds().contains(15));
     }
 }

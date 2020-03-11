@@ -19,10 +19,9 @@ package com.iabtcf.v2;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
-
-import com.iabtcf.decoder.TCModelDecoder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -32,6 +31,10 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.junit.Test;
+
+import com.iabtcf.decoder.TCModelDecoder;
+import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.IntIterableUtils;
 
 public class BitVectorTCModelV2Test {
 
@@ -75,9 +78,9 @@ public class BitVectorTCModelV2Test {
         assertTrue(tcModel.isPurposeOneTreatment());
         assertFalse(tcModel.useNonStandardStacks());
 
-        assertEquals(new TreeSet<>(Arrays.asList(1)), tcModel.specialFeatureOptIns());
-        assertEquals(new TreeSet<>(Arrays.asList(2, 10)), tcModel.purposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(2, 9)), tcModel.purposesLITransparency());
+        assertEquals(new TreeSet<>(Arrays.asList(1)), IntIterableUtils.toSet(tcModel.specialFeatureOptIns()));
+        assertEquals(new TreeSet<>(Arrays.asList(2, 10)), IntIterableUtils.toSet(tcModel.purposesConsent()));
+        assertEquals(new TreeSet<>(Arrays.asList(2, 9)), IntIterableUtils.toSet(tcModel.purposesLITransparency()));
     }
 
     @Test
@@ -86,12 +89,14 @@ public class BitVectorTCModelV2Test {
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(3, 4, 5, 6, 7, 8, 9)), tcModel.purposesConsent());
+        assertEquals(new TreeSet<>(Arrays.asList(3, 4, 5, 6, 7, 8, 9)),
+                IntIterableUtils.toSet(tcModel.purposesConsent()));
         assertEquals(
-                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98)), tcModel.vendorConsents());
+                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98)),
+                IntIterableUtils.toSet(tcModel.vendorConsents()));
         assertEquals(
                 new TreeSet<>(Arrays.asList(37, 47, 48, 53, 65, 98, 129)),
-                tcModel.vendorLegitimateInterests());
+                IntIterableUtils.toSet(tcModel.vendorLegitimateInterests()));
     }
 
     @Test
@@ -100,9 +105,11 @@ public class BitVectorTCModelV2Test {
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(12, 23, 37, 47, 48, 53)), tcModel.allowedVendors());
+        assertEquals(new TreeSet<>(Arrays.asList(12, 23, 37, 47, 48, 53)),
+                IntIterableUtils.toSet(tcModel.allowedVendors()));
         assertEquals(
-                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98, 129)), tcModel.disclosedVendors());
+                new TreeSet<>(Arrays.asList(23, 37, 47, 48, 53, 65, 98, 129)),
+                IntIterableUtils.toSet(tcModel.disclosedVendors()));
     }
 
     @Test
@@ -110,7 +117,7 @@ public class BitVectorTCModelV2Test {
         String base64CoreString =
                 "COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA.cAAAAAAAITg=";
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
-        assertEquals(1, tcModel.publisherPurposesConsent().size());
+        assertEquals(1, IntIterableUtils.toStream(tcModel.publisherPurposesConsent()).count());
     }
 
     @Test
@@ -154,16 +161,18 @@ public class BitVectorTCModelV2Test {
         List<PublisherRestriction> actual = tcModel.publisherRestrictions();
         List<PublisherRestriction> expected =
                 Arrays.asList(
-                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, Arrays.asList()),
-                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, Arrays.asList()),
+                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, BitSetIntIterable.EMPTY),
+                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, BitSetIntIterable.EMPTY),
                         new PublisherRestriction(
-                                3, RestrictionType.REQUIRE_LEGITIMATE_INTEREST, Arrays.asList()));
+                                3,
+                                RestrictionType.REQUIRE_LEGITIMATE_INTEREST,
+                                BitSetIntIterable.EMPTY));
 
         assertEquals(expected, actual);
 
         assertEquals(1, actual.get(0).getPurposeId());
         assertEquals(RestrictionType.REQUIRE_CONSENT, actual.get(0).getRestrictionType());
-        assertEquals(Arrays.asList(), actual.get(0).getVendorIds());
+        assertFalse(actual.get(0).getVendorIds().iterator().hasNext());
     }
 
     @Test
@@ -187,10 +196,12 @@ public class BitVectorTCModelV2Test {
 
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
 
-        assertEquals(new TreeSet<>(Arrays.asList(1)), tcModel.publisherPurposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(24)), tcModel.publisherPurposesLITransparency());
-        assertEquals(new TreeSet<>(Arrays.asList(2)), tcModel.customPurposesConsent());
-        assertEquals(new TreeSet<>(Arrays.asList(1, 2)), tcModel.customPurposesLITransparency());
+        assertEquals(new TreeSet<>(Arrays.asList(1)), IntIterableUtils.toSet(tcModel.publisherPurposesConsent()));
+        assertEquals(new TreeSet<>(Arrays.asList(24)),
+                IntIterableUtils.toSet(tcModel.publisherPurposesLITransparency()));
+        assertEquals(new TreeSet<>(Arrays.asList(2)), IntIterableUtils.toSet(tcModel.customPurposesConsent()));
+        assertEquals(new TreeSet<>(Arrays.asList(1, 2)),
+                IntIterableUtils.toSet(tcModel.customPurposesLITransparency()));
     }
 
     @Test
@@ -200,6 +211,20 @@ public class BitVectorTCModelV2Test {
         base64CoreString += "." + base64FromBitString(publisherPurposes);
 
         TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
-        assertTrue(tcModel.customPurposesConsent().isEmpty());
+        assertFalse(tcModel.customPurposesConsent().iterator().hasNext());
+    }
+
+    @Test
+    public void testRange() {
+        String base64CoreString2Range =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAYFfAV-BVkAGBVYFWAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+        String base64CoreString1Range =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+
+        TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString2Range);
+        assertEquals(new TreeSet<>(Arrays.asList(702, 703)), IntIterableUtils.toSet(tcModel.vendorConsents()));
+
+        tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString1Range);
+        assertEquals(new TreeSet<>(Arrays.asList(703)), IntIterableUtils.toSet(tcModel.vendorConsents()));
     }
 }
