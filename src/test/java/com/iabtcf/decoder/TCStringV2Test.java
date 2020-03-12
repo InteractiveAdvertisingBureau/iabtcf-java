@@ -123,7 +123,7 @@ public class TCStringV2Test {
         String base64CoreString =
                 "COv__-wOv__-wC2AAAENAPCgAAAAAAAAAAAAA_wAQA_gEBABAEAAAA";
         TCString tcModel = parse(base64CoreString);
-        assertEquals(new TreeSet<>(Arrays.asList(128)), IntIterableUtils.toSet(tcModel.getVendorLegitimateInterest()));
+        assertThat(tcModel.getVendorLegitimateInterest(), matchInts(128));
     }
 
     @Test
