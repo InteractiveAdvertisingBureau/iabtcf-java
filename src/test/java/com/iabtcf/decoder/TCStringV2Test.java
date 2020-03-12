@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -121,8 +122,8 @@ public class TCStringV2Test {
     public void testCanParseRangeEncodedVendorLegitimateInterests() {
         String base64CoreString =
                 "COv__-wOv__-wC2AAAENAPCgAAAAAAAAAAAAA_wAQA_gEBABAEAAAA";
-        TCModelV2 tcModel = (TCModelV2) TCModelDecoder.instance().decode(base64CoreString);
-        assertEquals(new TreeSet<>(Arrays.asList(128)), IntIterableUtils.toSet(tcModel.vendorLegitimateInterests()));
+        TCString tcModel = parse(base64CoreString);
+        assertEquals(new TreeSet<>(Arrays.asList(128)), IntIterableUtils.toSet(tcModel.getVendorLegitimateInterest()));
     }
 
     @Test

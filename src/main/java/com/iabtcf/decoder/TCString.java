@@ -27,7 +27,7 @@ import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 
 public interface TCString {
-    public static TCString decode(String consentString) {
+    static TCString decode(String consentString) {
         return TCStringDecoder.decode(consentString);
     }
 
