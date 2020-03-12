@@ -118,6 +118,14 @@ public class TCStringV2Test {
     }
 
     @Test
+    public void testCanParseRangeEncodedVendorLegitimateInterests() {
+        String base64CoreString =
+                "COv__-wOv__-wC2AAAENAPCgAAAAAAAAAAAAA_wAQA_gEBABAEAAAA";
+        TCString tcModel = parse(base64CoreString);
+        assertThat(tcModel.getVendorLegitimateInterest(), matchInts(128));
+    }
+
+    @Test
     public void testPublisherRestrictions() {
         String bitString =
                 "0000100011101011100"
