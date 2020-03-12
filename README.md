@@ -17,11 +17,13 @@ Framework Technical specifications available at: https://github.com/InteractiveA
 
 #### Maven
 
+Please [search maven central](https://search.maven.org/search?q=a:iabtcf-core) for the current release version.
+
 ```
 <dependency>
   <groupId>com.iabtcf</groupId>
   <artifactId>iabtcf-core</artifactId>
-  <version>2.0.0-alpha.0</version>
+  <version>VERSION</version>
 </dependency>
 ```
 
