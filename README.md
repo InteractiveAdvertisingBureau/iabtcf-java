@@ -13,6 +13,17 @@ Version 2 of the TCF Specifications were released 21 August 2019 with industry a
 
 Framework Technical specifications available at: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/tree/master/TCFv2 
 
+### Usage
+
+#### Maven
+
+```
+<dependency>
+  <groupId>com.iabtcf</groupId>
+  <artifactId>iabtcf-core</artifactId>
+  <version>2.0.0-alpha.0</version>
+</dependency>
+```
 
 ### About the Transparency & Consent Framework <a name="aboutTCframework"></a>
 
