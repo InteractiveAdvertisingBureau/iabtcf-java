@@ -26,7 +26,7 @@
     </scm>
     <properties>
         <maven-checkstyle-plugin-version>2.17</maven-checkstyle-plugin-version>
-        <checkstyle.version>7.1.2</checkstyle.version>
+        <checkstyle.version>8.29</checkstyle.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
