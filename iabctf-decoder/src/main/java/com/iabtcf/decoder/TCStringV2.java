@@ -9,9 +9,9 @@ package com.iabtcf.decoder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,9 +59,11 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.FieldDefs;
+import com.iabtcf.exceptions.InvalidRangeFieldException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.ByteBitVectorUtils;
 import com.iabtcf.utils.IntIterable;
@@ -141,6 +143,9 @@ class TCStringV2 implements TCString {
         return publisherPurposesConsent;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     static BitSetIntIterable fillVendors(ByteBitVector bbv, FieldDefs maxVendor, FieldDefs vendorField) {
         BitSet bs = new BitSet();
 
@@ -148,7 +153,7 @@ class TCStringV2 implements TCString {
         boolean isRangeEncoding = bbv.readBits1(maxVendor.getEnd(bbv));
 
         if (isRangeEncoding) {
-            vendorIdsFromRange(bbv, bs, vendorField);
+            vendorIdsFromRange(bbv, bs, vendorField, Optional.of(maxVendor));
         } else {
             for (int i = 0; i < maxV; i++) {
                 boolean hasVendorConsent = bbv.readBits1(vendorField.getOffset(bbv) + i);
@@ -162,10 +167,14 @@ class TCStringV2 implements TCString {
 
     /**
      * Returns the offset following this range entry
+     *
+     * @throws InvalidRangeFieldException
      */
-    static int vendorIdsFromRange(ByteBitVector bbv, BitSet bs, int numberOfVendorEntriesOffset) {
+    static int vendorIdsFromRange(ByteBitVector bbv, BitSet bs, int numberOfVendorEntriesOffset,
+            Optional<FieldDefs> maxVendor) {
         int numberOfVendorEntries = bbv.readBits12(numberOfVendorEntriesOffset);
         int offset = numberOfVendorEntriesOffset + FieldDefs.NUM_ENTRIES.getLength(bbv);
+        int maxV = maxVendor.map(maxVF -> bbv.readBits16(maxVF)).orElse(Integer.MAX_VALUE);
 
         for (int j = 0; j < numberOfVendorEntries; j++) {
             boolean isRangeEntry = bbv.readBits1(offset++);
@@ -174,6 +183,16 @@ class TCStringV2 implements TCString {
             if (isRangeEntry) {
                 int endVendorId = bbv.readBits16(offset);
                 offset += FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
+
+                if (startOrOnlyVendorId > endVendorId) {
+                    throw new InvalidRangeFieldException(String.format(
+                            "start vendor id (%d) is greater than endVendorId (%d)", startOrOnlyVendorId, endVendorId));
+                }
+                if (endVendorId > maxV) {
+                    throw new InvalidRangeFieldException(
+                            String.format("end vendor id (%d) is greater than max (%d)", endVendorId, maxV));
+                }
+
                 bs.set(startOrOnlyVendorId, endVendorId + 1);
             } else {
                 bs.set(startOrOnlyVendorId);
@@ -183,10 +202,16 @@ class TCStringV2 implements TCString {
         return offset;
     }
 
-    static void vendorIdsFromRange(ByteBitVector bbv, BitSet bs, FieldDefs vendorField) {
-        vendorIdsFromRange(bbv, bs, vendorField.getOffset(bbv));
+    /**
+     * @throws InvalidRangeFieldException
+     */
+    static void vendorIdsFromRange(ByteBitVector bbv, BitSet bs, FieldDefs vendorField, Optional<FieldDefs> maxVendor) {
+        vendorIdsFromRange(bbv, bs, vendorField.getOffset(bbv), maxVendor);
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     private int fillPublisherRestrictions(
             List<PublisherRestriction> publisherRestrictions, int currentPointer, ByteBitVector bitVector) {
 
@@ -202,7 +227,7 @@ class TCStringV2 implements TCString {
             RestrictionType restrictionType = RestrictionType.from(restrictionTypeId);
 
             BitSet bs = new BitSet();
-            currentPointer = vendorIdsFromRange(bbv, bs, currentPointer);
+            currentPointer = vendorIdsFromRange(bbv, bs, currentPointer, Optional.empty());
             PublisherRestriction publisherRestriction =
                     new PublisherRestriction(purposeId, restrictionType, new BitSetIntIterable(bs));
             publisherRestrictions.add(publisherRestriction);
@@ -295,6 +320,9 @@ class TCStringV2 implements TCString {
         return purposesConsent;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     @Override
     public IntIterable getVendorConsent() {
         if (cache.add(CORE_VENDOR_BITRANGE_FIELD)) {
@@ -364,6 +392,9 @@ class TCStringV2 implements TCString {
         return publisherCountryCode;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     @Override
     public IntIterable getVendorLegitimateInterest() {
         if (cache.add(CORE_VENDOR_LI_BITRANGE_FIELD)) {
@@ -373,6 +404,9 @@ class TCStringV2 implements TCString {
         return vendorLegitimateInterests;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     @Override
     public List<PublisherRestriction> getPublisherRestrictions() {
         if (cache.add(CORE_PUB_RESTRICTION_ENTRY)) {
@@ -382,6 +416,9 @@ class TCStringV2 implements TCString {
         return publisherRestrictions;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     @Override
     public IntIterable getAllowedVendors() {
         if (cache.add(AV_VENDOR_BITRANGE_FIELD)) {
@@ -395,6 +432,9 @@ class TCStringV2 implements TCString {
         return allowedVendors;
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     @Override
     public IntIterable getDisclosedVendors() {
         if (cache.add(DV_VENDOR_BITRANGE_FIELD)) {

@@ -25,6 +25,9 @@ import java.util.Base64;
 
 import org.junit.Test;
 
+import com.iabtcf.exceptions.ByteParseException;
+import com.iabtcf.exceptions.UnsupportedVersionException;
+
 public class TCStringDecoderTest {
 
     @Test
@@ -40,9 +43,16 @@ public class TCStringDecoderTest {
         assertNotNull(TCStringDecoder.decode(tcString));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedVersionException.class)
     public void shouldFailIfANonSupportedVersionIsPassed() {
         String tcString = Base64.getUrlEncoder().encodeToString(new byte[] { 13 });
         TCStringDecoder.decode(tcString);
+    }
+
+    @Test(expected = ByteParseException.class)
+    public void testReadBeyondBuffer() {
+        // bit pattern: 0000011
+        TCString tcString = TCString.decode("Bg");
+        tcString.getCreated();
     }
 }

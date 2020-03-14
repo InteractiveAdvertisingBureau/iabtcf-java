@@ -9,9 +9,9 @@ package com.iabtcf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,8 @@ package com.iabtcf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
+
+import com.iabtcf.exceptions.ByteParseException;
 
 public class ByteBitVector {
     private byte[] buffer;
@@ -54,6 +56,9 @@ public class ByteBitVector {
         buffer = b;
     }
 
+    /**
+     * @throws ByteParseException
+     */
     private boolean ensureReadable(int offset, int length) {
         int tlength = offset + length;
         int n;
@@ -61,6 +66,10 @@ public class ByteBitVector {
 
         if (tlength <= isrpos) {
             return true;
+        }
+
+        if (is == null) {
+            throw new ByteParseException(String.format("read index %d out of bounds %d", offset, buffer.length));
         }
 
         ensureCapacity(tlength);
@@ -76,17 +85,23 @@ public class ByteBitVector {
                 rem -= n;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ByteParseException(String.format("error decoding at offset %d length %d", offset, length), e);
         }
 
         return true;
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public boolean readBits1(FieldDefs field) {
         assert field.getLength(this) == 1;
         return readBits1(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public boolean readBits1(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -96,29 +111,47 @@ public class ByteBitVector {
         return ((buffer[startByte] >>> (7 - bitPos)) & 1) == 1;
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits2(FieldDefs field) {
         assert field.getLength(this) == 2;
         return readBits2(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits2(int offset) {
         return readByteBits(offset, 2);
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits3(FieldDefs field) {
         assert field.getLength(this) == 3;
         return readBits3(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits3(int offset) {
         return readByteBits(offset, 3);
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits6(FieldDefs field) {
         assert field.getLength(this) == 6;
         return readBits6(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public byte readBits6(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -136,6 +169,8 @@ public class ByteBitVector {
 
     /**
      * When nbits <= 8
+     *
+     * @throws ByteParseException
      */
     private byte readByteBits(int offset, int nbits) {
         int startByte = offset >> 3;
@@ -152,11 +187,17 @@ public class ByteBitVector {
         }
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits12(FieldDefs field) {
         assert field.getLength(this) == 12;
         return readBits12(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits12(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -174,11 +215,17 @@ public class ByteBitVector {
         }
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits16(FieldDefs field) {
         assert field.getLength(this) == 16;
         return readBits16(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits16(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -196,11 +243,17 @@ public class ByteBitVector {
         }
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits24(FieldDefs field) {
         assert field.getLength(this) == 24;
         return readBits24(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public int readBits24(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -220,11 +273,17 @@ public class ByteBitVector {
         }
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public long readBits36(FieldDefs field) {
         assert field.getLength(this) == 36;
         return readBits36(field.getOffset(this));
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public long readBits36(int offset) {
         int startByte = offset >> 3;
         int bitPos = offset % 8;
@@ -248,6 +307,9 @@ public class ByteBitVector {
         }
     }
 
+    /**
+     * @throws ByteParseException
+     */
     public BitSet readBitSet(int offset, int length) {
         // TODO(mk): can we read larger chunks at a time?
         BitSet bs = new BitSet(length);
@@ -265,29 +327,5 @@ public class ByteBitVector {
 
     private byte unsafeReadLsb(byte from, int offset, int length) {
         return length == 0 ? from : (byte) ((from & ((1 << length) - 1)) << offset);
-    }
-
-    // exploring writing bits...
-    public static void writeBits6(byte[] buffer, int offset, byte value) {
-        int startByte = offset >> 3;
-        int bitPos = offset % 8;
-        int n = 8 - bitPos;
-
-        value &= ((1 << 6) - 1);
-
-        if (n < 6) {
-            byte mask = (byte) ((1 << n) - 1);
-            buffer[startByte] &= ~mask;
-            buffer[startByte] |= (byte) (value >>> (6 - n));
-
-            mask = (byte) (((1 << (6 - n)) - 1) << (8 - (6 - n) - 0));
-            buffer[startByte + 1] &= ~mask;
-            buffer[startByte + 1] |= (byte) ((value & ((1 << (6 - n)) - 1)) << (8 - (6 - n) - 0));
-            return;
-        } else {
-            byte mask = (byte) (((1 << 6) - 1) << (8 - 6 - bitPos));
-            buffer[startByte] &= ~mask;
-            buffer[startByte] |= (byte) (value << (8 - 6 - bitPos));
-        }
     }
 }
