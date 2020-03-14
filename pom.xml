@@ -32,6 +32,7 @@
 
     <modules>
         <module>iabctf-decoder</module>
+        <module>iabtcf-gvl</module>
     </modules>
 
     <profiles>
