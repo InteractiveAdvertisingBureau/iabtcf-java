@@ -8,8 +8,8 @@
         <version>2.0.1-alpha.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>iabtcf-decoder</artifactId>
-    <name>IAB TCF Java Decoder Library</name>
+    <artifactId>iabtcf-encoder</artifactId>
+    <name>IAB TCF Java Encoder Library</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
