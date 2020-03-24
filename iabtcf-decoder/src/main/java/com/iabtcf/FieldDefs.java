@@ -181,14 +181,19 @@ public enum FieldDefs {
     }
 
     /**
+     * Returns the length of a non-dynamic field.
+     */
+    public int getLength() {
+        assert (this.isDynamic == false);
+
+        return length.apply(null);
+    }
+
+    /**
      * Returns the length of the field.
      */
     public int getLength(ByteBitVector bbv) {
-        if (isDynamic) {
-            return bbv.cache.getLength(this, length);
-        } else {
-            return length.apply(bbv);
-        }
+        return bbv.cache.getLength(this, length);
     }
 
     /**

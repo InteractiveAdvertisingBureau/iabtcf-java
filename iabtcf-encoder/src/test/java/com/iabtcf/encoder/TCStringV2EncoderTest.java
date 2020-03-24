@@ -1,5 +1,8 @@
 package com.iabtcf.encoder;
 
+import static com.iabtcf.encoder.utils.TestUtils.toDeci;
+import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
+
 /*-
  * #%L
  * IAB TCF Core Library
@@ -23,19 +26,18 @@ package com.iabtcf.encoder;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static com.iabtcf.encoder.utils.IntIterableMatcher.matchInts;
-import static com.iabtcf.encoder.utils.TestUtils.toDeci;
-import com.iabtcf.decoder.TCString;
-import com.iabtcf.utils.BitSetIntIterable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.iabtcf.decoder.TCString;
+import com.iabtcf.utils.BitSetIntIterable;
+
 public class TCStringV2EncoderTest {
 
-    private Instant created = Instant.now();
-    private Instant updated = created.plus(1, ChronoUnit.HOURS);
+    private final Instant created = Instant.now();
+    private final Instant updated = created.plus(1, ChronoUnit.HOURS);
 
-    private TCStringEncoder encoderBuilder = TCStringEncoder.newBuilder()
+    private final TCStringEncoder encoderBuilder = TCStringEncoder.newBuilder()
             .withVersion(2)
             .withCreated(created)
             .withLastUpdated(updated)

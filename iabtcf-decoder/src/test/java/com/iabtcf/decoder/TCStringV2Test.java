@@ -2,7 +2,7 @@ package com.iabtcf.decoder;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java Decoder Library
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -19,6 +19,7 @@ package com.iabtcf.decoder;
  * limitations under the License.
  * #L%
  */
+
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,7 +35,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.iabtcf.utils.BitSetIntIterable;
-import com.iabtcf.utils.IntIterableUtils;
 import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
 
@@ -114,7 +114,7 @@ public class TCStringV2Test {
     public void testCanParseAllParts() {
         TCString tcModel =
                 parse("COrEAV4OrXx94ACABBENAHCIAD-AAAAAAACAAxAAAAgAIAwgAgAAAAEAgQAAAAAEAYQAQAAAACAAAABAAA.IBAgAAAgAIAwgAgAAAAEAAAACA.QAagAQAgAIAwgA.cAAAAAAAITg=");
-        assertEquals(1, IntIterableUtils.toStream(tcModel.getPubPurposesConsent()).count());
+        assertEquals(1, tcModel.getPubPurposesConsent().toStream().count());
     }
 
     @Test

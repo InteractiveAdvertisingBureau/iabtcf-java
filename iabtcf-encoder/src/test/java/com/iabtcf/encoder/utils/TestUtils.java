@@ -25,7 +25,7 @@ import java.time.Instant;
 public class TestUtils {
 
     public static Instant toDeci(Instant instant) {
-        return Instant.ofEpochMilli((instant.toEpochMilli() / 100) * 100);
+       return Instant.ofEpochMilli((instant.toEpochMilli() / 100) * 100);
     }
 
 }

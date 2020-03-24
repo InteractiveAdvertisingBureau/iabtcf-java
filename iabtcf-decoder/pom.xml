@@ -10,7 +10,6 @@
 
     <artifactId>iabtcf-decoder</artifactId>
     <name>IAB TCF Java Decoder Library</name>
-    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
