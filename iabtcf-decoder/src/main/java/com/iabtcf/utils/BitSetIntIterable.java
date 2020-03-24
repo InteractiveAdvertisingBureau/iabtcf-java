@@ -21,13 +21,12 @@ package com.iabtcf.utils;
  */
 
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
  * An implementation of the IntIterable based on BitSet.
  */
-public class BitSetIntIterable implements IntIterable {
+public class BitSetIntIterable extends IntIterable {
     private final BitSet bs;
 
     public static final BitSetIntIterable EMPTY = new BitSetIntIterable(new BitSet());
@@ -45,27 +44,12 @@ public class BitSetIntIterable implements IntIterable {
     }
 
     @Override
-    public boolean isEmpty() {
-        return bs.isEmpty();
-    }
-
-    @Override
     public boolean contains(int value) {
         try {
             return bs.get(value);
         } catch (IndexOutOfBoundsException e) {
             return false;
         }
-    }
-
-    @Override
-    public boolean containsAll(int... source) {
-        for (int i = 0; i < source.length; i++) {
-            if (!contains(source[i])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -99,23 +83,6 @@ public class BitSetIntIterable implements IntIterable {
                 int next = currentIndex;
                 currentIndex = bs.nextSetBit(currentIndex + 1);
                 return next;
-            }
-        };
-    }
-
-    @Override
-    public Iterator<Integer> iterator() {
-        return new Iterator<Integer>() {
-            final IntIterator internal = intIterator();
-
-            @Override
-            public boolean hasNext() {
-                return internal.hasNext();
-            }
-
-            @Override
-            public Integer next() {
-                return internal.next();
             }
         };
     }

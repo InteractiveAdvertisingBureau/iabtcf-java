@@ -21,16 +21,17 @@ package com.iabtcf.encoder;
  */
 
 import static com.iabtcf.encoder.utils.TestUtils.toDeci;
+import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.BitSet;
 
-import com.iabtcf.decoder.TCString;
-import com.iabtcf.utils.BitSetIntIterable;
 import org.junit.Assert;
 import org.junit.Test;
-import static com.iabtcf.encoder.utils.IntIterableMatcher.matchInts;
+
+import com.iabtcf.decoder.TCString;
+import com.iabtcf.utils.BitSetIntIterable;
 
 public class TCStringV1EncoderTest {
 

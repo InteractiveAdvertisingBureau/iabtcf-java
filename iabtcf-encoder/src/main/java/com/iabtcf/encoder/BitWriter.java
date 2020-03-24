@@ -2,7 +2,7 @@ package com.iabtcf.encoder;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java Encoder Library
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,84 +20,215 @@ package com.iabtcf.encoder;
  * #L%
  */
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.BitSet;
+import java.util.PrimitiveIterator.OfLong;
 
-public class BitWriter {
+import com.iabtcf.FieldDefs;
+import com.iabtcf.utils.IntIterable;
+import com.iabtcf.utils.IntIterator;
 
-    private byte[] buffer = new byte[1 << 10];
-    private byte currentByte;
-    private int size;
-    private int bitPointer = 7;
+/**
+ * Provides the ability to construct a byte array that is iabtcf compliant. The BitWriter provides
+ * the ability to append bits of various types and sizes in an effort to construct the byte array.
+ */
+class BitWriter {
+    private static final long[] LONG_MASKS = new long[Long.SIZE + 1];
 
-    void write(long value, int length) {
-        if (value < 0) {
-            throw new IllegalArgumentException(value + " is a non positive value");
+    static {
+        for (int i = 0; i < Long.SIZE; i++) {
+            LONG_MASKS[i] = (1L << i) - 1;
         }
-        ensureCapacity(length);
-        for (int i = length - 1; i >= 0; i--) {
-            long mask = 1L << i;
-            if ((value & (mask)) > 0) {
-                currentByte |= 1 << (bitPointer);
+        LONG_MASKS[Long.SIZE] = ~0L;
+    }
+
+    private final OfLongIterable buffer = new OfLongIterable();
+    private int bitsRemaining = Long.SIZE;
+    private long pending = 0L;
+    private int precision = 0;
+
+    public BitWriter() {
+        this(0);
+    }
+
+    /**
+     * The 'precision' parameter can be used for encoding fields that must occupy a fixed-number of
+     * bits. These padding bits are only honored in {@link BitWriter#write(BitWriter)} and
+     * {@link BitWriter#toByteArray()}
+     */
+    public BitWriter(int precision) {
+        this.precision = precision;
+    }
+
+    public void write(boolean value) {
+        write(value ? 1 : 0, 1);
+    }
+
+    /**
+     * Writes an iabtcf encoded String..
+     */
+    public void write(String str) {
+        byte[] b = str.getBytes(StandardCharsets.US_ASCII);
+        for (int i = 0; i < b.length; i++) {
+            write(b[i] - 'A', FieldDefs.CHAR);
+        }
+    }
+
+    /**
+     * Writes an iabtcf encoded String of length specified by 'field'.
+     */
+    public void write(String str, FieldDefs field) {
+        assert (field.getLength() / FieldDefs.CHAR.getLength() == str.length());
+        write(str);
+    }
+
+    /**
+     * Writes 'length' number of bits whose set bits are indicated by the position of the ints in
+     * 'of'. The least significant bit starts at 1.
+     *
+     * @throws IndexOutOfBoundsException if 'of' contains an invalid index, <= 0.
+     */
+    public void write(IntIterable of, int length) {
+        BitWriter bw = new BitWriter(length);
+        BitSet bs = new BitSet();
+        for (IntIterator i = of.intIterator(); i.hasNext();) {
+            int nextInt = i.nextInt();
+            if (nextInt <= 0) {
+                throw new IndexOutOfBoundsException("invalid index: " + nextInt);
             }
-            advanceBitPointer();
+            bs.set(nextInt - 1);
+        }
+        for (int i = 0; i < bs.length(); i++) {
+            bw.write(bs.get(i));
+        }
+        write(bw);
+    }
+
+    /**
+     * Writes a series of bits of 'field' length whose set bits are indicated by the position of the
+     * ints in 'of'. The least significant bit starts at 1.
+     *
+     * @throws IndexOutOfBoundsException if 'of' contains an invalid index, <= 0.
+     */
+    public void write(IntIterable of, FieldDefs field) {
+        write(of, field.getLength());
+    }
+
+    public void write(boolean data, FieldDefs field) {
+        assert (field.getLength() == 1);
+        write(data);
+    }
+
+    /**
+     * Writes an iabtcf encoded instant value.
+     */
+    public void write(Instant i, FieldDefs field) {
+        write(i, field.getLength());
+    }
+
+    /**
+     * Writes an iabtcf encoded instant value.
+     */
+    public void write(Instant i, int length) {
+        write(i.toEpochMilli() / 100, length);
+    }
+
+    /**
+     * Writes an iabtcf encoded instant value, 36 bits.
+     */
+    public void write(Instant i) {
+        write(i, 36);
+    }
+
+    /**
+     * Writes up 'field' length number of bits from 'data'.
+     */
+    public void write(long data, FieldDefs field) {
+        write(data, field.getLength());
+    }
+
+    /**
+     * Writes up to 'length' number of bits from 'data'.
+     */
+    public void write(long data, int length) {
+        assert length >= 0 && length <= Long.SIZE;
+
+        data &= LONG_MASKS[length];
+        bitsRemaining -= length;
+        precision -= length;
+
+        if (bitsRemaining >= 0) {
+            pending |= data << bitsRemaining;
+        } else {
+            buffer.add(pending |= data >>> -bitsRemaining);
+            bitsRemaining += Long.SIZE;
+            pending = data << bitsRemaining;
         }
     }
 
-    void write(BitSet bitSet, int length) {
-        for (int i = 0; i < length; i++) {
-            writeBit(bitSet.get(i));
+    /**
+     * Writes bits encoded by the specified BitWriter. Padding bits, if any, are also appended.
+     */
+    public void write(BitWriter bw) {
+        enforcePrecision();
+
+        for (OfLong i = bw.buffer.longIterator(); i.hasNext();) {
+            write(i.nextLong(), Long.SIZE);
         }
+        write(bw.pending >>> bw.bitsRemaining, Long.SIZE - bw.bitsRemaining);
+
+        enforcePrecision(bw.precision);
     }
 
-    void writeInstant(Instant instant) {
-        long deciSeconds = instant.toEpochMilli() / 100;
-        write(deciSeconds, 36);
+    /**
+     * Returns the number of bits, including any padding bits that are to be written.
+     */
+    public int length() {
+        return buffer.size() * Long.SIZE + (Long.SIZE - bitsRemaining) + ((precision >= 0) ? precision : 0);
     }
 
-    void writeStr(String str) {
-        for (int i = 0; i < str.length(); i++) {
-            int value = str.charAt(i) - 'A';
-            write(value, 6);
+    /**
+     * Returns the byte array.
+     */
+    public byte[] toByteArray() {
+        enforcePrecision();
+
+        int bytesToWrite = (Long.SIZE + (Byte.SIZE - 1) - bitsRemaining) >> 3;
+
+        ByteBuffer bb = ByteBuffer.allocate(buffer.size() * (Long.SIZE / Byte.SIZE) + bytesToWrite);
+
+        for (OfLong li = buffer.longIterator(); li.hasNext();) {
+            bb.putLong(li.nextLong());
         }
-    }
 
-    void writeBit(boolean bit) {
-        int value = bit ? 1 : 0;
-        write(value, 1);
-    }
-
-    private void advanceBitPointer() {
-        bitPointer--;
-        if (bitPointer < 0) {
-            bitPointer = 7;
-            buffer[size++] = currentByte;
-            currentByte = 0;
+        for (int i = 0; i < bytesToWrite; i++) {
+            bb.put((byte) (pending >> (Long.SIZE - Byte.SIZE - i * Byte.SIZE)));
         }
+
+        return bb.array();
     }
 
-    private void ensureCapacity(int requestCapacity) {
-        if (requestCapacity + size >= buffer.length) {
-            byte[] newBuffer = new byte[(int) (buffer.length * 1.25)];
-            System.arraycopy(buffer, 0, newBuffer, 0, size);
-            this.buffer = newBuffer;
-            ensureCapacity(requestCapacity);
+    protected void enforcePrecision(int p) {
+        if (p <= 0) {
+            return;
         }
+
+        for (int i = 0; i < p / Long.SIZE; i++) {
+            write(0L, Long.SIZE);
+        }
+
+        write(0L, p % 64);
     }
 
-    public byte[] array() {
-        if (bitPointer < 7) { // clear remaining
-            ensureCapacity(1);
-            buffer[size++] = currentByte;
-        }
-        byte[] copy = Arrays.copyOf(buffer, size);
-        return copy;
+    private void enforcePrecision() {
+        enforcePrecision(precision);
+        precision = 0;
     }
 
     public String toBase64() {
-        byte[] encoded = this.array();
-        return Base64.getUrlEncoder().encodeToString(encoded);
+        return Base64.getUrlEncoder().encodeToString(this.toByteArray());
     }
 }
