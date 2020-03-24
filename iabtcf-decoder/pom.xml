@@ -10,6 +10,7 @@
 
     <artifactId>iabtcf-decoder</artifactId>
     <name>IAB TCF Java Decoder Library</name>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,6 +32,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
+
+	    <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <version>3.2.0</version>
+              <executions>
+		<execution>
+		  <goals>
+		    <goal>test-jar</goal>
+		  </goals>
+		</execution>
+              </executions>
+	    </plugin>
         </plugins>
     </build>
 

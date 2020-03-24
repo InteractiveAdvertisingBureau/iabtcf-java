@@ -9,9 +9,9 @@ package com.iabtcf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,13 +26,13 @@ import java.util.function.Function;
  * This enum defines all V1 and V2 consent string fields with their offsets and lengths. Since some
  * fields have dynamic values, the offset and length methods are a function of ByteBitVector
  * allowing a dynamic field access to the consent string.
- * 
+ *
  * The enum takes care to cache the lengths and offsets of fields when appropriate. Whenever
  * possible, static field lengths and offsets are cached by the enum using the MemoizingFunction.
  * Due to the dynamic nature of some fields, computing the offsets and lengths can only be done at
  * runtime when a consent string is parsed. For such fields, their values are cached by the
  * ByteBitVector used to parse the consent string.
- * 
+ *
  * All fields following a dynamic field are treated as a dynamic field.
  */
 public enum FieldDefs {
@@ -117,6 +117,8 @@ public enum FieldDefs {
     PURPOSE_ID(6, OffsetSupplier.NOT_SUPPORTED),
     RESTRICTION_TYPE(2, OffsetSupplier.NOT_SUPPORTED),
 
+    CHAR(6, OffsetSupplier.NOT_SUPPORTED),
+
     // v1 fields
     V1_VERSION(6, 0),
     V1_CREATED(36),
@@ -182,7 +184,11 @@ public enum FieldDefs {
      * Returns the length of the field.
      */
     public int getLength(ByteBitVector bbv) {
-        return bbv.cache.getLength(this, length);
+        if (isDynamic) {
+            return bbv.cache.getLength(this, length);
+        } else {
+            return length.apply(bbv);
+        }
     }
 
     /**
@@ -202,7 +208,7 @@ public enum FieldDefs {
     /**
      * The offset of the nth field depends on the length and offset of the nth-1 field. This class
      * is used to cache static fields to avoid querying parent fields.
-     * 
+     *
      * Both the value and it's dynamic state are cached.
      */
     private static abstract class MemoizingFunction
