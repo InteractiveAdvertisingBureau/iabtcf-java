@@ -1,6 +1,5 @@
 package com.iabtcf.utils;
 
-import java.util.BitSet;
 import java.util.HashSet;
 
 /*-
@@ -51,14 +50,5 @@ public class IntIterableUtils {
         return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(
                 it.intIterator(),
                 Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
-    }
-
-    public static IntIterable toIntIterable(int... values) {
-        BitSet bitSet = new BitSet();
-        for (int value : values) {
-            bitSet.set(value);
-        }
-        BitSetIntIterable bitSetIntIterable = new BitSetIntIterable(bitSet);
-        return bitSetIntIterable;
     }
 }
