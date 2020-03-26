@@ -171,7 +171,7 @@ public class TCStringV1Test {
 
     @Test
     public void testVendorIdRange() {
-        TCString model = parse("BOwBMFeOwBMFeABABBAAABAAAAAAGADgAUACgAHgAPg");
+        TCString model = parse("BOwOh-wOwOh-wABABBAAABAAAAACqADgAUACgAHgAPg");
         assertTrue(model.getVendorConsent().contains(15));
     }
 }

@@ -37,9 +37,11 @@ import static com.iabtcf.utils.ByteBitVectorUtils.readStr2;
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Optional;
 
 import com.iabtcf.ByteBitVector;
 import com.iabtcf.FieldDefs;
+import com.iabtcf.exceptions.InvalidRangeFieldException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
@@ -187,6 +189,9 @@ class TCStringV1 implements TCString {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @throws InvalidRangeFieldException
+     */
     private IntIterable fillVendorsV1(ByteBitVector bbv, FieldDefs maxVendor, FieldDefs vendorField) {
         BitSet bs = new BitSet();
 
@@ -195,7 +200,8 @@ class TCStringV1 implements TCString {
 
         if (isRangeEncoding) {
             boolean defaultConsent = bbv.readBits1(FieldDefs.V1_VENDOR_DEFAULT_CONSENT);
-            TCStringV2.vendorIdsFromRange(bbv, bs, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(bbv));
+            TCStringV2.vendorIdsFromRange(bbv, bs, FieldDefs.V1_VENDOR_NUM_ENTRIES.getOffset(bbv),
+                    Optional.of(maxVendor));
 
             if (defaultConsent) {
                 bs.flip(1, maxV + 1);

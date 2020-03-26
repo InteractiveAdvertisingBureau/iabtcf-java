@@ -35,6 +35,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.iabtcf.decoder.TCString;
+import com.iabtcf.exceptions.ByteParseException;
+
 public class ByteBitVectorTest {
     Random r = new Random();
 
@@ -468,52 +471,6 @@ public class ByteBitVectorTest {
     }
 
     @Test
-    public void testWriteBits6() {
-        byte[] buffer;
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 0, (byte) 2);
-        ByteBitVector bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(0));
-        assertEquals(8, buffer[0]);
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 1, (byte) 2);
-        bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(1));
-
-        buffer = new byte[2];
-        ByteBitVector.writeBits6(buffer, 2, (byte) 2);
-        bv = new ByteBitVector(buffer);
-        assertEquals(2, bv.readBits6(2));
-    }
-
-    @Test
-    public void testWriteBits6MultiByte() {
-        byte[] buffer;
-
-        for (int i = 3; i < 10; i++) {
-            buffer = new byte[2];
-            ByteBitVector.writeBits6(buffer, i, (byte) 2);
-            ByteBitVector bv = new ByteBitVector(buffer);
-            assertEquals(2, bv.readBits6(i));
-        }
-    }
-
-    @Test
-    public void testWriteBits6Random() {
-        for (int j = 0; j < 100; j++) {
-            for (int i = 0; i < 10; i++) {
-                byte[] buffer = new byte[2];
-                r.nextBytes(buffer);
-                ByteBitVector.writeBits6(buffer, i, (byte) 34);
-                ByteBitVector bv = new ByteBitVector(buffer);
-                assertEquals(34, bv.readBits6(i));
-            }
-        }
-    }
-
-    @Test
     public void testReadBits12N_Random() {
         for (int i = 0; i < 1000; i++) {
             checkTestReadBits12N_Random();
@@ -666,6 +623,16 @@ public class ByteBitVectorTest {
         assertEquals(largeValue5, result);
     }
 
+    @Test(expected = ByteParseException.class)
+    public void testReadBeyondBuffer() {
+        // bit pattern: 0000011
+        TCString tcString = TCString.decode("Bg");
+        tcString.getCreated();
+    }
+
+    /**
+     * performs a right shift operation on the entire byte array.
+     */
     private static void shift(byte[] buffer) {
         byte n = (byte) (buffer[0] & 0x1);
         byte tmp;
