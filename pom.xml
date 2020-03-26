@@ -23,8 +23,8 @@
     </scm>
 
     <properties>
-        <maven-checkstyle-plugin-version>2.17</maven-checkstyle-plugin-version>
-        <checkstyle.version>7.1.2</checkstyle.version>
+        <maven-checkstyle-plugin-version>3.1.1</maven-checkstyle-plugin-version>
+        <checkstyle.version>8.29</checkstyle.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -120,37 +120,27 @@
                     </configuration>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin-version}</version>
-                    <!-- Work-around for JDK8 lambda support https://jira.codehaus.org/browse/MCHECKSTYLE-253 -->
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>${checkstyle.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <configLocation>${checkstyle.config.location}</configLocation>
-                                <encoding>UTF-8</encoding>
-                                <consoleOutput>true</consoleOutput>
-                                <failsOnError>false</failsOnError>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+		<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-checkstyle-plugin</artifactId>
+		    <version>${checkstyle.version}</version>
+		    <configuration>
+			<configLocation>${checkstyle.config.location}</configLocation>
+			<encoding>UTF-8</encoding>
+			<consoleOutput>true</consoleOutput>
+			<failsOnError>true</failsOnError>
+			<linkXRef>false</linkXRef>
+		    </configuration>
+		    <executions>
+			<execution>
+			    <id>validate</id>
+			    <phase>validate</phase>
+			    <goals>
+				<goal>check</goal>
+			    </goals>
+			</execution>
+		    </executions>
+		</plugin>
             </plugins>
         </pluginManagement>
     </build>

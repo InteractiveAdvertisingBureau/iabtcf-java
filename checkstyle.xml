@@ -14,6 +14,12 @@
     <property name="severity" value="error"/>
   </module>
 
+  <!-- Checks if a line it too long. -->
+  <module name="LineLength">
+    <property name="max" value="120"/>
+<!--    <property name="severity" value="ignore"/> -->
+  </module>
+
   <!-- Check each Java file for violations. -->
   <module name="TreeWalker">
 
@@ -132,20 +138,13 @@
     <!-- Checks the Javadoc of a method or constructor. -->
     <module name="JavadocMethod">
       <property name="scope" value="protected"/>
-      <property name="allowThrowsTagsForSubclasses" value="true"/>
-      <property name="allowUndeclaredRTE" value="true"/>
+      <property name="validateThrows" value="true"/>
       <property name="severity" value="ignore"/>
     </module>
 
     <!-- Checks that variables have Javadoc comments. -->
     <module name="JavadocVariable">
       <property name="scope" value="protected"/>
-      <property name="severity" value="ignore"/>
-    </module>
-
-    <!-- Checks if a line it too long. -->
-    <module name="LineLength">
-      <property name="max" value="120"/>
       <property name="severity" value="ignore"/>
     </module>
 
