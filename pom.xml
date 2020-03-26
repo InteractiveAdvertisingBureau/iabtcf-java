@@ -23,8 +23,7 @@
     </scm>
 
     <properties>
-        <maven-checkstyle-plugin-version>3.1.1</maven-checkstyle-plugin-version>
-        <checkstyle.version>8.29</checkstyle.version>
+        <checkstyle.version>3.1.1</checkstyle.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
