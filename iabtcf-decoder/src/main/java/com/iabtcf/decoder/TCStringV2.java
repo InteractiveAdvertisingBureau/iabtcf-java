@@ -195,7 +195,7 @@ class TCStringV2 implements TCString {
 
         for (int i = 0; i < numberOfPublisherRestrictions; i++) {
             int purposeId = bitVector.readBits6(currentPointer);
-            currentPointer += FieldDefs.PURPOSE_ID.getLength(bitVector);;
+            currentPointer += FieldDefs.PURPOSE_ID.getLength(bitVector);
 
             int restrictionTypeId = bitVector.readBits2(currentPointer);
             currentPointer += 2;
