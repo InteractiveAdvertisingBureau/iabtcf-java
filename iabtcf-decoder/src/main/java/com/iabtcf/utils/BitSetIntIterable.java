@@ -141,13 +141,10 @@ public class BitSetIntIterable implements IntIterable {
         }
         BitSetIntIterable other = (BitSetIntIterable) obj;
         if (bs == null) {
-            if (other.bs != null) {
-                return false;
-            }
-        } else if (!bs.equals(other.bs)) {
-            return false;
+            return other.bs == null;
+        } else {
+            return bs.equals(other.bs);
         }
-        return true;
     }
 
     @Override
