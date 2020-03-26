@@ -21,11 +21,36 @@ package com.iabtcf.v2;
  */
 
 public enum SegmentType {
-    DEFAULT,
-    DISCLOSED_VENDOR,
-    ALLOWED_VENDOR,
-    PUBLISHER_TC,
-    INVALID;
+
+    DEFAULT {
+        public int value() {
+            return 0;
+        }
+    },
+    DISCLOSED_VENDOR {
+        @Override
+        public int value() {
+            return 1;
+        }
+    },
+    ALLOWED_VENDOR {
+        @Override
+        public int value() {
+            return 2;
+        }
+    },
+    PUBLISHER_TC {
+        @Override
+        public int value() {
+            return 3;
+        }
+    },
+    INVALID {
+        @Override
+        public int value() {
+            return -1;
+        }
+    };
 
     public static SegmentType from(int id) {
         switch (id) {
@@ -41,4 +66,5 @@ public enum SegmentType {
                 return INVALID;
         }
     }
+    public abstract int value();
 }

@@ -248,7 +248,7 @@ public enum FieldDefs {
         /**
          * This is used when we don't want a field to support offsets.
          */
-        public static final OffsetSupplier NOT_SUPPORTED = new OffsetSupplier() {
+        OffsetSupplier NOT_SUPPORTED = new OffsetSupplier() {
 
             @Override
             public Integer apply(ByteBitVector t) {
@@ -264,7 +264,7 @@ public enum FieldDefs {
         /**
          * A constant offset for static fields.
          */
-        public static OffsetSupplier constant(int offset) {
+        static OffsetSupplier constant(int offset) {
             return new OffsetSupplier() {
 
                 @Override
@@ -283,7 +283,7 @@ public enum FieldDefs {
          * Supplies the offset that's based on the specified field. The offset value is stored to
          * avoid re-computing.
          */
-        public static OffsetSupplier from(final FieldDefs thisEnum) {
+        static OffsetSupplier from(final FieldDefs thisEnum) {
             return new MemoizingFunction() {
                 @Override
                 public boolean isDynamic() {
@@ -301,7 +301,7 @@ public enum FieldDefs {
          * Supplies the offset that's based on the the fields previous field. The offset value is
          * stored to avoid re-computing.
          */
-        public static OffsetSupplier fromPrevious(final FieldDefs thisEnum) {
+        static OffsetSupplier fromPrevious(final FieldDefs thisEnum) {
             return new MemoizingFunction() {
 
                 @Override
@@ -317,7 +317,7 @@ public enum FieldDefs {
             };
         }
 
-        public boolean isDynamic();
+        boolean isDynamic();
     }
 
     private interface LengthSupplier extends Function<ByteBitVector, Integer> {
@@ -325,7 +325,7 @@ public enum FieldDefs {
         /**
          * A constant length for static fields.
          */
-        public static LengthSupplier constant(int length) {
+        static LengthSupplier constant(int length) {
             return new LengthSupplier() {
 
                 @Override
@@ -340,7 +340,7 @@ public enum FieldDefs {
             };
         }
 
-        public boolean isDynamic();
+        boolean isDynamic();
     }
 
     /**
