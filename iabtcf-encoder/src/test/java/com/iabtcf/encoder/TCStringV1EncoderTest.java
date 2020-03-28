@@ -22,6 +22,7 @@ package com.iabtcf.encoder;
 
 import static com.iabtcf.encoder.utils.TestUtils.toDeci;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
+import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +35,12 @@ import com.iabtcf.decoder.TCString;
 import com.iabtcf.utils.BitSetIntIterable;
 
 public class TCStringV1EncoderTest {
+
+    @Test
+    public void testEncodeDefault() {
+        String tcf = TCStringEncoder.newBuilder().version(1).encode();
+        assertEquals(1, TCString.decode(tcf).getVersion());
+    }
 
     @Test
     public void testCanEncodeV1String() {
@@ -49,17 +56,17 @@ public class TCStringV1EncoderTest {
         Instant updated = created.plus(1, ChronoUnit.HOURS);
 
         String str = TCStringEncoder.newBuilder()
-                .withVersion(1)
-                .withCmpId(2)
-                .withCreated(created)
-                .withLastUpdated(updated)
-                .withCmpVersion(3)
-                .withConsentScreen(4)
-                .withConsentLanguage("DE")
-                .withVendorListVersion(5)
-                .withPurposesConsent(new BitSetIntIterable(purposeConsent))
-                .withVendorsConsent(new BitSetIntIterable(vendorConsent))
-                .toTCFFormat();
+                .version(1)
+                .cmpId(2)
+                .created(created)
+                .lastUpdated(updated)
+                .cmpVersion(3)
+                .consentScreen(4)
+                .consentLanguage("DE")
+                .vendorListVersion(5)
+                .purposesConsent(new BitSetIntIterable(purposeConsent))
+                .vendorsConsent(new BitSetIntIterable(vendorConsent))
+                .encode();
 
         TCString decodedTCString = TCString.decode(str);
         Assert.assertEquals(1, decodedTCString.getVersion());
