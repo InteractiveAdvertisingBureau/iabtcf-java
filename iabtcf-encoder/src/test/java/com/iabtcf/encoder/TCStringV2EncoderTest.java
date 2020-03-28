@@ -2,6 +2,10 @@ package com.iabtcf.encoder;
 
 import static com.iabtcf.encoder.utils.TestUtils.toDeci;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /*-
  * #%L
@@ -26,7 +30,6 @@ import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.iabtcf.decoder.TCString;
@@ -37,99 +40,122 @@ public class TCStringV2EncoderTest {
     private final Instant created = Instant.now();
     private final Instant updated = created.plus(1, ChronoUnit.HOURS);
 
-    private final TCStringEncoder encoderBuilder = TCStringEncoder.newBuilder()
-            .withVersion(2)
-            .withCreated(created)
-            .withLastUpdated(updated)
-            .withCmpId(1)
-            .withCmpVersion(12)
-            .withConsentScreen(1)
-            .withConsentLanguage("FR")
-            .withVendorListVersion(2)
-            .withTcfPolicyVersion(1)
-            .withIsServiceSpecific(true)
-            .withUseNonStandardStacks(false)
-            .withSpecialFeatureOptIns(BitSetIntIterable.of(1, 2))
-            .withPurposesConsent(BitSetIntIterable.of(4, 8))
-            .withPurposesLITransparency(BitSetIntIterable.of(11, 20))
-            .withPurposeOneTreatment(true)
-            .withPublisherCC("DE")
-            .withVendorsConsent(BitSetIntIterable.of(1, 4))
-            .withVendorLegitimateInterest(BitSetIntIterable.of(2, 6));
+    private final TCStringEncoder.Builder encoderBuilder = TCStringEncoder.newBuilder()
+        .version(2)
+        .created(created)
+        .lastUpdated(updated)
+        .cmpId(1)
+        .cmpVersion(12)
+        .consentScreen(1)
+        .consentLanguage("FR")
+        .vendorListVersion(2)
+        .tcfPolicyVersion(1)
+        .isServiceSpecific(true)
+        .useNonStandardStacks(false)
+        .specialFeatureOptIns(BitSetIntIterable.of(1, 2))
+        .purposesConsent(BitSetIntIterable.of(4, 8))
+        .purposesLITransparency(BitSetIntIterable.of(11, 20))
+        .purposeOneTreatment(true)
+        .publisherCC("DE")
+        .vendorsConsent(BitSetIntIterable.of(1, 4))
+        .vendorLegitimateInterest(BitSetIntIterable.of(2, 6));
+
+    @Test
+    public void testEncodeDefault() {
+        String tcf = TCStringEncoder.newBuilder().version(2).encode();
+        assertEquals(2, TCString.decode(tcf).getVersion());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testVersionMustBeSet() {
+        TCStringEncoder.newBuilder().encode();
+    }
+
     @Test
     public void testItConstructsCoreString() {
-        String tcf = TCStringEncoder.newBuilder(encoderBuilder)
-                .toTCFFormat();
+        String tcf = TCStringEncoder.newBuilder(encoderBuilder).encode();
 
         TCString decoded = TCString.decode(tcf);
 
-        Assert.assertEquals(1, tcf.split("\\.").length);
-        Assert.assertEquals(2, decoded.getVersion());
-        Assert.assertEquals(toDeci(created), decoded.getCreated());
-        Assert.assertEquals(toDeci(updated), decoded.getLastUpdated());
-        Assert.assertEquals(1, decoded.getCmpId());
-        Assert.assertEquals(12, decoded.getCmpVersion());
-        Assert.assertEquals(1, decoded.getConsentScreen());
-        Assert.assertEquals("FR", decoded.getConsentLanguage());
-        Assert.assertEquals(2, decoded.getVendorListVersion());
-        Assert.assertEquals(1, decoded.getTcfPolicyVersion());
-        Assert.assertTrue(decoded.isServiceSpecific());
-        Assert.assertFalse(decoded.getUseNonStandardStacks());
-        Assert.assertThat(decoded.getSpecialFeatureOptIns(), matchInts(1, 2));
-        Assert.assertThat(decoded.getPurposesConsent(), matchInts(4, 8));
-        Assert.assertThat(decoded.getPurposesLITransparency(), matchInts(11, 20));
-        Assert.assertTrue(decoded.getPurposeOneTreatment());
-        Assert.assertEquals("DE", decoded.getPublisherCC());
-        Assert.assertThat(decoded.getVendorConsent(), matchInts(1, 4));
-        Assert.assertThat(decoded.getVendorLegitimateInterest(), matchInts(2, 6));
+        assertEquals(1, tcf.split("\\.").length);
+        assertEquals(2, decoded.getVersion());
+        assertEquals(toDeci(created), decoded.getCreated());
+        assertEquals(toDeci(updated), decoded.getLastUpdated());
+        assertEquals(1, decoded.getCmpId());
+        assertEquals(12, decoded.getCmpVersion());
+        assertEquals(1, decoded.getConsentScreen());
+        assertEquals("FR", decoded.getConsentLanguage());
+        assertEquals(2, decoded.getVendorListVersion());
+        assertEquals(1, decoded.getTcfPolicyVersion());
+        assertTrue(decoded.isServiceSpecific());
+        assertFalse(decoded.getUseNonStandardStacks());
+        assertThat(decoded.getSpecialFeatureOptIns(), matchInts(1, 2));
+        assertThat(decoded.getPurposesConsent(), matchInts(4, 8));
+        assertThat(decoded.getPurposesLITransparency(), matchInts(11, 20));
+        assertTrue(decoded.getPurposeOneTreatment());
+        assertEquals("DE", decoded.getPublisherCC());
+        assertThat(decoded.getVendorConsent(), matchInts(1, 4));
+        assertThat(decoded.getVendorLegitimateInterest(), matchInts(2, 6));
     }
 
     @Test
     public void testItDecodesAllOptionalSegments() {
         String tcf = TCStringEncoder.newBuilder(encoderBuilder)
-                    .withDisclosedVendors(BitSetIntIterable.of(1, 2))
-                    .withAllowedVendors(BitSetIntIterable.of(6, 11))
-                    .withPubPurposesConsent(BitSetIntIterable.of(7, 9))
-                    .withPubPurposesLITransparency(BitSetIntIterable.of(2, 3))
-                    .withNumberOfCustomPurposesConsent(4)
-                    .withCustomPurposesConsent(BitSetIntIterable.of(1, 2, 4))
-                    .withCustomPurposesLITransparency(BitSetIntIterable.of(1, 3, 4))
-                    .toTCFFormat();
+            .disclosedVendors(BitSetIntIterable.of(1, 2))
+            .allowedVendors(BitSetIntIterable.of(6, 11))
+            .pubPurposesConsent(BitSetIntIterable.of(7, 9))
+            .pubPurposesLITransparency(BitSetIntIterable.of(2, 3))
+            .numberOfCustomPurposesConsent(4)
+            .customPurposesConsent(BitSetIntIterable.of(1, 2, 4))
+            .customPurposesLITransparency(BitSetIntIterable.of(1, 3, 4))
+            .encode();
 
         TCString decoded = TCString.decode(tcf);
 
-        Assert.assertEquals(4, tcf.split("\\.").length);
-        Assert.assertThat(decoded.getDisclosedVendors(), matchInts(1, 2));
-        Assert.assertThat(decoded.getAllowedVendors(), matchInts(6, 11));
-        Assert.assertThat(decoded.getPubPurposesLITransparency(), matchInts(2, 3));
-        Assert.assertThat(decoded.getCustomPurposesConsent(), matchInts(1, 2, 4));
-        Assert.assertThat(decoded.getCustomPurposesLITransparency(), matchInts(1, 3, 4));
+        assertEquals(4, tcf.split("\\.").length);
+        assertThat(decoded.getDisclosedVendors(), matchInts(1, 2));
+        assertThat(decoded.getAllowedVendors(), matchInts(6, 11));
+        assertThat(decoded.getPubPurposesLITransparency(), matchInts(2, 3));
+        assertThat(decoded.getCustomPurposesConsent(), matchInts(1, 2, 4));
+        assertThat(decoded.getCustomPurposesLITransparency(), matchInts(1, 3, 4));
     }
 
     @Test
     public void testEncodedVendorDisclosedSection() {
         String tcf = TCStringEncoder.newBuilder(encoderBuilder)
-                .withDisclosedVendors(BitSetIntIterable.of(1, 2))
-                .toTCFFormat();
+            .disclosedVendors(BitSetIntIterable.of(1, 2))
+            .encode();
 
         TCString decoded = TCString.decode(tcf);
-        Assert.assertEquals(2, tcf.split("\\.").length);
-        Assert.assertThat(decoded.getDisclosedVendors(), matchInts(1, 2));
+        assertEquals(2, tcf.split("\\.").length);
+        assertThat(decoded.getDisclosedVendors(), matchInts(1, 2));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testShouldFailIfLongStringIsProvided() {
         TCStringEncoder.newBuilder(encoderBuilder)
-                .withConsentLanguage("GBR")
-                .toTCFFormat();
+            .consentLanguage("GBR")
+            .encode();
 
+    }
+
+    @Test
+    public void testLanguageToCaps() {
+        String tcStr = TCStringEncoder.newBuilder(encoderBuilder)
+            .version(1)
+            .consentLanguage("gb")
+            .encode();
+
+        assertEquals("GB", TCString.decode(tcStr).getConsentLanguage());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testShouldFailIfLowercaseStringIsProvided() {
-        TCStringEncoder.newBuilder(encoderBuilder)
-                .withConsentLanguage("gb")
-                .toTCFFormat();
+    public void testInvalidVersion0() {
+        TCStringEncoder.newBuilder(encoderBuilder).version(0);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidVersion3() {
+        TCStringEncoder.newBuilder(encoderBuilder).version(3);
+    }
 }

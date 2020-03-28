@@ -9,9 +9,9 @@ package com.iabtcf.decoder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ public interface TCString {
 
     /**
      * Version number of the encoding format
-     * 
+     *
      * @since 1.0
      * @return the version number
      */
@@ -72,10 +72,10 @@ public interface TCString {
     int getCmpVersion();
 
     /**
-     * 
+     *
      * CMP Screen number at which consent was given for a user with the CMP that last updated this
      * TC String.
-     * 
+     *
      * The number is a CMP internal designation and is CmpVersion specific. The number is used for
      * identifying on which screen a user gave consent as a record.
      *
@@ -95,7 +95,7 @@ public interface TCString {
     /**
      * Number corresponds to GVL vendorListVersion. Version of the GVL used to create this TC
      * String.
-     * 
+     *
      * @since 1.0
      * @return the version number
      */
@@ -104,9 +104,9 @@ public interface TCString {
     /**
      * The user’s consent value for each Purpose established on the legal basis of consent. The
      * Purposes are numerically identified and published in the Global Vendor List.
-     * 
+     *
      * An alias for PurposesAllowed
-     * 
+     *
      * @since 1.0
      * @return The integer values for each established Purpose.
      */
@@ -115,7 +115,7 @@ public interface TCString {
     /**
      * The vendor identifiers that have consent to process this users personal data. The vendor
      * identifiers are published in the GVL.
-     * 
+     *
      * @since 1.0
      * @return the vendor identifiers.
      */
@@ -124,10 +124,10 @@ public interface TCString {
     /**
      * Default consent for VendorIds not covered by a RangeEntry. VendorIds covered by a RangeEntry
      * have a consent value the opposite of DefaultConsent.
-     * 
+     *
      * This field in not used by Transparency and Consent String v2.0 specifications and always
      * returns false.
-     * 
+     *
      * @since 1.0
      * @return all vendors that have consent to process this users personal data
      */
@@ -178,10 +178,10 @@ public interface TCString {
     /**
      * The Purpose’s transparency requirements are met for each Purpose on the legal basis of
      * legitimate interest and the user has not exercised their "Right to Object" to that Purpose.
-     * 
+     *
      * By default or if the user has exercised their "Right to Object" to a Purpose, the
      * corresponding identifier for that Purpose is set to false.
-     * 
+     *
      * @since 2.0
      * @return The purpose identifiers for which the legal basis of legitimate interest are
      *         established.
@@ -191,7 +191,7 @@ public interface TCString {
     /**
      * CMPs can use the PublisherCC field to indicate the legal jurisdiction the publisher is under
      * to help vendors determine whether the vendor needs consent for Purpose 1.
-     * 
+     *
      * In a globally-scoped TC string, this field must always have a value of false. When a CMP
      * encounters a globally-scoped TC String with PurposeOneTreatment set to true then it is
      * considered invalid and the CMP must discard it and re-establish transparency and consent.
@@ -222,7 +222,7 @@ public interface TCString {
     /**
      * The restrictions of a vendor's data processing by a publisher within the context of the users
      * trafficking their digital property.
-     * 
+     *
      * @since 2.0
      * @return the list of publisher restrictions.
      */
@@ -231,7 +231,7 @@ public interface TCString {
     /**
      * Part of the OOB segments expressing that a Vendor is using legal bases outside of the TCF to
      * process personal data.
-     * 
+     *
      * @since 2.0
      * @return A list of Vendors that the publisher allows to use out-of-band legal bases.
      */
@@ -240,7 +240,7 @@ public interface TCString {
     /**
      * Part of the OOB segments expressing that a Vendor is using legal bases outside of the TCF to
      * process personal data.
-     * 
+     *
      * @since 2.0
      * @return A list of Vendors that disclosed to the user.
      */
@@ -250,12 +250,12 @@ public interface TCString {
      * Part of the Publisher Transparency and Consent segment of a TC String that publishers may use
      * to establish transparency with and receive consent from users for their own legal bases to
      * process personal data or to share with vendors if they so choose.
-     * 
+     *
      * The user's consent value for each Purpose established on the legal basis of consent, for the
      * publisher
-     * 
+     *
      * The Purposes are numerically identified and published in the Global Vendor List.
-     * 
+     *
      * @since 2.0
      * @return the consent value for each Purpose
      */
@@ -265,14 +265,14 @@ public interface TCString {
      * Part of the Publisher Transparency and Consent segment of a TC String that publishers may use
      * to establish transparency with and receive consent from users for their own legal bases to
      * process personal data or to share with vendors if they so choose.
-     * 
+     *
      * The Purpose’s transparency requirements are met for each Purpose established on the legal
      * basis of legitimate interest and the user has not exercised their "Right to Object" to that
      * Purpose.
-     * 
+     *
      * By default or if the user has exercised their "Right to Object" to a Purpose, the
      * corresponding identifier for that Purpose is set to false.
-     * 
+     *
      * @since 2.0
      * @return The consent value for each Purpose where legitimate interest was established.
      */
@@ -282,10 +282,10 @@ public interface TCString {
      * Part of the Publisher Transparency and Consent segment of a TC String that publishers may use
      * to establish transparency with and receive consent from users for their own legal bases to
      * process personal data or to share with vendors if they so choose.
-     * 
+     *
      * Custom purposes will be defined by the publisher and displayed to a user in a CMP user
      * interface.
-     * 
+     *
      * @since 2.0
      * @return The established custom purpose consent values
      */
@@ -295,7 +295,7 @@ public interface TCString {
      * Part of the Publisher Transparency and Consent segment of a TC String that publishers may use
      * to establish transparency with and receive consent from users for their own legal bases to
      * process personal data or to share with vendors if they so choose.
-     * 
+     *
      * @return The custom purpose consent values with established legitimate interest disclosure.
      */
     IntIterable getCustomPurposesLITransparency();

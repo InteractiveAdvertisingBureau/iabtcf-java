@@ -31,15 +31,15 @@ import static com.iabtcf.FieldDefs.V1_VENDOR_BITRANGE_FIELD;
 import static com.iabtcf.FieldDefs.V1_VENDOR_LIST_VERSION;
 import static com.iabtcf.FieldDefs.V1_VENDOR_MAX_VENDOR_ID;
 import static com.iabtcf.FieldDefs.V1_VERSION;
-import static com.iabtcf.utils.ByteBitVectorUtils.deciSeconds;
-import static com.iabtcf.utils.ByteBitVectorUtils.readStr2;
+import static com.iabtcf.utils.BitReaderUtils.deciSeconds;
+import static com.iabtcf.utils.BitReaderUtils.readStr2;
 
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
 import com.iabtcf.utils.BitSetIntIterable;
@@ -48,13 +48,13 @@ import com.iabtcf.v2.PublisherRestriction;
 
 class TCStringV1 implements TCString {
 
-    private final ByteBitVector bbv;
+    private final BitReader bbv;
 
-    private TCStringV1(ByteBitVector bitVector) {
+    private TCStringV1(BitReader bitVector) {
         this.bbv = bitVector;
     }
 
-    public static TCStringV1 fromBitVector(ByteBitVector bitVector) {
+    public static TCStringV1 fromBitVector(BitReader bitVector) {
         return new TCStringV1(bitVector);
     }
 
@@ -192,7 +192,7 @@ class TCStringV1 implements TCString {
     /**
      * @throws InvalidRangeFieldException
      */
-    private IntIterable fillVendorsV1(ByteBitVector bbv, FieldDefs maxVendor, FieldDefs vendorField) {
+    private IntIterable fillVendorsV1(BitReader bbv, FieldDefs maxVendor, FieldDefs vendorField) {
         BitSet bs = new BitSet();
 
         int maxV = bbv.readBits16(maxVendor);

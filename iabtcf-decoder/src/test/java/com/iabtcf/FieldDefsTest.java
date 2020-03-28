@@ -36,7 +36,7 @@ public class FieldDefsTest {
 
         SegmentInputStream sis = new SegmentInputStream(tcString, 0);
         InputStream is = Base64.getUrlDecoder().wrap(sis);
-        ByteBitVector bitVector = new ByteBitVector(is);
+        BitReader bitVector = new BitReader(is);
 
         // read the fields twice
         for (int i = 0; i < 2; i++) {
@@ -66,7 +66,7 @@ public class FieldDefsTest {
 
         SegmentInputStream sis = new SegmentInputStream(tcString, 0);
         InputStream is = Base64.getUrlDecoder().wrap(sis);
-        ByteBitVector bitVector = new ByteBitVector(is);
+        BitReader bitVector = new BitReader(is);
 
         assertEquals(6, FieldDefs.V1_VERSION.getLength(bitVector));
         assertEquals(0, FieldDefs.V1_VERSION.getOffset(bitVector));
@@ -103,7 +103,7 @@ public class FieldDefsTest {
 
         SegmentInputStream sis = new SegmentInputStream(tcString, 0);
         InputStream is = Base64.getUrlDecoder().wrap(sis);
-        ByteBitVector bitVector = new ByteBitVector(is);
+        BitReader bitVector = new BitReader(is);
 
         assertEquals(1, FieldDefs.V1_VENDOR_DEFAULT_CONSENT.getLength(bitVector));
         assertEquals(173, FieldDefs.V1_VENDOR_BITRANGE_FIELD.getOffset(bitVector));

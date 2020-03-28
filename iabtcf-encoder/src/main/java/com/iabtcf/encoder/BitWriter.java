@@ -21,6 +21,7 @@ package com.iabtcf.encoder;
  */
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -60,6 +61,10 @@ class BitWriter {
      * {@link BitWriter#toByteArray()}
      */
     public BitWriter(int precision) {
+        if (precision < 0) {
+            throw new IllegalArgumentException("precision must be non-negative");
+        }
+
         this.precision = precision;
     }
 
@@ -67,11 +72,17 @@ class BitWriter {
         write(value ? 1 : 0, 1);
     }
 
+    public void write(boolean data, FieldDefs field) {
+        assert (field.getLength() == 1);
+        write(data);
+    }
+
     /**
      * Writes an iabtcf encoded String..
      */
     public void write(String str) {
-        byte[] b = str.getBytes(StandardCharsets.US_ASCII);
+        assert Charset.forName("US-ASCII").newEncoder().canEncode(str);
+        byte[] b = str.toUpperCase().getBytes(StandardCharsets.US_ASCII);
         for (int i = 0; i < b.length; i++) {
             write(b[i] - 'A', FieldDefs.CHAR);
         }
@@ -81,30 +92,8 @@ class BitWriter {
      * Writes an iabtcf encoded String of length specified by 'field'.
      */
     public void write(String str, FieldDefs field) {
-        assert (field.getLength() / FieldDefs.CHAR.getLength() == str.length());
+        assert (field.getLength() / FieldDefs.CHAR.getLength()) == str.length();
         write(str);
-    }
-
-    /**
-     * Writes 'length' number of bits whose set bits are indicated by the position of the ints in
-     * 'of'. The least significant bit starts at 1.
-     *
-     * @throws IndexOutOfBoundsException if 'of' contains an invalid index, <= 0.
-     */
-    public void write(IntIterable of, int length) {
-        BitWriter bw = new BitWriter(length);
-        BitSet bs = new BitSet();
-        for (IntIterator i = of.intIterator(); i.hasNext();) {
-            int nextInt = i.nextInt();
-            if (nextInt <= 0) {
-                throw new IndexOutOfBoundsException("invalid index: " + nextInt);
-            }
-            bs.set(nextInt - 1);
-        }
-        for (int i = 0; i < bs.length(); i++) {
-            bw.write(bs.get(i));
-        }
-        write(bw);
     }
 
     /**
@@ -117,16 +106,37 @@ class BitWriter {
         write(of, field.getLength());
     }
 
-    public void write(boolean data, FieldDefs field) {
-        assert (field.getLength() == 1);
-        write(data);
-    }
-
     /**
      * Writes an iabtcf encoded instant value.
      */
     public void write(Instant i, FieldDefs field) {
         write(i, field.getLength());
+    }
+
+    /**
+     * Writes 'length' number of bits whose set bits are indicated by the position of the ints in
+     * 'of'. The least significant bit starts at 1.
+     *
+     * @throws IndexOutOfBoundsException if 'of' contains an invalid index, <= 0 or length is < 0
+     */
+    public void write(IntIterable of, int length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must be non-negative");
+        }
+
+        BitWriter bw = new BitWriter(length);
+        BitSet bs = new BitSet();
+        for (IntIterator i = of.intIterator(); i.hasNext();) {
+            int nextInt = i.nextInt();
+            if (nextInt <= 0) {
+                throw new IndexOutOfBoundsException("invalid index: " + nextInt);
+            }
+            bs.set(nextInt - 1);
+        }
+        for (int i = 0; i < Math.min(length, bs.length()); i++) {
+            bw.write(bs.get(i));
+        }
+        write(bw);
     }
 
     /**
@@ -154,7 +164,9 @@ class BitWriter {
      * Writes up to 'length' number of bits from 'data'.
      */
     public void write(long data, int length) {
-        assert length >= 0 && length <= Long.SIZE;
+        if (length < 0 || length > Long.SIZE) {
+            throw new IllegalArgumentException("length is invalid: " + length);
+        }
 
         data &= LONG_MASKS[length];
         bitsRemaining -= length;
@@ -173,8 +185,6 @@ class BitWriter {
      * Writes bits encoded by the specified BitWriter. Padding bits, if any, are also appended.
      */
     public void write(BitWriter bw) {
-        enforcePrecision();
-
         for (OfLong i = bw.buffer.longIterator(); i.hasNext();) {
             write(i.nextLong(), Long.SIZE);
         }
@@ -228,6 +238,9 @@ class BitWriter {
         precision = 0;
     }
 
+    /**
+     * Returns a base64 url encoded representation of the bit array.
+     */
     public String toBase64() {
         return Base64.getUrlEncoder().encodeToString(this.toByteArray());
     }
