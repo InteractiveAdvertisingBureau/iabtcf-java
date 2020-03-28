@@ -22,21 +22,21 @@ package com.iabtcf.utils;
 
 import java.time.Instant;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 
-public class ByteBitVectorUtils {
+public class BitReaderUtils {
 
-    public static Instant deciSeconds(ByteBitVector bv, FieldDefs field) {
+    public static Instant deciSeconds(BitReader bv, FieldDefs field) {
         return Instant.ofEpochMilli(bv.readBits36(field.getOffset(bv)) * 100);
     }
 
-    public static String readStr2(ByteBitVector bv, int offset) {
+    public static String readStr2(BitReader bv, int offset) {
         return String
                 .valueOf(new char[] {(char) ('A' + bv.readBits6(offset)), (char) ('A' + bv.readBits6(offset + 6))});
     }
 
-    public static String readStr2(ByteBitVector bv, FieldDefs field) {
+    public static String readStr2(BitReader bv, FieldDefs field) {
         return readStr2(bv, field.getOffset(bv));
     }
 }

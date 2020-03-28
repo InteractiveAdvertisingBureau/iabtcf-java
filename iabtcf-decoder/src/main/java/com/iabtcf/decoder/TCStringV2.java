@@ -61,11 +61,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
 import com.iabtcf.utils.BitSetIntIterable;
-import com.iabtcf.utils.ByteBitVectorUtils;
+import com.iabtcf.utils.BitReaderUtils;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
@@ -100,28 +100,28 @@ class TCStringV2 implements TCString {
     private IntIterable customPurposesLITransparency;
 
     private final EnumSet<FieldDefs> cache = EnumSet.noneOf(FieldDefs.class);
-    private final ByteBitVector bbv;
-    private final Collection<ByteBitVector> remainingVectors;
+    private final BitReader bbv;
+    private final Collection<BitReader> remainingVectors;
 
-    private TCStringV2(ByteBitVector bbv) {
-        this(bbv, new ByteBitVector[] {});
+    private TCStringV2(BitReader bbv) {
+        this(bbv, new BitReader[] {});
     }
 
-    private TCStringV2(ByteBitVector bbv, ByteBitVector... theRest) {
+    private TCStringV2(BitReader bbv, BitReader... theRest) {
         this.bbv = bbv;
         this.remainingVectors = Arrays.asList(theRest);
     }
 
-    public static TCStringV2 fromBitVector(ByteBitVector coreBitVector, ByteBitVector... remainingVectors) {
+    public static TCStringV2 fromBitVector(BitReader coreBitVector, BitReader... remainingVectors) {
         return new TCStringV2(coreBitVector, remainingVectors);
     }
 
-    private ByteBitVector getSegment(SegmentType segmentType) {
+    private BitReader getSegment(SegmentType segmentType) {
         if (segmentType == SegmentType.DEFAULT) {
             return bbv;
         }
 
-        for (ByteBitVector rbbv : remainingVectors) {
+        for (BitReader rbbv : remainingVectors) {
             int rSegmentType = rbbv.readBits3(OOB_SEGMENT_TYPE);
             if (segmentType == SegmentType.from(rSegmentType)) {
                 return rbbv;
@@ -135,7 +135,7 @@ class TCStringV2 implements TCString {
         if (cache.add(PPTC_PUB_PURPOSES_CONSENT)) {
             publisherPurposesConsent = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            BitReader dvBbv = getSegment(SegmentType.PUBLISHER_TC);
             if (dvBbv != null) {
                 publisherPurposesConsent = fillBitSet(dvBbv, PPTC_PUB_PURPOSES_CONSENT);
             }
@@ -146,7 +146,7 @@ class TCStringV2 implements TCString {
     /**
      * @throws InvalidRangeFieldException
      */
-    static BitSetIntIterable fillVendors(ByteBitVector bbv, FieldDefs maxVendor, FieldDefs vendorField) {
+    static BitSetIntIterable fillVendors(BitReader bbv, FieldDefs maxVendor, FieldDefs vendorField) {
         BitSet bs = new BitSet();
 
         int maxV = bbv.readBits16(maxVendor);
@@ -170,7 +170,7 @@ class TCStringV2 implements TCString {
      *
      * @throws InvalidRangeFieldException
      */
-    static int vendorIdsFromRange(ByteBitVector bbv, BitSet bs, int numberOfVendorEntriesOffset,
+    static int vendorIdsFromRange(BitReader bbv, BitSet bs, int numberOfVendorEntriesOffset,
             Optional<FieldDefs> maxVendor) {
         int numberOfVendorEntries = bbv.readBits12(numberOfVendorEntriesOffset);
         int offset = numberOfVendorEntriesOffset + FieldDefs.NUM_ENTRIES.getLength(bbv);
@@ -205,7 +205,7 @@ class TCStringV2 implements TCString {
     /**
      * @throws InvalidRangeFieldException
      */
-    static void vendorIdsFromRange(ByteBitVector bbv, BitSet bs, FieldDefs vendorField, Optional<FieldDefs> maxVendor) {
+    static void vendorIdsFromRange(BitReader bbv, BitSet bs, FieldDefs vendorField, Optional<FieldDefs> maxVendor) {
         vendorIdsFromRange(bbv, bs, vendorField.getOffset(bbv), maxVendor);
     }
 
@@ -213,7 +213,7 @@ class TCStringV2 implements TCString {
      * @throws InvalidRangeFieldException
      */
     private int fillPublisherRestrictions(
-            List<PublisherRestriction> publisherRestrictions, int currentPointer, ByteBitVector bitVector) {
+            List<PublisherRestriction> publisherRestrictions, int currentPointer, BitReader bitVector) {
 
         int numberOfPublisherRestrictions = bitVector.readBits12(currentPointer);
         currentPointer += FieldDefs.NUM_ENTRIES.getLength(bitVector);
@@ -235,7 +235,7 @@ class TCStringV2 implements TCString {
         return currentPointer;
     }
 
-    static BitSetIntIterable fillBitSet(ByteBitVector bbv, FieldDefs field) {
+    static BitSetIntIterable fillBitSet(BitReader bbv, FieldDefs field) {
         int offset = field.getOffset(bbv);
         int length = field.getLength(bbv);
 
@@ -299,7 +299,7 @@ class TCStringV2 implements TCString {
     @Override
     public String getConsentLanguage() {
         if (cache.add(CORE_CONSENT_LANGUAGE)) {
-            consentLanguage = ByteBitVectorUtils.readStr2(bbv, CORE_CONSENT_LANGUAGE);
+            consentLanguage = BitReaderUtils.readStr2(bbv, CORE_CONSENT_LANGUAGE);
         }
         return consentLanguage;
     }
@@ -387,7 +387,7 @@ class TCStringV2 implements TCString {
     @Override
     public String getPublisherCC() {
         if (cache.add(CORE_PUBLISHER_CC)) {
-            publisherCountryCode = ByteBitVectorUtils.readStr2(bbv, CORE_PUBLISHER_CC);
+            publisherCountryCode = BitReaderUtils.readStr2(bbv, CORE_PUBLISHER_CC);
         }
         return publisherCountryCode;
     }
@@ -424,7 +424,7 @@ class TCStringV2 implements TCString {
         if (cache.add(AV_VENDOR_BITRANGE_FIELD)) {
             allowedVendors = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.ALLOWED_VENDOR);
+            BitReader dvBbv = getSegment(SegmentType.ALLOWED_VENDOR);
             if (dvBbv != null) {
                 allowedVendors = fillVendors(dvBbv, AV_MAX_VENDOR_ID, AV_VENDOR_BITRANGE_FIELD);
             }
@@ -440,7 +440,7 @@ class TCStringV2 implements TCString {
         if (cache.add(DV_VENDOR_BITRANGE_FIELD)) {
             disclosedVendors = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.DISCLOSED_VENDOR);
+            BitReader dvBbv = getSegment(SegmentType.DISCLOSED_VENDOR);
 
             if (dvBbv != null) {
                 disclosedVendors = fillVendors(dvBbv, DV_MAX_VENDOR_ID, DV_VENDOR_BITRANGE_FIELD);
@@ -454,7 +454,7 @@ class TCStringV2 implements TCString {
         if (cache.add(PPTC_PUB_PURPOSES_LI_TRANSPARENCY)) {
             publisherPurposesLITransparency = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            BitReader dvBbv = getSegment(SegmentType.PUBLISHER_TC);
             if (dvBbv != null) {
                 publisherPurposesLITransparency = fillBitSet(dvBbv, PPTC_PUB_PURPOSES_LI_TRANSPARENCY);
             }
@@ -467,7 +467,7 @@ class TCStringV2 implements TCString {
         if (cache.add(PPTC_CUSTOM_PURPOSES_CONSENT)) {
             customPurposesConsent = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            BitReader dvBbv = getSegment(SegmentType.PUBLISHER_TC);
             if (dvBbv != null) {
                 customPurposesConsent = fillBitSet(dvBbv, PPTC_CUSTOM_PURPOSES_CONSENT);
             }
@@ -480,7 +480,7 @@ class TCStringV2 implements TCString {
         if (cache.add(PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY)) {
             customPurposesLITransparency = BitSetIntIterable.EMPTY;
 
-            ByteBitVector dvBbv = getSegment(SegmentType.PUBLISHER_TC);
+            BitReader dvBbv = getSegment(SegmentType.PUBLISHER_TC);
             if (dvBbv != null) {
                 customPurposesLITransparency = fillBitSet(dvBbv, PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY);
             }

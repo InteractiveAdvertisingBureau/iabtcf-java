@@ -24,6 +24,7 @@ import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -32,19 +33,128 @@ import java.util.Base64;
 
 import org.junit.Test;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.decoder.TCString;
+import com.iabtcf.utils.BitReaderUtils;
 import com.iabtcf.utils.BitSetIntIterable;
-import com.iabtcf.utils.ByteBitVectorUtils;
 
 public class BitWriterTest {
+    @Test
+    public void testWriteBoolean() {
+        BitWriter bw = new BitWriter(0);
+        bw.write(true);
+        byte[] b = bw.toByteArray();
+        assertEquals(1 << 7, b[0] & 0xFF);
+        assertEquals(1, b.length);
+    }
+
+    @Test
+    public void testWriteASCII() {
+        String str = new String("A");
+        BitWriter bw = new BitWriter();
+        try {
+            bw.write(str);
+        } catch (AssertionError e) {
+            return;
+        }
+
+        assertEquals(str.getBytes()[0] - 'A', bw.toByteArray()[0]);
+    }
+
+    @Test
+    public void testLowerCase() {
+        String str = new String("aA");
+        BitWriter bw = new BitWriter();
+        try {
+            bw.write(str);
+        } catch (AssertionError e) {
+            return;
+        }
+
+        assertEquals(str.toUpperCase().getBytes()[0] - 'A', bw.toByteArray()[0]);
+        assertEquals(str.toUpperCase().getBytes()[1] - 'A', bw.toByteArray()[1]);
+    }
+
+    @Test
+    public void testWriteUTF16() {
+        String str = new String(Character.toChars(0x0510));
+        BitWriter bw = new BitWriter();
+        try {
+            bw.write(str);
+        } catch (AssertionError e) {
+            return;
+        }
+
+        assertNotEquals(str.getBytes()[0], bw.toByteArray()[0]);
+    }
+
+    @Test
+    public void testEncodeIntIterableSmallerSize() {
+        BitSetIntIterable bsii = BitSetIntIterable.of(1, 15, 512);
+        BitWriter bw = new BitWriter();
+        bw.write(bsii, 12);
+        byte[] b = bw.toByteArray();
+        assertEquals(1 << 7, b[0] & 0xFF);
+        assertEquals(2, b.length);
+    }
+
+    @Test
+    public void testEncodeIntIterableEqualSize() {
+        BitSetIntIterable bsii = BitSetIntIterable.of(1, 15, 512);
+        BitWriter bw = new BitWriter();
+        bw.write(bsii, 15);
+        byte[] b = bw.toByteArray();
+        assertEquals(1 << 7, b[0] & 0xFF);
+        assertEquals(1 << 1, b[1] & 0xFF);
+        assertEquals(2, b.length);
+    }
+
+    @Test
+    public void testEncodeIntIterableLargerSize() {
+        BitSetIntIterable bsii = BitSetIntIterable.of(1, 15, 512);
+        BitWriter bw = new BitWriter();
+        bw.write(bsii, 1024);
+        byte[] b = bw.toByteArray();
+        assertEquals(1 << 7, b[0] & 0xFF);
+        assertEquals(1 << 1, b[1] & 0xFF);
+        assertEquals(1024 / 8, b.length);
+        assertEquals(1, b[(512 / 8) - 1]);
+    }
+
+    @Test
+    public void testBitSetRespectsPadding() {
+        BitSetIntIterable bsii = BitSetIntIterable.of(1, 15, 512);
+        BitWriter bw = new BitWriter();
+        bw.write(bsii, 1024);
+        byte[] b = bw.toByteArray();
+        assertEquals(1 << 7, b[0] & 0xFF);
+        assertEquals(1 << 1, b[1] & 0xFF);
+        assertEquals(1024 / 8, b.length);
+        assertEquals(1, b[(512 / 8) - 1]);
+
+        // the next bit is at position 1025
+        bw.write(true);
+        b = bw.toByteArray();
+        assertEquals(1 << 7, b[(1024 / 8)] & 0xFF);
+    }
+
+    @Test
+    public void testCountsForPadding() {
+        BitSetIntIterable bsii = BitSetIntIterable.of(1, 15, 512);
+        BitWriter bw = new BitWriter(1024 + 512);
+        bw.write(bsii, 784);
+        bw.write(bsii, 128);
+        byte[] b = bw.toByteArray();
+        assertEquals((1024 + 512) / 8, b.length);
+    }
+
     @Test
     public void testEncode16() {
         BitWriter bw = new BitWriter();
         bw.write(32, 16);
         byte[] b = bw.toByteArray();
-        ByteBitVector bbv = new ByteBitVector(b);
+        BitReader bbv = new BitReader(b);
         int value = bbv.readBits16(0);
         assertEquals(32, value);
     }
@@ -54,7 +164,7 @@ public class BitWriterTest {
         BitWriter bv = new BitWriter();
         bv.write(3, 1);
         bv.write(1L << 3294832095852432L, Long.SIZE);
-        ByteBitVector bbv = new ByteBitVector(bv.toByteArray());
+        BitReader bbv = new BitReader(bv.toByteArray());
         long value = 0;
         value |= (long) bbv.readBits16(1) << 48;
         value |= (long) bbv.readBits16(1 + 16) << 32;
@@ -65,7 +175,7 @@ public class BitWriterTest {
 
         bv = new BitWriter();
         bv.write(1L << 3294832095852432L, Long.SIZE);
-        bbv = new ByteBitVector(bv.toByteArray());
+        bbv = new BitReader(bv.toByteArray());
         value = 0;
         value |= (long) bbv.readBits16(0) << 48;
         value |= (long) bbv.readBits16(16) << 32;
@@ -99,7 +209,7 @@ public class BitWriterTest {
         BitWriter bitWriter = new BitWriter();
         bitWriter.write(now);
 
-        ByteBitVector reader = new ByteBitVector(bitWriter.toByteArray());
+        BitReader reader = new BitReader(bitWriter.toByteArray());
         long l = reader.readBits36(0);
         long actual = now.toEpochMilli() / 100;
         assertEquals(l, actual);
@@ -111,8 +221,8 @@ public class BitWriterTest {
         String str = "DE";
         bitWriter.write(str);
 
-        ByteBitVector reader = new ByteBitVector(bitWriter.toByteArray());
-        String actual = ByteBitVectorUtils.readStr2(reader, 0);
+        BitReader reader = new BitReader(bitWriter.toByteArray());
+        String actual = BitReaderUtils.readStr2(reader, 0);
         assertEquals(str, actual);
     }
 
@@ -182,20 +292,32 @@ public class BitWriterTest {
         BitWriter bw = new BitWriter();
         bw.write(2, 6);
         bw.write(Instant.parse("2020-01-26T17:01:00Z").toEpochMilli() / 100, 36);
-        bw.write(Instant.parse("2021-02-02T17:01:00Z").toEpochMilli() / 100, 36);
+        bw.write(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
         bw.write(675, FieldDefs.CORE_CMP_ID);
         bw.write(2, FieldDefs.CORE_CMP_VERSION);
         bw.write(1, FieldDefs.CORE_CONSENT_SCREEN);
-        bw.write("EN", FieldDefs.CORE_CONSENT_LANGUAGE);
-        bw.write(15, FieldDefs.CORE_VENDOR_LIST_VERSION);
-        bw.write(2, FieldDefs.CORE_TCF_POLICY_VERSION);
-        bw.write(false, FieldDefs.CORE_IS_SERVICE_SPECIFIC);
-        bw.write(false, FieldDefs.CORE_USE_NON_STANDARD_STOCKS);
-        bw.write(BitSetIntIterable.of(1), FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS);
-        bw.write(BitSetIntIterable.of(2, 10), FieldDefs.CORE_PURPOSES_CONSENT);
-        bw.write(BitSetIntIterable.of(2, 9), FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY);
-        bw.write(true, FieldDefs.CORE_PURPOSE_ONE_TREATMENT);
-        bw.write("AA", FieldDefs.CORE_PUBLISHER_CC);
+
+        BitWriter bwA = new BitWriter();
+        bwA.write("EN", FieldDefs.CORE_CONSENT_LANGUAGE);
+        bwA.write(15, FieldDefs.CORE_VENDOR_LIST_VERSION);
+        bwA.write(2, FieldDefs.CORE_TCF_POLICY_VERSION);
+        bwA.write(false, FieldDefs.CORE_IS_SERVICE_SPECIFIC);
+
+        BitWriter bwB = new BitWriter();
+        bwB.write(false, FieldDefs.CORE_USE_NON_STANDARD_STOCKS);
+        bwB.write(BitSetIntIterable.of(1), FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS);
+        bwB.write(BitSetIntIterable.of(2, 10), FieldDefs.CORE_PURPOSES_CONSENT);
+        bwB.write(BitSetIntIterable.of(2, 9), FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY);
+
+        BitWriter bwC = new BitWriter(
+                FieldDefs.CORE_PURPOSE_ONE_TREATMENT.getLength() + FieldDefs.CORE_PUBLISHER_CC.getLength());
+        bwC.write(true, FieldDefs.CORE_PURPOSE_ONE_TREATMENT);
+        bwC.write("AA", FieldDefs.CORE_PUBLISHER_CC);
+
+        bwB.write(bwC);
+
+        bw.write(bwA);
+        bw.write(bwB);
 
         // skip vendor consent
         bw.write(0, 16);
@@ -262,5 +384,45 @@ public class BitWriterTest {
         assertEquals(2, tcModel.getVersion());
         assertEquals(Instant.parse("2020-01-26T17:01:00Z"), tcModel.getCreated());
         assertEquals(Instant.parse("2021-02-02T17:01:00Z"), tcModel.getLastUpdated());
+    }
+
+    @Test
+    public void testLength() {
+        BitWriter bw = new BitWriter(0);
+        assertEquals(0, bw.length());
+        bw.write(true);
+        assertEquals(1, bw.length());
+        bw.write("hello");
+        assertEquals(1 + 5 * 6, bw.length());
+    }
+
+    @Test
+    public void testLengthPrecisionSmaller() {
+        BitWriter bw = new BitWriter(28);
+        assertEquals(28, bw.length());
+        bw.write(true);
+        assertEquals(28, bw.length());
+        bw.write("hello");
+        assertEquals(1 + 5 * 6, bw.length());
+    }
+
+    @Test
+    public void testLengthPrecisionSmaller1() {
+        BitWriter bw = new BitWriter(32);
+        assertEquals(32, bw.length());
+        bw.write(true);
+        assertEquals(32, bw.length());
+        bw.write("hello");
+        assertEquals(32, bw.length());
+    }
+
+    @Test
+    public void testLengthPrecision() {
+        BitWriter bw = new BitWriter(128);
+        assertEquals(128, bw.length());
+        bw.write(true);
+        assertEquals(128, bw.length());
+        bw.write("hello");
+        assertEquals(128, bw.length());
     }
 }

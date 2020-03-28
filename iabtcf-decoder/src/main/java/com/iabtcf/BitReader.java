@@ -26,20 +26,20 @@ import java.util.BitSet;
 
 import com.iabtcf.exceptions.ByteParseException;
 
-public class ByteBitVector {
+public class BitReader {
     private byte[] buffer;
     private int isrpos;
     private final InputStream is;
     final LengthOffsetCache cache;
 
-    public ByteBitVector(InputStream is) {
+    public BitReader(InputStream is) {
         this.buffer = new byte[4096];
         this.is = is;
         this.isrpos = 0;
         cache = new LengthOffsetCache(this);
     }
 
-    public ByteBitVector(byte[] buffer) {
+    public BitReader(byte[] buffer) {
         this.buffer = buffer;
         this.isrpos = buffer.length;
         this.is = null;
