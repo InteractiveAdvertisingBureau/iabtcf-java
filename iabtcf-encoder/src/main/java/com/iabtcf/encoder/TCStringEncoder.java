@@ -21,7 +21,6 @@ package com.iabtcf.encoder;
  */
 
 import java.time.Instant;
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,8 +55,6 @@ public class TCStringEncoder {
     private IntIterable customPurposesConsent;
     private IntIterable customPurposesLITransparency;
     private IntIterable pubPurposesLITransparency;
-
-    private static final BitSet EMPTY_BIT_SET = new BitSet();
 
     private TCStringEncoder() {
 
@@ -235,14 +232,14 @@ public class TCStringEncoder {
     public String toTCFFormat() {
         if (this.version == 1) {
             return encodeVersion1();
-        } else if (this.version == 2) {
-            return Stream
-                .of(encodeCoreString(), encodeDisclosedVendors(), encodeAllowedVendors(), encodePubPurposesConsent())
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining("."));
-
         }
-        throw new UnsupportedOperationException(this.version + " is unsupported");
+
+        assert (this.version == 2);
+
+        return Stream
+            .of(encodeCoreString(), encodeDisclosedVendors(), encodeAllowedVendors(), encodePubPurposesConsent())
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining("."));
     }
 
     private String encodeVersion1() {

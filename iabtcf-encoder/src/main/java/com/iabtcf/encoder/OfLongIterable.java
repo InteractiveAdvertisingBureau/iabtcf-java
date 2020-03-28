@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.PrimitiveIterator.OfLong;
 
 class OfLongIterable {
-    private long[] array;
-    private int size = 10;
+    private long[] array = new long[10];
+    private int size = 0;
 
     public int size() {
         return size;
@@ -57,5 +57,35 @@ class OfLongIterable {
                 return OfLongIterable.this.array[i++];
             }
         };
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(array);
+        result = prime * result + size;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OfLongIterable other = (OfLongIterable) obj;
+        if (!Arrays.equals(array, other.array)) {
+            return false;
+        }
+        if (size != other.size) {
+            return false;
+        }
+        return true;
     }
 }

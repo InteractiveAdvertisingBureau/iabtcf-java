@@ -22,19 +22,19 @@ package com.iabtcf.decoder;
 
 import java.util.Base64;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.ByteParseException;
 import com.iabtcf.exceptions.UnsupportedVersionException;
 
 class TCStringDecoder {
-    static ByteBitVector vectorFromString(String base64UrlEncodedString) {
+    static BitReader vectorFromString(String base64UrlEncodedString) {
         // SegmentInputStream sis = new SegmentInputStream(base64UrlEncodedString, 0);
         // InputStream is = DECODER.wrap(sis);
         //
         //
         byte[] bytes = Base64.getUrlDecoder().decode(base64UrlEncodedString);
-        return new ByteBitVector(bytes);
+        return new BitReader(bytes);
     }
 
     /**
@@ -46,7 +46,7 @@ class TCStringDecoder {
             throws IllegalArgumentException, ByteParseException, UnsupportedVersionException {
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
-        ByteBitVector bitVector = vectorFromString(base64UrlEncodedString);
+        BitReader bitVector = vectorFromString(base64UrlEncodedString);
 
         int version = bitVector.readBits6(FieldDefs.CORE_VERSION);
 
@@ -55,7 +55,7 @@ class TCStringDecoder {
                 return TCStringV1.fromBitVector(bitVector);
             case 2:
                 if (split.length > 1) {
-                    ByteBitVector[] remaining = new ByteBitVector[split.length - 1];
+                    BitReader[] remaining = new BitReader[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
                         remaining[i - 1] = vectorFromString(split[i]);
                     }

@@ -33,21 +33,27 @@ import com.iabtcf.utils.IntIterator;
 class VendorFieldEncoder {
     private final BitSet vendors;
     private int maxVendorId;
-    private boolean defaultConsent = false;
-    private boolean emitRangeEncoding = false;
+    private boolean defaultConsent;
+    private boolean emitRangeEncoding;
 
     public VendorFieldEncoder() {
-        this(new BitSet(), 0);
+        this(new BitSet(), 0, false, false);
     }
 
     public VendorFieldEncoder(VendorFieldEncoder prototype) {
-        this(prototype.vendors.length() == 0 ? new BitSet() : prototype.vendors.get(0, prototype.vendors.length()),
-                prototype.maxVendorId);
+        this(prototype.vendors.length() == 0 ? new BitSet()
+                : prototype.vendors.get(0,
+                        prototype.vendors.length()),
+                prototype.maxVendorId,
+                prototype.defaultConsent,
+                prototype.emitRangeEncoding);
     }
 
-    private VendorFieldEncoder(BitSet vendors, int maxVendorId) {
+    private VendorFieldEncoder(BitSet vendors, int maxVendorId, boolean defaultConsent, boolean emitRangeEncoding) {
         this.vendors = vendors;
         this.maxVendorId = maxVendorId;
+        this.defaultConsent = defaultConsent;
+        this.emitRangeEncoding = emitRangeEncoding;
     }
 
     /**
@@ -155,7 +161,8 @@ class VendorFieldEncoder {
                 rangeBits.write(idxClr, FieldDefs.END_VENDOR_ID);
             }
             numEntries++;
-        } while ((idxSet = vendors.nextSetBit(idxClr)) > 0 && rangeBits.length() < vendors.length());
+        } while ((idxSet = vendors.nextSetBit(idxClr)) > 0
+                && (rangeBits.length() < vendors.length() || emitRangeEncoding));
 
         // emit max vendor id
         bv.write(maxVendorId, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID);

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -153,6 +154,41 @@ public class BitSetIntIterableTest {
         bs.set(5);
         BitSetIntIterable e = new BitSetIntIterable(bs);
         assertStreamEquals(new TreeSet<>(Arrays.asList(1, 4, 5)).stream(), e.toStream());
+        assertFalse(e.isEmpty());
+    }
+
+    @Test
+    public void testOf() {
+        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        assertStreamEquals(new TreeSet<>(Arrays.asList(1, 2, 3)).stream(), e.toStream());
+    }
+
+    @Test
+    public void testEmptyFalse() {
+        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        assertFalse(e.isEmpty());
+    }
+
+    @Test
+    public void testEmptyTrue() {
+        BitSetIntIterable e = BitSetIntIterable.of();
+        assertTrue(e.isEmpty());
+    }
+
+    @Test
+    public void testEmptyTrueBs() {
+        BitSetIntIterable e = new BitSetIntIterable(new BitSet());
+        assertTrue(e.isEmpty());
+    }
+
+    @Test
+    public void testOfIterable() {
+        Set<Integer> expected = new TreeSet<>(Arrays.asList(1, 2, 3));
+        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        for (Iterator<Integer> i = e.iterator(); i.hasNext();) {
+            expected.contains(i.next());
+        }
+        assertStreamEquals(expected.stream(), e.toStream());
     }
 
     static void assertStreamEquals(Stream<?> s1, IntStream s2) {
