@@ -31,6 +31,19 @@ public class BitSetIntIterable extends IntIterable {
 
     public static final BitSetIntIterable EMPTY = new BitSetIntIterable(new BitSet());
 
+    public static BitSetIntIterable from(IntIterable ii) {
+        if (ii instanceof BitSetIntIterable) {
+            return ((BitSetIntIterable) ii).clone();
+        }
+
+        BitSet bs = new BitSet();
+        for (IntIterator i = ii.intIterator(); i.hasNext();) {
+            bs.set(i.nextInt());
+        }
+
+        return new BitSetIntIterable(bs);
+    }
+
     public static BitSetIntIterable of(int... values) {
         BitSet bs = new BitSet();
         for (int i = 0; i < values.length; i++) {
@@ -41,6 +54,15 @@ public class BitSetIntIterable extends IntIterable {
 
     public BitSetIntIterable(BitSet bs) {
         this.bs = bs;
+    }
+
+    public BitSet toBitSet() {
+        return (BitSet) bs.clone();
+    }
+
+    @Override
+    public BitSetIntIterable clone() {
+        return new BitSetIntIterable((BitSet) bs.clone());
     }
 
     @Override

@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.iabtcf.FieldDefs;
+import com.iabtcf.decoder.TCString;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.SegmentType;
@@ -67,6 +68,8 @@ import com.iabtcf.v2.SegmentType;
 public interface TCStringEncoder {
 
     String encode();
+
+    TCString toTCString();
 
     static class TCStringEncoderV1 implements TCStringEncoder {
         private final int version;
@@ -119,6 +122,11 @@ public interface TCStringEncoder {
             bitWriter.write(vendorConsentBits);
 
             return bitWriter.toBase64();
+        }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
         }
     }
 
@@ -287,6 +295,11 @@ public interface TCStringEncoder {
                 .filter(str -> str != null && !str.isEmpty())
                 .collect(Collectors.joining("."));
         }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
+        }
     }
 
     public static class Builder implements TCStringEncoder {
@@ -343,6 +356,29 @@ public interface TCStringEncoder {
             vendorLegitimateInterest = prototype.vendorLegitimateInterest;
             disclosedVendors = prototype.disclosedVendors;
             allowedVendors = prototype.allowedVendors;
+        }
+
+        public Builder(TCString tcString) {
+            version = tcString.getVersion();
+            created = tcString.getCreated();
+            updated = tcString.getLastUpdated();
+            cmpId = tcString.getCmpId();
+            cmpVersion = tcString.getCmpVersion();
+            consentScreen = tcString.getConsentScreen();
+            consentLanguage = tcString.getConsentLanguage();
+            vendorListVersion = tcString.getVendorListVersion();
+            purposesConsent = tcString.getPurposesConsent();
+            vendorsConsent = tcString.getVendorConsent();
+            tcfPolicyVersion = tcString.getTcfPolicyVersion();
+            isServiceSpecific = tcString.isServiceSpecific();
+            useNonStandardStacks = tcString.getUseNonStandardStacks();
+            specialFeatureOptIns = tcString.getSpecialFeatureOptIns();
+            purposesLITransparency = tcString.getPurposesLITransparency();
+            purposeOneTreatment = tcString.getPurposeOneTreatment();
+            publisherCC = tcString.getPublisherCC();
+            vendorLegitimateInterest = tcString.getVendorLegitimateInterest();
+            disclosedVendors = tcString.getDisclosedVendors();
+            allowedVendors = tcString.getAllowedVendors();
         }
 
         public Builder version(int version) {
@@ -487,6 +523,11 @@ public interface TCStringEncoder {
             return this;
         }
 
+        public Builder clearPublisherRestrictionEntry() {
+            publisherRestrictions.clear();
+            return this;
+        }
+
         /**
          * For V1 range encoding, default consent for VendorIds not covered by a RangeEntry.
          * VendorIds covered by a RangeEntry have a consent value the opposite of DefaultConsent.
@@ -505,6 +546,11 @@ public interface TCStringEncoder {
             }
 
             return new TCStringEncoderV2(this).encode();
+        }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
         }
 
         private String validateString(String str, FieldDefs field) {
@@ -531,5 +577,9 @@ public interface TCStringEncoder {
 
     public static TCStringEncoder.Builder newBuilder(TCStringEncoder.Builder tcStringEncoder) {
         return new TCStringEncoder.Builder(tcStringEncoder);
+    }
+
+    public static TCStringEncoder.Builder newBuilder(TCString tcString) {
+        return new TCStringEncoder.Builder(tcString);
     }
 }

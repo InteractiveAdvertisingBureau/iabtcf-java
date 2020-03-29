@@ -191,6 +191,33 @@ public class BitSetIntIterableTest {
         assertStreamEquals(expected.stream(), e.toStream());
     }
 
+
+    @Test
+    public void testClone() {
+        BitSet bs = new BitSet();
+        bs.set(10);
+        BitSetIntIterable e = new BitSetIntIterable(bs);
+
+        BitSetIntIterable e1 = e.clone();
+
+        bs.clear();
+        assertTrue(e.isEmpty());
+        assertFalse(e1.isEmpty());
+    }
+
+    @Test
+    public void testCopy() {
+        BitSet bs = new BitSet();
+        bs.set(10);
+        IntIterable e = new BitSetIntIterable(bs);
+
+        BitSetIntIterable e1 = BitSetIntIterable.from(e);
+
+        bs.clear();
+        assertTrue(e.isEmpty());
+        assertFalse(e1.isEmpty());
+    }
+
     static void assertStreamEquals(Stream<?> s1, IntStream s2) {
         Iterator<?> iter1 = s1.iterator(), iter2 = s2.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
