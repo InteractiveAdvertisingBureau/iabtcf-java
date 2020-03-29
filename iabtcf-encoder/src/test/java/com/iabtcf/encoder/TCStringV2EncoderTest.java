@@ -29,11 +29,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.junit.Test;
 
 import com.iabtcf.decoder.TCString;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.v2.PublisherRestriction;
+import com.iabtcf.v2.RestrictionType;
 
 public class TCStringV2EncoderTest {
 
@@ -158,4 +161,38 @@ public class TCStringV2EncoderTest {
     public void testInvalidVersion3() {
         TCStringEncoder.newBuilder(encoderBuilder).version(3);
     }
+
+    @Test
+    public void testPubisherRestrictions() {
+        TCStringEncoder.Builder b = TCStringEncoder.newBuilder(encoderBuilder);
+
+        TCString decoded = TCString.decode(b.encode());
+        assertEquals(0, decoded.getPublisherRestrictions().size());
+
+        PublisherRestrictionEntry.Builder pre = PublisherRestrictionEntry.newBuilder()
+            .purposeId(3)
+            .restrictionType(RestrictionType.NOT_ALLOWED)
+            .addVendor(3)
+            .addVendor(7);
+
+        b.addPublisherRestrictionEntry(pre.build());
+
+        pre.purposeId(1)
+            .clearVendors()
+            .addVendor(3);
+        b.addPublisherRestrictionEntry(pre.build());
+
+        decoded = TCString.decode(b.encode());
+        List<PublisherRestriction> pubRest = decoded.getPublisherRestrictions();
+
+        assertEquals(2, pubRest.size());
+        assertEquals(3, pubRest.get(0).getPurposeId());
+        assertEquals(RestrictionType.NOT_ALLOWED, pubRest.get(0).getRestrictionType());
+        assertThat(pubRest.get(0).getVendorIds(), matchInts(3, 7));
+
+        assertEquals(1, pubRest.get(1).getPurposeId());
+        assertEquals(RestrictionType.NOT_ALLOWED, pubRest.get(1).getRestrictionType());
+        assertThat(pubRest.get(1).getVendorIds(), matchInts(3));
+    }
+
 }
