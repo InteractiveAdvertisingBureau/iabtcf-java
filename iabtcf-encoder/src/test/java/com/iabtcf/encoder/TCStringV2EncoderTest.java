@@ -4,6 +4,7 @@ import static com.iabtcf.encoder.utils.TestUtils.toDeci;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.BitSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -195,4 +197,16 @@ public class TCStringV2EncoderTest {
         assertThat(pubRest.get(1).getVendorIds(), matchInts(3));
     }
 
+    @Test
+    public void testToTCString() {
+        TCString tcStr = TCString.decode("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA");
+        TCStringEncoder.Builder b = TCStringEncoder.newBuilder(tcStr);
+        TCString tcStr1 = b.toTCString();
+        assertEquals(tcStr, tcStr1);
+
+        BitSet av = BitSetIntIterable.from(tcStr.getAllowedVendors()).toBitSet();
+        av.set(400);
+        b.allowedVendors(new BitSetIntIterable(av));
+        assertNotEquals(tcStr, b.toTCString());
+    }
 }
