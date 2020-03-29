@@ -31,7 +31,24 @@ public class BitSetIntIterable extends IntIterable {
 
     public static final BitSetIntIterable EMPTY = new BitSetIntIterable(new BitSet());
 
-    public static BitSetIntIterable of(int... values) {
+    public static BitSetIntIterable from(BitSet bs) {
+        return new BitSetIntIterable((BitSet) bs.clone());
+    }
+
+    public static BitSetIntIterable from(IntIterable ii) {
+        if (ii instanceof BitSetIntIterable) {
+            return ((BitSetIntIterable) ii).clone();
+        }
+
+        BitSet bs = new BitSet();
+        for (IntIterator i = ii.intIterator(); i.hasNext();) {
+            bs.set(i.nextInt());
+        }
+
+        return new BitSetIntIterable(bs);
+    }
+
+    public static BitSetIntIterable from(int... values) {
         BitSet bs = new BitSet();
         for (int i = 0; i < values.length; i++) {
             bs.set(values[i]);
@@ -39,8 +56,29 @@ public class BitSetIntIterable extends IntIterable {
         return new BitSetIntIterable(bs);
     }
 
-    public BitSetIntIterable(BitSet bs) {
+    public static BitSetIntIterable.Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static BitSetIntIterable.Builder newBuilder(BitSetIntIterable prototype) {
+        return new Builder(prototype);
+    }
+
+    public static BitSetIntIterable.Builder newBuilder(BitSet bs) {
+        return new Builder(new BitSetIntIterable(bs));
+    }
+
+    private BitSetIntIterable(BitSet bs) {
         this.bs = bs;
+    }
+
+    public BitSet toBitSet() {
+        return (BitSet) bs.clone();
+    }
+
+    @Override
+    public BitSetIntIterable clone() {
+        return new BitSetIntIterable((BitSet) bs.clone());
     }
 
     @Override
@@ -117,5 +155,67 @@ public class BitSetIntIterable extends IntIterable {
     @Override
     public String toString() {
         return bs.toString();
+    }
+
+    public static class Builder {
+        private final BitSet bs;
+
+        private Builder() {
+            this(new BitSet());
+        }
+
+        private Builder(BitSet bs) {
+            this.bs = bs;
+        }
+
+        private Builder(BitSetIntIterable prototype) {
+            this(prototype.clone().bs);
+        }
+
+        public Builder add(int value) {
+            bs.set(value);
+            return this;
+        }
+
+        public Builder add(BitSetIntIterable value) {
+            bs.or(value.bs);
+            return this;
+        }
+
+        public Builder add(IntIterable value) {
+            for (IntIterator ii = value.intIterator(); ii.hasNext();) {
+                bs.set(ii.nextInt());
+            }
+            return this;
+        }
+
+        public Builder add(Builder value) {
+            bs.or(value.bs);
+            return this;
+        }
+
+        public Builder clear() {
+            bs.clear();
+            return this;
+        }
+
+        /**
+         * Returns the maximum value in the set.
+         */
+        public int max() {
+            if (bs.isEmpty()) {
+                return 0;
+            }
+
+            return bs.length() - 1;
+        }
+
+        public BitSetIntIterable build() {
+            return new BitSetIntIterable((BitSet) bs.clone());
+        }
+    }
+
+    public static Builder newBuilder(IntIterable purposesConsent) {
+        return new Builder(BitSetIntIterable.from(purposesConsent));
     }
 }

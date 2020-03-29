@@ -7,14 +7,14 @@ package com.iabtcf.encoder;
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance  the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * OUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * #L%
@@ -52,11 +52,15 @@ import static com.iabtcf.FieldDefs.V1_VERSION;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.iabtcf.FieldDefs;
+import com.iabtcf.decoder.TCString;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.SegmentType;
@@ -64,6 +68,8 @@ import com.iabtcf.v2.SegmentType;
 public interface TCStringEncoder {
 
     String encode();
+
+    TCString toTCString();
 
     static class TCStringEncoderV1 implements TCStringEncoder {
         private final int version;
@@ -90,8 +96,8 @@ public interface TCStringEncoder {
             this.consentScreen = builder.consentScreen;
             this.consentLanguage = builder.consentLanguage;
             this.vendorListVersion = builder.vendorListVersion;
-            this.purposesConsent = builder.purposesConsent;
-            this.vendorsConsent = builder.vendorsConsent;
+            this.purposesConsent = builder.purposesConsent.build();
+            this.vendorsConsent = builder.vendorConsent.build();
             this.defaultConsent = builder.defaultConsent;
         }
 
@@ -116,6 +122,11 @@ public interface TCStringEncoder {
             bitWriter.write(vendorConsentBits);
 
             return bitWriter.toBase64();
+        }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
         }
     }
 
@@ -145,6 +156,7 @@ public interface TCStringEncoder {
         private final IntIterable customPurposesConsent;
         private final IntIterable customPurposesLITransparency;
         private final IntIterable pubPurposesLITransparency;
+        private final List<PublisherRestrictionEntry> publisherRestrictions;
 
         private TCStringEncoderV2(TCStringEncoder.Builder builder) {
             if (builder.version != 2) {
@@ -159,23 +171,25 @@ public interface TCStringEncoder {
             consentScreen = builder.consentScreen;
             consentLanguage = Objects.requireNonNull(builder.consentLanguage);
             vendorListVersion = builder.vendorListVersion;
-            purposesConsent = Objects.requireNonNull(builder.purposesConsent);
-            vendorsConsent = Objects.requireNonNull(builder.vendorsConsent);
+            purposesConsent = builder.purposesConsent.build();
+            vendorsConsent = builder.vendorConsent.build();
             tcfPolicyVersion = builder.tcfPolicyVersion;
             isServiceSpecific = builder.isServiceSpecific;
             useNonStandardStacks = builder.useNonStandardStacks;
-            specialFeatureOptIns = Objects.requireNonNull(builder.specialFeatureOptIns);
-            purposesLITransparency = Objects.requireNonNull(builder.purposesLITransparency);
+            specialFeatureOptIns = builder.specialFeatureOptIns.build();
+            purposesLITransparency = builder.purposesLITransparency.build();
             purposeOneTreatment = builder.purposeOneTreatment;
-            publisherCC = Objects.requireNonNull(builder.publisherCC);
-            vendorLegitimateInterest = Objects.requireNonNull(builder.vendorLegitimateInterest);
-            disclosedVendors = Objects.requireNonNull(builder.disclosedVendors);
-            allowedVendors = Objects.requireNonNull(builder.allowedVendors);
-            pubPurposesLITransparency = Objects.requireNonNull(builder.pubPurposesLITransparency);
-            numberOfCustomPurposes = builder.numberOfCustomPurposes;
-            pubPurposesConsent = Objects.requireNonNull(builder.pubPurposesConsent);
-            customPurposesLITransparency = Objects.requireNonNull(builder.customPurposesLITransparency);
-            customPurposesConsent = Objects.requireNonNull(builder.customPurposesConsent);
+            publisherCC = builder.publisherCC;
+            vendorLegitimateInterest = builder.vendorLegitimateInterest.build();
+            disclosedVendors = builder.disclosedVendors.build();
+            allowedVendors = builder.allowedVendors.build();
+            pubPurposesLITransparency = builder.pubPurposesLITransparency.build();
+            pubPurposesConsent = builder.pubPurposesConsent.build();
+            numberOfCustomPurposes =
+                    Math.max(builder.customPurposesLITransparency.max(), builder.customPurposesConsent.max());
+            customPurposesLITransparency = builder.customPurposesLITransparency.build();
+            customPurposesConsent = builder.customPurposesConsent.build();
+            publisherRestrictions = new ArrayList<>(builder.publisherRestrictions);
         }
 
         private String encodeSegment(SegmentType segmentType) {
@@ -240,6 +254,19 @@ public interface TCStringEncoder {
             bitWriter.write(new VendorFieldEncoder().add(vendorsConsent).build());
             bitWriter.write(new VendorFieldEncoder().add(vendorLegitimateInterest).build());
 
+            bitWriter.write(publisherRestrictions.size(), FieldDefs.CORE_NUM_PUB_RESTRICTION);
+
+            for (PublisherRestrictionEntry pre : publisherRestrictions) {
+                bitWriter.write(pre.getPurposeId(), FieldDefs.PURPOSE_ID);
+                bitWriter.write(pre.getRestrictionType().ordinal(), FieldDefs.RESTRICTION_TYPE);
+                VendorFieldEncoder v = new VendorFieldEncoder()
+                    .emitRangeEncoding(true)
+                    .emitMaxVendorId(false)
+                    .emitIsRangeEncoding(false)
+                    .add(pre.getVendors());
+                bitWriter.write(v.build());
+            }
+
             return bitWriter.toBase64();
         }
 
@@ -247,7 +274,7 @@ public interface TCStringEncoder {
          * Publisher Purposes Transparency and Consent segment
          */
         private String encodePPTC() {
-            if (pubPurposesConsent.isEmpty()) {
+            if (pubPurposesConsent.isEmpty() && pubPurposesLITransparency.isEmpty() && numberOfCustomPurposes == 0) {
                 return "";
             }
 
@@ -269,6 +296,11 @@ public interface TCStringEncoder {
                 .filter(str -> str != null && !str.isEmpty())
                 .collect(Collectors.joining("."));
         }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
+        }
     }
 
     public static class Builder implements TCStringEncoder {
@@ -280,24 +312,24 @@ public interface TCStringEncoder {
         private int consentScreen = 0;
         private String consentLanguage = "EN";
         private int vendorListVersion = 0;
-        private IntIterable purposesConsent = BitSetIntIterable.EMPTY;
-        private IntIterable vendorsConsent = BitSetIntIterable.EMPTY;
+        private BitSetIntIterable.Builder purposesConsent = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder vendorConsent = BitSetIntIterable.newBuilder();
         private int tcfPolicyVersion = 0;
         private boolean isServiceSpecific = false;
         private boolean useNonStandardStacks = false;
-        private IntIterable specialFeatureOptIns = BitSetIntIterable.EMPTY;
-        private IntIterable purposesLITransparency = BitSetIntIterable.EMPTY;
+        private BitSetIntIterable.Builder specialFeatureOptIns = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder purposesLITransparency = BitSetIntIterable.newBuilder();
         private boolean purposeOneTreatment = false;
         private String publisherCC = "US";
-        private IntIterable vendorLegitimateInterest = BitSetIntIterable.EMPTY;
-        private IntIterable disclosedVendors = BitSetIntIterable.EMPTY;
-        private IntIterable allowedVendors = BitSetIntIterable.EMPTY;
-        private IntIterable pubPurposesConsent = BitSetIntIterable.EMPTY;
-        private int numberOfCustomPurposes = 0;
-        private IntIterable customPurposesConsent = BitSetIntIterable.EMPTY;
-        private IntIterable customPurposesLITransparency = BitSetIntIterable.EMPTY;
-        private IntIterable pubPurposesLITransparency = BitSetIntIterable.EMPTY;
+        private BitSetIntIterable.Builder vendorLegitimateInterest = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder disclosedVendors = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder allowedVendors = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder pubPurposesConsent = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder customPurposesConsent = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder customPurposesLITransparency = BitSetIntIterable.newBuilder();
+        private BitSetIntIterable.Builder pubPurposesLITransparency = BitSetIntIterable.newBuilder();
         private boolean defaultConsent = false;
+        private final List<PublisherRestrictionEntry> publisherRestrictions = new ArrayList<>();
 
         private Builder() {
 
@@ -313,7 +345,7 @@ public interface TCStringEncoder {
             consentLanguage = prototype.consentLanguage;
             vendorListVersion = prototype.vendorListVersion;
             purposesConsent = prototype.purposesConsent;
-            vendorsConsent = prototype.vendorsConsent;
+            vendorConsent = prototype.vendorConsent;
             tcfPolicyVersion = prototype.tcfPolicyVersion;
             isServiceSpecific = prototype.isServiceSpecific;
             useNonStandardStacks = prototype.useNonStandardStacks;
@@ -324,6 +356,29 @@ public interface TCStringEncoder {
             vendorLegitimateInterest = prototype.vendorLegitimateInterest;
             disclosedVendors = prototype.disclosedVendors;
             allowedVendors = prototype.allowedVendors;
+        }
+
+        public Builder(TCString tcString) {
+            version = tcString.getVersion();
+            created = tcString.getCreated();
+            updated = tcString.getLastUpdated();
+            cmpId = tcString.getCmpId();
+            cmpVersion = tcString.getCmpVersion();
+            consentScreen = tcString.getConsentScreen();
+            consentLanguage = tcString.getConsentLanguage();
+            vendorListVersion = tcString.getVendorListVersion();
+            purposesConsent = BitSetIntIterable.newBuilder(tcString.getPurposesConsent());
+            vendorConsent = BitSetIntIterable.newBuilder(tcString.getVendorConsent());
+            tcfPolicyVersion = tcString.getTcfPolicyVersion();
+            isServiceSpecific = tcString.isServiceSpecific();
+            useNonStandardStacks = tcString.getUseNonStandardStacks();
+            specialFeatureOptIns = BitSetIntIterable.newBuilder(tcString.getSpecialFeatureOptIns());
+            purposesLITransparency = BitSetIntIterable.newBuilder(tcString.getPurposesLITransparency());
+            purposeOneTreatment = tcString.getPurposeOneTreatment();
+            publisherCC = tcString.getPublisherCC();
+            vendorLegitimateInterest = BitSetIntIterable.newBuilder(tcString.getVendorLegitimateInterest());
+            disclosedVendors = BitSetIntIterable.newBuilder(tcString.getDisclosedVendors());
+            allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
         }
 
         public Builder version(int version) {
@@ -366,13 +421,33 @@ public interface TCStringEncoder {
             return this;
         }
 
-        public Builder purposesConsent(IntIterable purposesConsent) {
-            this.purposesConsent = purposesConsent;
+        public Builder addPurposesConsent(int purposesConsent) {
+            this.purposesConsent.add(purposesConsent);
             return this;
         }
 
-        public Builder vendorsConsent(IntIterable vendorsConsent) {
-            this.vendorsConsent = vendorsConsent;
+        public Builder addPurposesConsent(IntIterable purposesConsent) {
+            this.purposesConsent.add(purposesConsent);
+            return this;
+        }
+
+        public Builder clearPurposesConsent() {
+            purposesConsent.clear();
+            return this;
+        }
+
+        public Builder addVendorConsent(int vendorsConsent) {
+            this.vendorConsent.add(vendorsConsent);
+            return this;
+        }
+
+        public Builder addVendorConsent(IntIterable vendorsConsent) {
+            this.vendorConsent.add(vendorsConsent);
+            return this;
+        }
+
+        public Builder clearVendorConsent() {
+            this.vendorConsent.clear();
             return this;
         }
 
@@ -391,13 +466,33 @@ public interface TCStringEncoder {
             return this;
         }
 
-        public Builder specialFeatureOptIns(IntIterable specialFeatureOptIns) {
-            this.specialFeatureOptIns = specialFeatureOptIns;
+        public Builder addSpecialFeatureOptIns(int specialFeatureOptIns) {
+            this.specialFeatureOptIns.add(specialFeatureOptIns);
             return this;
         }
 
-        public Builder purposesLITransparency(IntIterable purposesLITransparency) {
-            this.purposesLITransparency = purposesLITransparency;
+        public Builder addSpecialFeatureOptIns(IntIterable specialFeatureOptIns) {
+            this.specialFeatureOptIns.add(specialFeatureOptIns);
+            return this;
+        }
+
+        public Builder clearSpecialFeatureOptIns() {
+            this.specialFeatureOptIns.clear();
+            return this;
+        }
+
+        public Builder addPurposesLITransparency(int purposesLITransparency) {
+            this.purposesLITransparency.add(purposesLITransparency);
+            return this;
+        }
+
+        public Builder addPurposesLITransparency(IntIterable purposesLITransparency) {
+            this.purposesLITransparency.add(purposesLITransparency);
+            return this;
+        }
+
+        public Builder clearPurposesLITransparency() {
+            this.purposesLITransparency.clear();
             return this;
         }
 
@@ -411,43 +506,131 @@ public interface TCStringEncoder {
             return this;
         }
 
-        public Builder vendorLegitimateInterest(IntIterable vendorLegitimateInterest) {
-            this.vendorLegitimateInterest = vendorLegitimateInterest;
+        public Builder addVendorLegitimateInterest(int vendorLegitimateInterest) {
+            this.vendorLegitimateInterest.add(vendorLegitimateInterest);
             return this;
         }
 
-        public Builder disclosedVendors(IntIterable disclosedVendors) {
-            this.disclosedVendors = disclosedVendors;
+        public Builder addVendorLegitimateInterest(IntIterable vendorLegitimateInterest) {
+            this.vendorLegitimateInterest.add(vendorLegitimateInterest);
             return this;
         }
 
-        public Builder allowedVendors(IntIterable allowedVendors) {
-            this.allowedVendors = allowedVendors;
+        public Builder clearVendorLegitimateInterest() {
+            this.vendorLegitimateInterest.clear();
             return this;
         }
 
-        public Builder pubPurposesConsent(IntIterable pubPurposesConsent) {
-            this.pubPurposesConsent = pubPurposesConsent;
+        public Builder addDisclosedVendors(int disclosedVendors) {
+            this.disclosedVendors.add(disclosedVendors);
             return this;
         }
 
-        public Builder pubPurposesLITransparency(IntIterable pubPurposesLITransparency) {
-            this.pubPurposesLITransparency = pubPurposesLITransparency;
+        public Builder addDisclosedVendors(IntIterable disclosedVendors) {
+            this.disclosedVendors.add(disclosedVendors);
             return this;
         }
 
-        public Builder numberOfCustomPurposesConsent(int numberOfCustomPurposes) {
-            this.numberOfCustomPurposes = numberOfCustomPurposes;
+        public Builder clearDisclosedVendors() {
+            this.disclosedVendors.clear();
             return this;
         }
 
-        public Builder customPurposesConsent(IntIterable customPurposesConsent) {
-            this.customPurposesConsent = customPurposesConsent;
+        public Builder addAllowedVendors(int allowedVendors) {
+            this.allowedVendors.add(allowedVendors);
             return this;
         }
 
-        public Builder customPurposesLITransparency(IntIterable customPurposesLITransparency) {
-            this.customPurposesLITransparency = customPurposesLITransparency;
+        public Builder addAllowedVendors(IntIterable allowedVendors) {
+            this.allowedVendors.add(allowedVendors);
+            return this;
+        }
+
+        public Builder clearAllowedVendors() {
+            this.allowedVendors.clear();
+            return this;
+        }
+
+        public Builder addPubPurposesConsent(int pubPurposesConsent) {
+            this.pubPurposesConsent.add(pubPurposesConsent);
+            return this;
+        }
+
+        public Builder addPubPurposesConsent(IntIterable pubPurposesConsent) {
+            this.pubPurposesConsent.add(pubPurposesConsent);
+            return this;
+        }
+
+        public Builder clearPubPurposesConsent() {
+            this.pubPurposesConsent.clear();
+            return this;
+        }
+
+        public Builder addCustomPurposesConsent(int customPurposesConsent) {
+            this.customPurposesConsent.add(customPurposesConsent);
+            return this;
+        }
+
+        public Builder addCustomPurposesConsent(IntIterable customPurposesConsent) {
+            this.customPurposesConsent.add(customPurposesConsent);
+            return this;
+        }
+
+        public Builder clearCustomPurposesConsent() {
+            this.customPurposesConsent.clear();
+            return this;
+        }
+
+        public Builder addCustomPurposesLITransparency(int customPurposesLITransparency) {
+            this.customPurposesLITransparency.add(customPurposesLITransparency);
+            return this;
+        }
+
+        public Builder addCustomPurposesLITransparency(IntIterable customPurposesLITransparency) {
+            this.customPurposesLITransparency.add(customPurposesLITransparency);
+            return this;
+        }
+
+        public Builder clearCustomPurposesLITransparency() {
+            this.customPurposesLITransparency.clear();
+            return this;
+        }
+
+        public Builder addPubPurposesLITransparency(int pubPurposesLITransparency) {
+            this.pubPurposesLITransparency.add(pubPurposesLITransparency);
+            return this;
+        }
+
+        public Builder addPubPurposesLITransparency(IntIterable pubPurposesLITransparency) {
+            this.pubPurposesLITransparency.add(pubPurposesLITransparency);
+            return this;
+        }
+
+        public Builder clearPubPurposesLITransparency() {
+            this.pubPurposesLITransparency.clear();
+            return this;
+        }
+
+
+        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry entry) {
+            publisherRestrictions.add(entry);
+            return this;
+        }
+
+        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry... entries) {
+            for (int i = 0; i < entries.length; i++) {
+                addPublisherRestrictionEntry(entries[i]);
+            }
+            return this;
+        }
+
+        public Builder addPublisherRestrictionEntry(Collection<PublisherRestrictionEntry> entries) {
+            publisherRestrictions.addAll(entries);
+            return this;
+        }
+
+        public Builder clearPublisherRestrictionEntry() {
+            publisherRestrictions.clear();
             return this;
         }
 
@@ -469,6 +652,11 @@ public interface TCStringEncoder {
             }
 
             return new TCStringEncoderV2(this).encode();
+        }
+
+        @Override
+        public TCString toTCString() {
+            return TCString.decode(encode());
         }
 
         private String validateString(String str, FieldDefs field) {
@@ -495,5 +683,9 @@ public interface TCStringEncoder {
 
     public static TCStringEncoder.Builder newBuilder(TCStringEncoder.Builder tcStringEncoder) {
         return new TCStringEncoder.Builder(tcStringEncoder);
+    }
+
+    public static TCStringEncoder.Builder newBuilder(TCString tcString) {
+        return new TCStringEncoder.Builder(tcString);
     }
 }

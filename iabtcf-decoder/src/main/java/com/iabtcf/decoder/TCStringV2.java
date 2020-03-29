@@ -59,13 +59,14 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
-import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.BitReaderUtils;
+import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
@@ -162,7 +163,7 @@ class TCStringV2 implements TCString {
                 }
             }
         }
-        return new BitSetIntIterable(bs);
+        return BitSetIntIterable.from(bs);
     }
 
     /**
@@ -229,7 +230,7 @@ class TCStringV2 implements TCString {
             BitSet bs = new BitSet();
             currentPointer = vendorIdsFromRange(bbv, bs, currentPointer, Optional.empty());
             PublisherRestriction publisherRestriction =
-                    new PublisherRestriction(purposeId, restrictionType, new BitSetIntIterable(bs));
+                    new PublisherRestriction(purposeId, restrictionType, BitSetIntIterable.from(bs));
             publisherRestrictions.add(publisherRestriction);
         }
         return currentPointer;
@@ -239,13 +240,13 @@ class TCStringV2 implements TCString {
         int offset = field.getOffset(bbv);
         int length = field.getLength(bbv);
 
-        BitSet bs = new BitSet();
+        BitSetIntIterable.Builder bs = BitSetIntIterable.newBuilder();
         for (int i = 0; i < length; i++) {
             if (bbv.readBits1(offset + i)) {
-                bs.set(i + 1);
+                bs.add(i + 1);
             }
         }
-        return new BitSetIntIterable(bs);
+        return bs.build();
     }
 
     @Override
@@ -486,5 +487,54 @@ class TCStringV2 implements TCString {
             }
         }
         return customPurposesLITransparency;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(allowedVendors, consentLanguage, consentManagerProviderId, consentManagerProviderVersion,
+                consentRecordCreated, consentRecordLastUpdated, consentScreen, customPurposesConsent,
+                customPurposesLITransparency, disclosedVendors, isPurposeOneTreatment, isServiceSpecific, policyVersion,
+                publisherCountryCode, publisherPurposesConsent, publisherPurposesLITransparency, publisherRestrictions,
+                purposesConsent, purposesLITransparency, specialFeaturesOptInts, useNonStandardStacks, vendorConsents,
+                vendorLegitimateInterests, vendorListVersion, version);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TCStringV2 other = (TCStringV2) obj;
+        return Objects.equals(getAllowedVendors(), other.getAllowedVendors())
+                && Objects.equals(getConsentLanguage(), other.getConsentLanguage())
+                && getCmpId() == other.getCmpId()
+                && getCmpVersion() == other.getCmpVersion()
+                && Objects.equals(getCreated(), other.getCreated())
+                && Objects.equals(getLastUpdated(), other.getLastUpdated())
+                && getConsentScreen() == other.getConsentScreen()
+                && Objects.equals(getCustomPurposesConsent(), other.getCustomPurposesConsent())
+                && Objects.equals(getCustomPurposesLITransparency(),
+                        other.getCustomPurposesLITransparency())
+                && Objects.equals(getDisclosedVendors(), other.getDisclosedVendors())
+                && getPurposeOneTreatment() == other.getPurposeOneTreatment()
+                && isServiceSpecific() == other.isServiceSpecific()
+                && getTcfPolicyVersion() == other.getTcfPolicyVersion()
+                && Objects.equals(getPublisherCC(), other.getPublisherCC())
+                && Objects.equals(getPubPurposesConsent(), other.getPubPurposesConsent())
+                && Objects.equals(getPubPurposesLITransparency(), other.getPubPurposesLITransparency())
+                && Objects.equals(getPublisherRestrictions(), other.getPublisherRestrictions())
+                && Objects.equals(getPurposesConsent(), other.getPurposesConsent())
+                && Objects.equals(getPurposesLITransparency(), other.getPurposesLITransparency())
+                && Objects.equals(getSpecialFeatureOptIns(), other.getSpecialFeatureOptIns())
+                && getUseNonStandardStacks() == other.getUseNonStandardStacks()
+                && Objects.equals(getVendorConsent(), other.getVendorConsent())
+                && Objects.equals(getVendorLegitimateInterest(), other.getVendorLegitimateInterest())
+                && getVendorListVersion() == other.getVendorListVersion() && getVersion() == other.getVersion();
     }
 }
