@@ -184,7 +184,7 @@ public enum FieldDefs {
      * Returns the length of a non-dynamic field.
      */
     public int getLength() {
-        assert (this.isDynamic == false);
+        assert (length.isDynamic() == false);
 
         return length.apply(null);
     }

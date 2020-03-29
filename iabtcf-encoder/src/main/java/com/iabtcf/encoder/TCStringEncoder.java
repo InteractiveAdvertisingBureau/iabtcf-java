@@ -7,14 +7,14 @@ package com.iabtcf.encoder;
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance  the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * OUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * #L%
@@ -52,6 +52,9 @@ import static com.iabtcf.FieldDefs.V1_VERSION;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -145,6 +148,7 @@ public interface TCStringEncoder {
         private final IntIterable customPurposesConsent;
         private final IntIterable customPurposesLITransparency;
         private final IntIterable pubPurposesLITransparency;
+        private final List<PublisherRestrictionEntry> publisherRestrictions;
 
         private TCStringEncoderV2(TCStringEncoder.Builder builder) {
             if (builder.version != 2) {
@@ -176,6 +180,7 @@ public interface TCStringEncoder {
             pubPurposesConsent = Objects.requireNonNull(builder.pubPurposesConsent);
             customPurposesLITransparency = Objects.requireNonNull(builder.customPurposesLITransparency);
             customPurposesConsent = Objects.requireNonNull(builder.customPurposesConsent);
+            publisherRestrictions = new ArrayList<>(builder.publisherRestrictions);
         }
 
         private String encodeSegment(SegmentType segmentType) {
@@ -240,6 +245,19 @@ public interface TCStringEncoder {
             bitWriter.write(new VendorFieldEncoder().add(vendorsConsent).build());
             bitWriter.write(new VendorFieldEncoder().add(vendorLegitimateInterest).build());
 
+            bitWriter.write(publisherRestrictions.size(), FieldDefs.CORE_NUM_PUB_RESTRICTION);
+
+            for (PublisherRestrictionEntry pre : publisherRestrictions) {
+                bitWriter.write(pre.getPurposeId(), FieldDefs.PURPOSE_ID);
+                bitWriter.write(pre.getRestrictionType().ordinal(), FieldDefs.RESTRICTION_TYPE);
+                VendorFieldEncoder v = new VendorFieldEncoder()
+                    .emitRangeEncoding(true)
+                    .emitMaxVendorId(false)
+                    .emitIsRangeEncoding(false)
+                    .add(pre.getVendors());
+                bitWriter.write(v.build());
+            }
+
             return bitWriter.toBase64();
         }
 
@@ -298,6 +316,7 @@ public interface TCStringEncoder {
         private IntIterable customPurposesLITransparency = BitSetIntIterable.EMPTY;
         private IntIterable pubPurposesLITransparency = BitSetIntIterable.EMPTY;
         private boolean defaultConsent = false;
+        private final List<PublisherRestrictionEntry> publisherRestrictions = new ArrayList<>();
 
         private Builder() {
 
@@ -448,6 +467,23 @@ public interface TCStringEncoder {
 
         public Builder customPurposesLITransparency(IntIterable customPurposesLITransparency) {
             this.customPurposesLITransparency = customPurposesLITransparency;
+            return this;
+        }
+
+        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry entry) {
+            publisherRestrictions.add(entry);
+            return this;
+        }
+
+        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry... entries) {
+            for (int i = 0; i < entries.length; i++) {
+                addPublisherRestrictionEntry(entries[i]);
+            }
+            return this;
+        }
+
+        public Builder addPublisherRestrictionEntry(Collection<PublisherRestrictionEntry> entries) {
+            publisherRestrictions.addAll(entries);
             return this;
         }
 
