@@ -30,5 +30,7 @@ public interface IntIterable extends Iterable<Integer> {
 
     boolean containsAll(int... source);
 
+    boolean containsAny(int... source);
+
     IntIterator intIterator();
 }
