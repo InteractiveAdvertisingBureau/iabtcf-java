@@ -52,11 +52,14 @@ public class BitSetIntIterable implements IntIterable {
 
     @Override
     public boolean contains(int value) {
-        try {
-            return bs.get(value);
-        } catch (IndexOutOfBoundsException e) {
+        if (isOutOfBitSetBounds(value)) {
             return false;
         }
+        return bs.get(value);
+    }
+
+    private boolean isOutOfBitSetBounds(final int value) {
+        return value < 0 && value > bs.size();
     }
 
     @Override
@@ -70,10 +73,9 @@ public class BitSetIntIterable implements IntIterable {
     }
 
     @Override
-    public boolean containsAny(int... source) {
+    public boolean containsAny(final int... source) {
         return Arrays
                 .stream(source)
-                .filter(value -> value < bs.size())
                 .anyMatch(this::contains);
     }
 
