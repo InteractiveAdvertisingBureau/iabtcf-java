@@ -20,6 +20,7 @@ package com.iabtcf.utils;
  * #L%
  */
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -66,6 +67,14 @@ public class BitSetIntIterable implements IntIterable {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean containsAny(int... source) {
+        return Arrays
+                .stream(source)
+                .filter(value -> value < bs.size())
+                .anyMatch(this::contains);
     }
 
     @Override
