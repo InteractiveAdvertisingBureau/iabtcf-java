@@ -31,8 +31,6 @@ import static com.iabtcf.FieldDefs.V1_VENDOR_BITRANGE_FIELD;
 import static com.iabtcf.FieldDefs.V1_VENDOR_LIST_VERSION;
 import static com.iabtcf.FieldDefs.V1_VENDOR_MAX_VENDOR_ID;
 import static com.iabtcf.FieldDefs.V1_VERSION;
-import static com.iabtcf.utils.BitReaderUtils.deciSeconds;
-import static com.iabtcf.utils.BitReaderUtils.readStr2;
 
 import java.time.Instant;
 import java.util.BitSet;
@@ -66,12 +64,12 @@ class TCStringV1 implements TCString {
 
     @Override
     public Instant getCreated() {
-        return deciSeconds(bbv, V1_CREATED);
+        return Instant.ofEpochMilli(bbv.readBits36(V1_CREATED) * 100);
     }
 
     @Override
     public Instant getLastUpdated() {
-        return deciSeconds(bbv, V1_LAST_UPDATED);
+        return Instant.ofEpochMilli(bbv.readBits36(V1_LAST_UPDATED) * 100);
     }
 
     @Override
@@ -91,7 +89,7 @@ class TCStringV1 implements TCString {
 
     @Override
     public String getConsentLanguage() {
-        return readStr2(bbv, V1_CONSENT_LANGUAGE);
+        return bbv.readStr2(V1_CONSENT_LANGUAGE);
     }
 
     @Override
@@ -249,5 +247,34 @@ class TCStringV1 implements TCString {
                 && Objects.equals(getVendorConsent(), other.getVendorConsent())
                 && getDefaultVendorConsent() == other.getDefaultVendorConsent()
                 && Objects.equals(getPurposesConsent(), other.getPurposesConsent());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TCStringV1 [getVersion()=");
+        builder.append(getVersion());
+        builder.append(", getCreated()=");
+        builder.append(getCreated());
+        builder.append(", getLastUpdated()=");
+        builder.append(getLastUpdated());
+        builder.append(", getCmpId()=");
+        builder.append(getCmpId());
+        builder.append(", getCmpVersion()=");
+        builder.append(getCmpVersion());
+        builder.append(", getConsentScreen()=");
+        builder.append(getConsentScreen());
+        builder.append(", getConsentLanguage()=");
+        builder.append(getConsentLanguage());
+        builder.append(", getVendorListVersion()=");
+        builder.append(getVendorListVersion());
+        builder.append(", getVendorConsent()=");
+        builder.append(getVendorConsent());
+        builder.append(", getDefaultVendorConsent()=");
+        builder.append(getDefaultVendorConsent());
+        builder.append(", getPurposesConsent()=");
+        builder.append(getPurposesConsent());
+        builder.append("]");
+        return builder.toString();
     }
 }

@@ -39,7 +39,6 @@ import org.junit.Test;
 
 import com.iabtcf.decoder.TCString;
 import com.iabtcf.exceptions.ByteParseException;
-import com.iabtcf.utils.BitReaderUtils;
 
 public class BitReaderTest {
     Random r = new Random();
@@ -672,7 +671,7 @@ public class BitReaderTest {
     public void testReadSixBitString() {
         String bitString = "000000 000001";
         BitReader bitVector = fromBitString(bitString);
-        assertEquals("AB", BitReaderUtils.readStr2(bitVector, 0));
+        assertEquals("AB", bitVector.readStr2(0));
     }
 
     private BitReader fromBitString(String bits) {

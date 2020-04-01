@@ -91,6 +91,15 @@ public class BitReader {
         return true;
     }
 
+    public String readStr2(int offset) {
+        return String
+            .valueOf(new char[] {(char) ('A' + readBits6(offset)), (char) ('A' + readBits6(offset + 6))});
+    }
+
+    public String readStr2(FieldDefs field) {
+        return readStr2(field.getOffset(this));
+    }
+
     /**
      * @throws ByteParseException
      */

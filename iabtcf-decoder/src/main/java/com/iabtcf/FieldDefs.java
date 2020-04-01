@@ -112,6 +112,7 @@ public enum FieldDefs {
     IS_A_RANGE(1, OffsetSupplier.NOT_SUPPORTED),
     START_OR_ONLY_VENDOR_ID(16, OffsetSupplier.NOT_SUPPORTED),
     END_VENDOR_ID(16, OffsetSupplier.NOT_SUPPORTED),
+    TIMESTAMP(36, OffsetSupplier.NOT_SUPPORTED),
 
     // publish restriction fields, only field lengths are supported
     PURPOSE_ID(6, OffsetSupplier.NOT_SUPPORTED),

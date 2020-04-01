@@ -65,7 +65,6 @@ import java.util.Optional;
 import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
-import com.iabtcf.utils.BitReaderUtils;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
@@ -300,7 +299,7 @@ class TCStringV2 implements TCString {
     @Override
     public String getConsentLanguage() {
         if (cache.add(CORE_CONSENT_LANGUAGE)) {
-            consentLanguage = BitReaderUtils.readStr2(bbv, CORE_CONSENT_LANGUAGE);
+            consentLanguage = bbv.readStr2(CORE_CONSENT_LANGUAGE);
         }
         return consentLanguage;
     }
@@ -388,7 +387,7 @@ class TCStringV2 implements TCString {
     @Override
     public String getPublisherCC() {
         if (cache.add(CORE_PUBLISHER_CC)) {
-            publisherCountryCode = BitReaderUtils.readStr2(bbv, CORE_PUBLISHER_CC);
+            publisherCountryCode = bbv.readStr2(CORE_PUBLISHER_CC);
         }
         return publisherCountryCode;
     }
@@ -536,5 +535,62 @@ class TCStringV2 implements TCString {
                 && Objects.equals(getVendorConsent(), other.getVendorConsent())
                 && Objects.equals(getVendorLegitimateInterest(), other.getVendorLegitimateInterest())
                 && getVendorListVersion() == other.getVendorListVersion() && getVersion() == other.getVersion();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TCStringV2 [version=");
+        builder.append(version);
+        builder.append(", consentRecordCreated=");
+        builder.append(consentRecordCreated);
+        builder.append(", consentRecordLastUpdated=");
+        builder.append(consentRecordLastUpdated);
+        builder.append(", consentManagerProviderId=");
+        builder.append(consentManagerProviderId);
+        builder.append(", consentManagerProviderVersion=");
+        builder.append(consentManagerProviderVersion);
+        builder.append(", consentScreen=");
+        builder.append(consentScreen);
+        builder.append(", consentLanguage=");
+        builder.append(consentLanguage);
+        builder.append(", vendorListVersion=");
+        builder.append(vendorListVersion);
+        builder.append(", policyVersion=");
+        builder.append(policyVersion);
+        builder.append(", isServiceSpecific=");
+        builder.append(isServiceSpecific);
+        builder.append(", useNonStandardStacks=");
+        builder.append(useNonStandardStacks);
+        builder.append(", specialFeaturesOptInts=");
+        builder.append(specialFeaturesOptInts);
+        builder.append(", purposesConsent=");
+        builder.append(purposesConsent);
+        builder.append(", purposesLITransparency=");
+        builder.append(purposesLITransparency);
+        builder.append(", isPurposeOneTreatment=");
+        builder.append(isPurposeOneTreatment);
+        builder.append(", publisherCountryCode=");
+        builder.append(publisherCountryCode);
+        builder.append(", vendorConsents=");
+        builder.append(vendorConsents);
+        builder.append(", vendorLegitimateInterests=");
+        builder.append(vendorLegitimateInterests);
+        builder.append(", publisherRestrictions=");
+        builder.append(publisherRestrictions);
+        builder.append(", disclosedVendors=");
+        builder.append(disclosedVendors);
+        builder.append(", allowedVendors=");
+        builder.append(allowedVendors);
+        builder.append(", publisherPurposesConsent=");
+        builder.append(publisherPurposesConsent);
+        builder.append(", publisherPurposesLITransparency=");
+        builder.append(publisherPurposesLITransparency);
+        builder.append(", customPurposesConsent=");
+        builder.append(customPurposesConsent);
+        builder.append(", customPurposesLITransparency=");
+        builder.append(customPurposesLITransparency);
+        builder.append("]");
+        return builder.toString();
     }
 }
