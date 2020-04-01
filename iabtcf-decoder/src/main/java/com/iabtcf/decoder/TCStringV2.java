@@ -163,7 +163,7 @@ class TCStringV2 implements TCString {
                 }
             }
         }
-        return new BitSetIntIterable(bs);
+        return BitSetIntIterable.from(bs);
     }
 
     /**
@@ -230,7 +230,7 @@ class TCStringV2 implements TCString {
             BitSet bs = new BitSet();
             currentPointer = vendorIdsFromRange(bbv, bs, currentPointer, Optional.empty());
             PublisherRestriction publisherRestriction =
-                    new PublisherRestriction(purposeId, restrictionType, new BitSetIntIterable(bs));
+                    new PublisherRestriction(purposeId, restrictionType, BitSetIntIterable.from(bs));
             publisherRestrictions.add(publisherRestriction);
         }
         return currentPointer;
@@ -240,13 +240,13 @@ class TCStringV2 implements TCString {
         int offset = field.getOffset(bbv);
         int length = field.getLength(bbv);
 
-        BitSet bs = new BitSet();
+        BitSetIntIterable.Builder bs = BitSetIntIterable.newBuilder();
         for (int i = 0; i < length; i++) {
             if (bbv.readBits1(offset + i)) {
-                bs.set(i + 1);
+                bs.add(i + 1);
             }
         }
-        return new BitSetIntIterable(bs);
+        return bs.build();
     }
 
     @Override

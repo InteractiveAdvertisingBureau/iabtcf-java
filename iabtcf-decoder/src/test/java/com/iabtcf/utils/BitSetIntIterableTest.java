@@ -48,7 +48,7 @@ public class BitSetIntIterableTest {
     public void testLengthZero() {
         BitSet bs = new BitSet();
         bs.set(0);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertTrue(e.contains(0));
         assertTrue(e.intIterator().hasNext());
         assertEquals(1, e.toSet().size());
@@ -59,7 +59,7 @@ public class BitSetIntIterableTest {
     public void testLengthMiddle() {
         BitSet bs = new BitSet();
         bs.set(5);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertFalse(e.contains(0));
         assertTrue(e.contains(5));
         assertTrue(e.intIterator().hasNext());
@@ -72,7 +72,7 @@ public class BitSetIntIterableTest {
         BitSet bs = new BitSet();
         bs.set(0);
         bs.set(4);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertTrue(e.contains(0));
         assertTrue(e.contains(4));
         assertFalse(e.contains(5));
@@ -88,7 +88,7 @@ public class BitSetIntIterableTest {
         bs.set(0);
         bs.set(4);
         bs.set(5);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertTrue(e.contains(0));
         assertTrue(e.contains(4));
         assertTrue(e.contains(5));
@@ -106,7 +106,7 @@ public class BitSetIntIterableTest {
         bs.set(0);
         bs.set(4);
         bs.set(5);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertTrue(e.containsAll());
         assertTrue(e.containsAll(0, 4));
         assertTrue(e.containsAll(4, 5));
@@ -125,7 +125,7 @@ public class BitSetIntIterableTest {
     @Test
     public void testToEmptySet() {
         BitSet bs = new BitSet();
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertEquals(new TreeSet<>(Arrays.asList()), e.toSet());
     }
 
@@ -135,14 +135,14 @@ public class BitSetIntIterableTest {
         bs.set(1);
         bs.set(4);
         bs.set(5);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertEquals(new TreeSet<>(Arrays.asList(1, 4, 5)), e.toSet());
     }
 
     @Test
     public void testToEmptyStream() {
         BitSet bs = new BitSet();
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertStreamEquals(new TreeSet<>(Arrays.asList()).stream(), e.toStream());
     }
 
@@ -152,39 +152,39 @@ public class BitSetIntIterableTest {
         bs.set(1);
         bs.set(4);
         bs.set(5);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
         assertStreamEquals(new TreeSet<>(Arrays.asList(1, 4, 5)).stream(), e.toStream());
         assertFalse(e.isEmpty());
     }
 
     @Test
     public void testOf() {
-        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        BitSetIntIterable e = BitSetIntIterable.from(1, 2, 3);
         assertStreamEquals(new TreeSet<>(Arrays.asList(1, 2, 3)).stream(), e.toStream());
     }
 
     @Test
     public void testEmptyFalse() {
-        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        BitSetIntIterable e = BitSetIntIterable.from(1, 2, 3);
         assertFalse(e.isEmpty());
     }
 
     @Test
     public void testEmptyTrue() {
-        BitSetIntIterable e = BitSetIntIterable.of();
+        BitSetIntIterable e = BitSetIntIterable.from();
         assertTrue(e.isEmpty());
     }
 
     @Test
     public void testEmptyTrueBs() {
-        BitSetIntIterable e = new BitSetIntIterable(new BitSet());
+        BitSetIntIterable e = BitSetIntIterable.from(new BitSet());
         assertTrue(e.isEmpty());
     }
 
     @Test
     public void testOfIterable() {
         Set<Integer> expected = new TreeSet<>(Arrays.asList(1, 2, 3));
-        BitSetIntIterable e = BitSetIntIterable.of(1, 2, 3);
+        BitSetIntIterable e = BitSetIntIterable.from(1, 2, 3);
         for (Iterator<Integer> i = e.iterator(); i.hasNext();) {
             expected.contains(i.next());
         }
@@ -196,12 +196,12 @@ public class BitSetIntIterableTest {
     public void testClone() {
         BitSet bs = new BitSet();
         bs.set(10);
-        BitSetIntIterable e = new BitSetIntIterable(bs);
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
 
         BitSetIntIterable e1 = e.clone();
 
         bs.clear();
-        assertTrue(e.isEmpty());
+        assertFalse(e.isEmpty());
         assertFalse(e1.isEmpty());
     }
 
@@ -209,13 +209,25 @@ public class BitSetIntIterableTest {
     public void testCopy() {
         BitSet bs = new BitSet();
         bs.set(10);
-        IntIterable e = new BitSetIntIterable(bs);
+        IntIterable e = BitSetIntIterable.from(bs);
 
         BitSetIntIterable e1 = BitSetIntIterable.from(e);
 
         bs.clear();
-        assertTrue(e.isEmpty());
+        assertFalse(e.isEmpty());
         assertFalse(e1.isEmpty());
+    }
+
+    @Test
+    public void testMax() {
+        BitSetIntIterable.Builder bs = BitSetIntIterable.newBuilder();
+        assertEquals(bs.max(), 0);
+        bs.add(1);
+        assertEquals(bs.max(), 1);
+        bs.add(2);
+        bs.add(99);
+        bs.add(100);
+        assertEquals(bs.max(), 100);
     }
 
     static void assertStreamEquals(Stream<?> s1, IntStream s2) {

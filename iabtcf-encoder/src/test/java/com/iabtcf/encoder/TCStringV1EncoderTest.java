@@ -23,6 +23,8 @@ package com.iabtcf.encoder;
 import static com.iabtcf.encoder.utils.TestUtils.toDeci;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -55,18 +57,19 @@ public class TCStringV1EncoderTest {
         Instant created = Instant.now();
         Instant updated = created.plus(1, ChronoUnit.HOURS);
 
-        String str = TCStringEncoder.newBuilder()
-                .version(1)
-                .cmpId(2)
-                .created(created)
-                .lastUpdated(updated)
-                .cmpVersion(3)
-                .consentScreen(4)
-                .consentLanguage("DE")
-                .vendorListVersion(5)
-                .purposesConsent(new BitSetIntIterable(purposeConsent))
-                .vendorsConsent(new BitSetIntIterable(vendorConsent))
-                .encode();
+        TCStringEncoder tcStrE = TCStringEncoder.newBuilder()
+            .version(1)
+            .cmpId(2)
+            .created(created)
+            .lastUpdated(updated)
+            .cmpVersion(3)
+            .consentScreen(4)
+            .consentLanguage("DE")
+            .vendorListVersion(5)
+            .addPurposesConsent(BitSetIntIterable.from(purposeConsent))
+            .addVendorConsent(BitSetIntIterable.from(vendorConsent));
+
+        String str = tcStrE.encode();
 
         TCString decodedTCString = TCString.decode(str);
         Assert.assertEquals(1, decodedTCString.getVersion());
@@ -78,6 +81,29 @@ public class TCStringV1EncoderTest {
         Assert.assertEquals("DE", decodedTCString.getConsentLanguage());
         Assert.assertThat(decodedTCString.getVendorConsent(), matchInts(1, 2, 8));
         Assert.assertThat(decodedTCString.getPurposesConsent(), matchInts(1));
+
+        assertEquals(decodedTCString, tcStrE.toTCString());
+    }
+
+    @Test
+    public void testDefaultConsent() {
+        Instant created = Instant.now();
+        Instant updated = created.plus(1, ChronoUnit.HOURS);
+
+        TCStringEncoder tcStrE = TCStringEncoder.newBuilder()
+            .version(1)
+            .cmpId(2)
+            .created(created)
+            .lastUpdated(updated)
+            .cmpVersion(3)
+            .consentScreen(4)
+            .consentLanguage("DE")
+            .vendorListVersion(5)
+            .defaultConsent(true)
+            .addVendorConsent(30);
+
+        assertTrue(tcStrE.toTCString().getVendorConsent().contains(2));
+        assertFalse(tcStrE.toTCString().getVendorConsent().contains(30));
     }
 
 }
