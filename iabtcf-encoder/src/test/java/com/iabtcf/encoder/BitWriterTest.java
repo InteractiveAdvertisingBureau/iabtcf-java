@@ -36,6 +36,7 @@ import org.junit.Test;
 import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.decoder.TCString;
+import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitReaderUtils;
 import com.iabtcf.utils.BitSetIntIterable;
 
@@ -424,5 +425,11 @@ public class BitWriterTest {
         assertEquals(128, bw.length());
         bw.write("hello");
         assertEquals(128, bw.length());
+    }
+
+    @Test(expected = ValueOverflowException.class)
+    public void testWriteV() {
+        BitWriter bw = new BitWriter(128);
+        bw.writeV(64, FieldDefs.CHAR);
     }
 }

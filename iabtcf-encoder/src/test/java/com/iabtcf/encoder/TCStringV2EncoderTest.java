@@ -33,6 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.iabtcf.decoder.TCString;
@@ -44,26 +45,30 @@ public class TCStringV2EncoderTest {
 
     private final Instant created = Instant.now();
     private final Instant updated = created.plus(1, ChronoUnit.HOURS);
+    private TCStringEncoder.Builder encoderBuilder;
 
-    private final TCStringEncoder.Builder encoderBuilder = TCStringEncoder.newBuilder()
-        .version(2)
-        .created(created)
-        .lastUpdated(updated)
-        .cmpId(1)
-        .cmpVersion(12)
-        .consentScreen(1)
-        .consentLanguage("FR")
-        .vendorListVersion(2)
-        .tcfPolicyVersion(1)
-        .isServiceSpecific(true)
-        .useNonStandardStacks(false)
-        .addSpecialFeatureOptIns(BitSetIntIterable.from(1, 2))
-        .addPurposesConsent(BitSetIntIterable.from(4, 8))
-        .addPurposesLITransparency(BitSetIntIterable.from(11, 20))
-        .purposeOneTreatment(true)
-        .publisherCC("DE")
-        .addVendorConsent(BitSetIntIterable.from(1, 4))
-        .addVendorLegitimateInterest(BitSetIntIterable.from(2, 6));
+    @Before
+    public void setUp() {
+        encoderBuilder = TCStringEncoder.newBuilder()
+            .version(2)
+            .created(created)
+            .lastUpdated(updated)
+            .cmpId(1)
+            .cmpVersion(12)
+            .consentScreen(1)
+            .consentLanguage("FR")
+            .vendorListVersion(2)
+            .tcfPolicyVersion(1)
+            .isServiceSpecific(true)
+            .useNonStandardStacks(false)
+            .addSpecialFeatureOptIns(BitSetIntIterable.from(1, 2))
+            .addPurposesConsent(BitSetIntIterable.from(4, 8))
+            .addPurposesLITransparency(BitSetIntIterable.from(11, 20))
+            .purposeOneTreatment(true)
+            .publisherCC("DE")
+            .addVendorConsent(BitSetIntIterable.from(1, 4))
+            .addVendorLegitimateInterest(BitSetIntIterable.from(2, 6));
+    }
 
     @Test
     public void testEncodeDefault() {

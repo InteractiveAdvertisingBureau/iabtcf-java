@@ -160,7 +160,7 @@ class VendorFieldEncoder {
         BitWriter bv = new BitWriter();
 
         if (vendors.length() == 0) {
-            bv.write(0, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID);
+            bv.writeV(0, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID);
             bv.write(false, FieldDefs.CORE_VENDOR_IS_RANGE_ENCODING);
             return bv;
         }
@@ -178,11 +178,11 @@ class VendorFieldEncoder {
 
             if (length == 1) {
                 rangeBits.write(false, FieldDefs.CORE_VENDOR_IS_RANGE_ENCODING);
-                rangeBits.write(idxSet + 1, FieldDefs.START_OR_ONLY_VENDOR_ID);
+                rangeBits.writeV(idxSet + 1, FieldDefs.START_OR_ONLY_VENDOR_ID);
             } else {
                 rangeBits.write(true, FieldDefs.CORE_VENDOR_IS_RANGE_ENCODING);
-                rangeBits.write(idxSet + 1, FieldDefs.START_OR_ONLY_VENDOR_ID);
-                rangeBits.write(idxClr, FieldDefs.END_VENDOR_ID);
+                rangeBits.writeV(idxSet + 1, FieldDefs.START_OR_ONLY_VENDOR_ID);
+                rangeBits.writeV(idxClr, FieldDefs.END_VENDOR_ID);
             }
             numEntries++;
         } while ((idxSet = vendors.nextSetBit(idxClr)) > 0
@@ -190,7 +190,7 @@ class VendorFieldEncoder {
 
         // emit max vendor id
         if (emitMaxVendorId) {
-            bv.write(maxVendorId, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID);
+            bv.writeV(maxVendorId, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID);
         }
 
         if (rangeBits.length() < vendors.length() || emitRangeEncoding) {
@@ -203,7 +203,7 @@ class VendorFieldEncoder {
             if (emitDefaultConsent) {
                 bv.write(defaultConsent, FieldDefs.V1_VENDOR_DEFAULT_CONSENT);
             }
-            bv.write(numEntries, FieldDefs.NUM_ENTRIES);
+            bv.writeV(numEntries, FieldDefs.NUM_ENTRIES);
             bv.write(rangeBits);
         } else {
             // emit bit field

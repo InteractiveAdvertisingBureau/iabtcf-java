@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.PrimitiveIterator.OfLong;
 
 import com.iabtcf.FieldDefs;
+import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
 
@@ -84,7 +85,7 @@ class BitWriter {
         assert Charset.forName("US-ASCII").newEncoder().canEncode(str);
         byte[] b = str.toUpperCase().getBytes(StandardCharsets.US_ASCII);
         for (int i = 0; i < b.length; i++) {
-            write(b[i] - 'A', FieldDefs.CHAR);
+            writeV(b[i] - 'A', FieldDefs.CHAR);
         }
     }
 
@@ -164,6 +165,16 @@ class BitWriter {
      */
     public void write(long data, FieldDefs field) {
         write(data, field.getLength());
+    }
+
+    /**
+     * Writes up 'field' length number of bits from 'data', checking for boundary.
+     *
+     * @throws ValueOverflowException if i cannot be encoded by field#getLength number of bits.
+     */
+    public void writeV(long i, FieldDefs field) {
+        Bounds.checkBounds(i, field);
+        write(i, field);
     }
 
     /**
