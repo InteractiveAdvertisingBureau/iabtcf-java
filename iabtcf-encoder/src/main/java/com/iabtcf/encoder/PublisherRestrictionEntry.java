@@ -1,5 +1,7 @@
 package com.iabtcf.encoder;
 
+import com.iabtcf.FieldDefs;
+
 /*-
  * #%L
  * IAB TCF Java Encoder Library
@@ -35,7 +37,7 @@ public class PublisherRestrictionEntry {
             throw new IllegalArgumentException("purposeId must be positive: " + purposeId);
         }
 
-        this.purposeId = purposeId;
+        this.purposeId = Bounds.checkBounds(purposeId, FieldDefs.PURPOSE_ID);
         this.restrictionType = restrictionType;
         this.vendors = vendors;
     }
@@ -86,6 +88,7 @@ public class PublisherRestrictionEntry {
             if (vendor < 1) {
                 throw new IllegalArgumentException("vendor id must be > 0: " + vendor);
             }
+
             vendors.add(vendor);
             return this;
         }

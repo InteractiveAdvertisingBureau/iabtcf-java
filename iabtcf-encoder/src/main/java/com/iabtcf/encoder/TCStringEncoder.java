@@ -49,6 +49,8 @@ import static com.iabtcf.FieldDefs.V1_LAST_UPDATED;
 import static com.iabtcf.FieldDefs.V1_PURPOSES_ALLOW;
 import static com.iabtcf.FieldDefs.V1_VENDOR_LIST_VERSION;
 import static com.iabtcf.FieldDefs.V1_VERSION;
+import static com.iabtcf.encoder.Bounds.checkBounds;
+import static com.iabtcf.encoder.Bounds.checkBoundsBits;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -163,33 +165,41 @@ public interface TCStringEncoder {
                 throw new IllegalArgumentException("version must be 2: " + builder.version);
             }
 
-            version = builder.version;
+            version = checkBounds(builder.version, FieldDefs.CORE_CMP_VERSION);
             created = Objects.requireNonNull(builder.created);
             updated = Objects.requireNonNull(builder.updated);
-            cmpId = builder.cmpId;
-            cmpVersion = builder.cmpVersion;
-            consentScreen = builder.consentScreen;
+            cmpId = checkBounds(builder.cmpId, FieldDefs.CORE_CMP_ID);
+            cmpVersion = checkBounds(builder.cmpVersion, FieldDefs.CORE_CMP_VERSION);
+            consentScreen = checkBounds(builder.consentScreen, FieldDefs.CORE_CONSENT_SCREEN);
             consentLanguage = Objects.requireNonNull(builder.consentLanguage);
-            vendorListVersion = builder.vendorListVersion;
-            purposesConsent = builder.purposesConsent.build();
-            vendorsConsent = builder.vendorConsent.build();
-            tcfPolicyVersion = builder.tcfPolicyVersion;
+            vendorListVersion = checkBounds(builder.vendorListVersion, FieldDefs.CORE_VENDOR_LIST_VERSION);
+            purposesConsent = checkBoundsBits(builder.purposesConsent, FieldDefs.CORE_PURPOSES_CONSENT).build();
+            vendorsConsent = checkBounds(builder.vendorConsent, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID).build();
+            tcfPolicyVersion = checkBounds(builder.tcfPolicyVersion, FieldDefs.CORE_TCF_POLICY_VERSION);
             isServiceSpecific = builder.isServiceSpecific;
             useNonStandardStacks = builder.useNonStandardStacks;
-            specialFeatureOptIns = builder.specialFeatureOptIns.build();
-            purposesLITransparency = builder.purposesLITransparency.build();
+            specialFeatureOptIns =
+                    checkBoundsBits(builder.specialFeatureOptIns, FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS).build();
+            purposesLITransparency =
+                    checkBoundsBits(builder.purposesLITransparency, FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY).build();
             purposeOneTreatment = builder.purposeOneTreatment;
-            publisherCC = builder.publisherCC;
-            vendorLegitimateInterest = builder.vendorLegitimateInterest.build();
-            disclosedVendors = builder.disclosedVendors.build();
-            allowedVendors = builder.allowedVendors.build();
-            pubPurposesLITransparency = builder.pubPurposesLITransparency.build();
-            pubPurposesConsent = builder.pubPurposesConsent.build();
+            publisherCC = Objects.requireNonNull(builder.publisherCC);
+            vendorLegitimateInterest =
+                    checkBounds(builder.vendorLegitimateInterest, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID).build();
+            disclosedVendors = checkBounds(builder.disclosedVendors, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID).build();
+            allowedVendors = checkBounds(builder.allowedVendors, FieldDefs.CORE_VENDOR_MAX_VENDOR_ID).build();
+            pubPurposesLITransparency =
+                    checkBoundsBits(builder.pubPurposesLITransparency, FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY)
+                        .build();
+            pubPurposesConsent =
+                    checkBoundsBits(builder.pubPurposesConsent, FieldDefs.PPTC_PUB_PURPOSES_CONSENT).build();
             numberOfCustomPurposes =
-                    Math.max(builder.customPurposesLITransparency.max(), builder.customPurposesConsent.max());
+                    checkBounds(
+                            Math.max(builder.customPurposesLITransparency.max(), builder.customPurposesConsent.max()),
+                            FieldDefs.PPTC_NUM_CUSTOM_PURPOSES);
             customPurposesLITransparency = builder.customPurposesLITransparency.build();
             customPurposesConsent = builder.customPurposesConsent.build();
-            publisherRestrictions = new ArrayList<>(builder.publisherRestrictions);
+            publisherRestrictions = checkBounds(new ArrayList<>(builder.publisherRestrictions));
         }
 
         private String encodeSegment(SegmentType segmentType) {
@@ -332,7 +342,6 @@ public interface TCStringEncoder {
         private final List<PublisherRestrictionEntry> publisherRestrictions = new ArrayList<>();
 
         private Builder() {
-
         }
 
         private Builder(TCStringEncoder.Builder prototype) {
