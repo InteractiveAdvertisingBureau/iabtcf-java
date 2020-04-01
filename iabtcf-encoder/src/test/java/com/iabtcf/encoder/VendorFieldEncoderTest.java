@@ -168,8 +168,8 @@ public class VendorFieldEncoderTest {
     private BitWriter createV1BitString() {
         BitWriter bw = new BitWriter();
         bw.write(1, 6);
-        bw.write(Instant.parse("2018-06-04T00:00:00Z"), 36);
-        bw.write(Instant.parse("2018-06-04T00:00:00Z"), 36);
+        bw.write(Instant.parse("2018-06-04T00:00:00Z"), FieldDefs.TIMESTAMP);
+        bw.write(Instant.parse("2018-06-04T00:00:00Z"), FieldDefs.TIMESTAMP);
         bw.write(15, FieldDefs.CORE_CMP_ID);
         bw.write(5, FieldDefs.CORE_CMP_VERSION);
         bw.write(18, FieldDefs.CORE_CONSENT_SCREEN);

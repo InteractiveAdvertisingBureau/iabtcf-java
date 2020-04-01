@@ -250,4 +250,33 @@ class TCStringV1 implements TCString {
                 && getDefaultVendorConsent() == other.getDefaultVendorConsent()
                 && Objects.equals(getPurposesConsent(), other.getPurposesConsent());
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TCStringV1 [getVersion()=");
+        builder.append(getVersion());
+        builder.append(", getCreated()=");
+        builder.append(getCreated());
+        builder.append(", getLastUpdated()=");
+        builder.append(getLastUpdated());
+        builder.append(", getCmpId()=");
+        builder.append(getCmpId());
+        builder.append(", getCmpVersion()=");
+        builder.append(getCmpVersion());
+        builder.append(", getConsentScreen()=");
+        builder.append(getConsentScreen());
+        builder.append(", getConsentLanguage()=");
+        builder.append(getConsentLanguage());
+        builder.append(", getVendorListVersion()=");
+        builder.append(getVendorListVersion());
+        builder.append(", getVendorConsent()=");
+        builder.append(getVendorConsent());
+        builder.append(", getDefaultVendorConsent()=");
+        builder.append(getDefaultVendorConsent());
+        builder.append(", getPurposesConsent()=");
+        builder.append(getPurposesConsent());
+        builder.append("]");
+        return builder.toString();
+    }
 }

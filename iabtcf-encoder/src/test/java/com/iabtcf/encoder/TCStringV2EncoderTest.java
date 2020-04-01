@@ -343,7 +343,6 @@ public class TCStringV2EncoderTest {
 
         assertThat(b.toTCString().getDisclosedVendors(), matchInts(11));
     }
-    // start
 
     @Test
     public void testAddClearPubPurposesConsent() {
@@ -415,7 +414,6 @@ public class TCStringV2EncoderTest {
         assertThat(b.toTCString().getAllowedVendors(), matchInts(11));
     }
 
-    // end
     @Test
     public void testToTCString() {
         TCString tcStr = TCString.decode("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA");

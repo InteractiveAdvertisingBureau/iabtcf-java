@@ -537,4 +537,61 @@ class TCStringV2 implements TCString {
                 && Objects.equals(getVendorLegitimateInterest(), other.getVendorLegitimateInterest())
                 && getVendorListVersion() == other.getVendorListVersion() && getVersion() == other.getVersion();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TCStringV2 [version=");
+        builder.append(version);
+        builder.append(", consentRecordCreated=");
+        builder.append(consentRecordCreated);
+        builder.append(", consentRecordLastUpdated=");
+        builder.append(consentRecordLastUpdated);
+        builder.append(", consentManagerProviderId=");
+        builder.append(consentManagerProviderId);
+        builder.append(", consentManagerProviderVersion=");
+        builder.append(consentManagerProviderVersion);
+        builder.append(", consentScreen=");
+        builder.append(consentScreen);
+        builder.append(", consentLanguage=");
+        builder.append(consentLanguage);
+        builder.append(", vendorListVersion=");
+        builder.append(vendorListVersion);
+        builder.append(", policyVersion=");
+        builder.append(policyVersion);
+        builder.append(", isServiceSpecific=");
+        builder.append(isServiceSpecific);
+        builder.append(", useNonStandardStacks=");
+        builder.append(useNonStandardStacks);
+        builder.append(", specialFeaturesOptInts=");
+        builder.append(specialFeaturesOptInts);
+        builder.append(", purposesConsent=");
+        builder.append(purposesConsent);
+        builder.append(", purposesLITransparency=");
+        builder.append(purposesLITransparency);
+        builder.append(", isPurposeOneTreatment=");
+        builder.append(isPurposeOneTreatment);
+        builder.append(", publisherCountryCode=");
+        builder.append(publisherCountryCode);
+        builder.append(", vendorConsents=");
+        builder.append(vendorConsents);
+        builder.append(", vendorLegitimateInterests=");
+        builder.append(vendorLegitimateInterests);
+        builder.append(", publisherRestrictions=");
+        builder.append(publisherRestrictions);
+        builder.append(", disclosedVendors=");
+        builder.append(disclosedVendors);
+        builder.append(", allowedVendors=");
+        builder.append(allowedVendors);
+        builder.append(", publisherPurposesConsent=");
+        builder.append(publisherPurposesConsent);
+        builder.append(", publisherPurposesLITransparency=");
+        builder.append(publisherPurposesLITransparency);
+        builder.append(", customPurposesConsent=");
+        builder.append(customPurposesConsent);
+        builder.append(", customPurposesLITransparency=");
+        builder.append(customPurposesLITransparency);
+        builder.append("]");
+        return builder.toString();
+    }
 }

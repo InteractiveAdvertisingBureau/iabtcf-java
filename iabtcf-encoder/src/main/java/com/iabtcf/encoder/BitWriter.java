@@ -111,7 +111,7 @@ class BitWriter {
      * Writes an iabtcf encoded instant value.
      */
     public void write(Instant i, FieldDefs field) {
-        write(i, field.getLength());
+        write(i.toEpochMilli() / 100, field);
     }
 
     /**
@@ -147,17 +147,10 @@ class BitWriter {
     }
 
     /**
-     * Writes an iabtcf encoded instant value.
-     */
-    public void write(Instant i, int length) {
-        write(i.toEpochMilli() / 100, length);
-    }
-
-    /**
-     * Writes an iabtcf encoded instant value, 36 bits.
+     * Writes an iabtcf encoded instant value, FieldDefs.TIMESTAMP.
      */
     public void write(Instant i) {
-        write(i, 36);
+        write(i, FieldDefs.TIMESTAMP);
     }
 
     /**
