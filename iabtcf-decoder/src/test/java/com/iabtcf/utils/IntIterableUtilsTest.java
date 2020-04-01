@@ -38,7 +38,7 @@ public class IntIterableUtilsTest {
         bs.set(1);
         bs.set(512);
 
-        IntIterable ii = new BitSetIntIterable(bs);
+        IntIterable ii = BitSetIntIterable.from(bs);
         assertEquals(new TreeSet<>(Arrays.asList(0, 1, 512)), ii.toSet());
     }
 
@@ -49,7 +49,7 @@ public class IntIterableUtilsTest {
         bs.set(1);
         bs.set(512);
 
-        IntIterable ii = new BitSetIntIterable(bs);
+        IntIterable ii = BitSetIntIterable.from(bs);
         Set<Integer> l = ii.toStream().boxed().collect(Collectors.toSet());
 
         assertEquals(new TreeSet<>(Arrays.asList(0, 1, 512)), l);

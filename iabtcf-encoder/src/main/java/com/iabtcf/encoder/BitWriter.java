@@ -131,9 +131,15 @@ class BitWriter {
             if (nextInt <= 0) {
                 throw new IndexOutOfBoundsException("invalid index: " + nextInt);
             }
+
+            if (nextInt > length) {
+                // we continue here, can't assume IntIterable is in sorted order
+                continue;
+            }
+
             bs.set(nextInt - 1);
         }
-        for (int i = 0; i < Math.min(length, bs.length()); i++) {
+        for (int i = 0; i < length; i++) {
             bw.write(bs.get(i));
         }
         write(bw);

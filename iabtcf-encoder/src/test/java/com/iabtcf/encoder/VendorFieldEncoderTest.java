@@ -175,7 +175,7 @@ public class VendorFieldEncoderTest {
         bw.write(18, FieldDefs.CORE_CONSENT_SCREEN);
         bw.write("EN", FieldDefs.CORE_CONSENT_LANGUAGE);
         bw.write(150, FieldDefs.CORE_VENDOR_LIST_VERSION);
-        bw.write(BitSetIntIterable.of(1, 2, 3, 4, 5, 15, 24), FieldDefs.V1_PURPOSES_ALLOW);
+        bw.write(BitSetIntIterable.from(1, 2, 3, 4, 5, 15, 24), FieldDefs.V1_PURPOSES_ALLOW);
 
         return bw;
     }
@@ -259,7 +259,7 @@ public class VendorFieldEncoderTest {
         VendorFieldEncoder bfe = new VendorFieldEncoder()
             .emitRangeEncoding(true)
             .setMaxVendorId(3)
-            .add(BitSetIntIterable.of(1, 3));
+            .add(BitSetIntIterable.from(1, 3));
 
         BitWriter bfeBits = bfe.build();
         BitReader br = new BitReader(bfeBits.toByteArray());
@@ -274,7 +274,7 @@ public class VendorFieldEncoderTest {
         VendorFieldEncoder bfe = new VendorFieldEncoder()
             .emitRangeEncoding(true)
             .setMaxVendorId(3)
-            .add(BitSetIntIterable.of(1, 3));
+            .add(BitSetIntIterable.from(1, 3));
 
         BitWriter bfeBits = bfe.build();
         BitReader br = new BitReader(bfeBits.toByteArray());
@@ -299,7 +299,7 @@ public class VendorFieldEncoderTest {
             .defaultConsent(true)
             .emitRangeEncoding(true)
             .setMaxVendorId(3)
-            .add(BitSetIntIterable.of(1, 3).toStream().boxed().collect(Collectors.toList()));
+            .add(BitSetIntIterable.from(1, 3).toStream().boxed().collect(Collectors.toList()));
 
         VendorFieldEncoder bfe = new VendorFieldEncoder(proto);
         bfe.add(2);

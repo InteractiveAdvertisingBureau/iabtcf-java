@@ -9,9 +9,9 @@ package com.iabtcf.encoder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@ package com.iabtcf.encoder;
  * limitations under the License.
  * #L%
  */
-
-import java.util.BitSet;
 
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
@@ -33,6 +31,10 @@ public class PublisherRestrictionEntry {
     private final IntIterable vendors;
 
     private PublisherRestrictionEntry(int purposeId, RestrictionType restrictionType, IntIterable vendors) {
+        if (purposeId <= 0) {
+            throw new IllegalArgumentException("purposeId must be positive: " + purposeId);
+        }
+
         this.purposeId = purposeId;
         this.restrictionType = restrictionType;
         this.vendors = vendors;
@@ -53,15 +55,21 @@ public class PublisherRestrictionEntry {
     public static class Builder {
         private int purposeId;
         private RestrictionType restrictionType;
-        private final BitSet vendors = new BitSet();
+        private final BitSetIntIterable.Builder vendors = BitSetIntIterable.newBuilder();
 
         public Builder() {
+        }
+
+        public Builder(PublisherRestrictionEntry prototype) {
+            purposeId = prototype.purposeId;
+            restrictionType = prototype.restrictionType;
+            vendors.add(prototype.vendors);
         }
 
         public Builder(Builder prototype) {
             purposeId = prototype.purposeId;
             restrictionType = prototype.restrictionType;
-            vendors.or(prototype.vendors);
+            vendors.add(prototype.vendors);
         }
 
         public Builder purposeId(int purposeId) {
@@ -78,7 +86,7 @@ public class PublisherRestrictionEntry {
             if (vendor < 1) {
                 throw new IllegalArgumentException("vendor id must be > 0: " + vendor);
             }
-            vendors.set(vendor);
+            vendors.add(vendor);
             return this;
         }
 
@@ -104,13 +112,17 @@ public class PublisherRestrictionEntry {
         public PublisherRestrictionEntry build() {
             return new PublisherRestrictionEntry(purposeId,
                     restrictionType,
-                    new BitSetIntIterable((BitSet) vendors.clone()));
+                    vendors.build());
         }
 
     }
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public static Builder newBuilder(PublisherRestrictionEntry prototype) {
+        return new Builder(prototype);
     }
 
     public static Builder newBuilder(Builder prototype) {

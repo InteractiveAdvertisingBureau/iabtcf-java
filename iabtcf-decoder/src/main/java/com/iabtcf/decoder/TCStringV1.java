@@ -9,9 +9,9 @@ package com.iabtcf.decoder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,6 +37,7 @@ import static com.iabtcf.utils.BitReaderUtils.readStr2;
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.iabtcf.BitReader;
@@ -215,6 +216,38 @@ class TCStringV1 implements TCString {
             }
         }
 
-        return new BitSetIntIterable(bs);
+        return BitSetIntIterable.from(bs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getVersion(), getCreated(), getLastUpdated(), getCmpId(), getCmpVersion(),
+                getConsentScreen(), getConsentLanguage(), getVendorListVersion(), getVendorConsent(),
+                getDefaultVendorConsent(), getPurposesConsent());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TCStringV1 other = (TCStringV1) obj;
+        return getVersion() == other.getVersion()
+                && Objects.equals(getCreated(), other.getCreated())
+                && Objects.equals(getLastUpdated(), other.getLastUpdated())
+                && getCmpId() == other.getCmpId()
+                && getCmpVersion() == other.getCmpVersion()
+                && getConsentScreen() == other.getConsentScreen()
+                && Objects.equals(getConsentLanguage(), other.getConsentLanguage())
+                && getVendorListVersion() == other.getVendorListVersion()
+                && Objects.equals(getVendorConsent(), other.getVendorConsent())
+                && getDefaultVendorConsent() == other.getDefaultVendorConsent()
+                && Objects.equals(getPurposesConsent(), other.getPurposesConsent());
     }
 }
