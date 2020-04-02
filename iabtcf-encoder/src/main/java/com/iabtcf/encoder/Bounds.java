@@ -38,8 +38,10 @@ class Bounds {
     }
 
     /**
-     * This is used to make sure the maximum value is less than a digit of field#getLength number of
-     * bits.
+     * This is used to make sure the maximum value in 'values' is less than a digit of
+     * field#getLength number of bits.
+     *
+     * @throws ValueOverflowException
      */
     public static BitSetIntIterable.Builder checkBounds(BitSetIntIterable.Builder values, FieldDefs field) {
         checkBounds(values.max(), (1L << field.getLength()) - 1, field);
@@ -48,7 +50,10 @@ class Bounds {
     }
 
     /**
-     * This is used make sure the maximum value is is less than field#getLength number of bits.
+     * This is used make sure the maximum value in 'values' is less than field#getLength number of
+     * bits.
+     *
+     * @throws ValueOverflowException
      */
     public static BitSetIntIterable.Builder checkBoundsBits(BitSetIntIterable.Builder values, FieldDefs field) {
         checkBounds(values.max(), field.getLength(), field);
@@ -57,24 +62,41 @@ class Bounds {
     }
 
     /**
-     * This is used to make sure the value is less than a digit of field#getLength number of bits.
+     * This is used to make sure the 'value' is less than a digit of field#getLength number of bits.
+     *
+     * @throws ValueOverflowException if field#getLength > Integer.SIZE
      */
     public static int checkBounds(int value, FieldDefs field) {
+        if (field.getLength() > Integer.SIZE) {
+            throw new ValueOverflowException(Integer.SIZE, field.getLength());
+        }
+
         checkBounds(value & ((1L << Integer.SIZE) - 1), field);
 
         return value;
     }
 
+    /**
+     * This is used to make sure the 'value' is less than a digit of field#getLength number of bits.
+     *
+     * @throws ValueOverflowException if field#getLength > Long.SIZE
+     */
     public static long checkBounds(long value, FieldDefs field) {
-        return checkBounds(value, (1L << field.getLength()) - 1, field);
+        final int length = field.getLength();
+        if (length > Long.SIZE) {
+            throw new ValueOverflowException(Long.SIZE, length);
+        } else if (length == Long.SIZE) {
+            return value;
+        }
+
+        return checkBounds(value, (1L << length) - 1, field);
     }
 
     private static long checkBounds(long value, long max, FieldDefs field) {
-        if (value > max) {
+        if (Long.compareUnsigned(value, max) > 0) {
             throw new ValueOverflowException(value, max, field);
         }
 
         return value;
     }
-
 }
