@@ -63,15 +63,28 @@ import java.util.stream.Stream;
 
 import com.iabtcf.FieldDefs;
 import com.iabtcf.decoder.TCString;
+import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.SegmentType;
 
 public interface TCStringEncoder {
 
-    String encode();
+    /**
+     * Returns a base64 url encoded iabtcf compliant consent string
+     *
+     * @throws IllegalArgumentException if the version is invalid
+     * @throws ValueOverflowException if an attempt was made to encode a value beyond it's limit.
+     */
+    String encode() throws IllegalArgumentException, ValueOverflowException;
 
-    TCString toTCString();
+    /**
+     * Returns a TCString representation
+     *
+     * @throws IllegalArgumentException if the version is invalid
+     * @throws ValueOverflowException if an attempt was made to encode a value beyond it's limit.
+     */
+    TCString toTCString() throws IllegalArgumentException, ValueOverflowException;
 
     static class TCStringEncoderV1 implements TCStringEncoder {
         private final int version;
@@ -160,7 +173,12 @@ public interface TCStringEncoder {
         private final IntIterable pubPurposesLITransparency;
         private final List<PublisherRestrictionEntry> publisherRestrictions;
 
-        private TCStringEncoderV2(TCStringEncoder.Builder builder) {
+        /**
+         * @throws IllegalArgumentException if the version is invalid
+         * @throws ValueOverflowException
+         */
+        private TCStringEncoderV2(TCStringEncoder.Builder builder)
+                throws IllegalArgumentException, ValueOverflowException {
             if (builder.version != 2) {
                 throw new IllegalArgumentException("version must be 2: " + builder.version);
             }
@@ -390,7 +408,7 @@ public interface TCStringEncoder {
             allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
         }
 
-        public Builder version(int version) {
+        public Builder version(int version) throws IllegalArgumentException {
             this.version = validateVersion(version);
             return this;
         }
@@ -420,7 +438,7 @@ public interface TCStringEncoder {
             return this;
         }
 
-        public Builder consentLanguage(String consentLanguage) {
+        public Builder consentLanguage(String consentLanguage) throws IllegalArgumentException {
             this.consentLanguage = validateString(consentLanguage, FieldDefs.CORE_CONSENT_LANGUAGE);
             return this;
         }

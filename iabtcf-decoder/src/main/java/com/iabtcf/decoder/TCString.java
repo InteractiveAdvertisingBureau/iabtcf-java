@@ -23,11 +23,22 @@ package com.iabtcf.decoder;
 import java.time.Instant;
 import java.util.List;
 
+import com.iabtcf.exceptions.ByteParseException;
+import com.iabtcf.exceptions.UnsupportedVersionException;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 
 public interface TCString {
-    static TCString decode(String consentString) {
+
+    /**
+     * Decodes an iabtcf compliant encoded string.
+     *
+     * @throws ByteParseException if version field failed to parse
+     * @throws UnsupportedVersionException invalid version field
+     * @throws IllegalArgumentException if consentString is not in valid Base64 scheme
+     */
+    static TCString decode(String consentString)
+            throws IllegalArgumentException, ByteParseException, UnsupportedVersionException {
         return TCStringDecoder.decode(consentString);
     }
 

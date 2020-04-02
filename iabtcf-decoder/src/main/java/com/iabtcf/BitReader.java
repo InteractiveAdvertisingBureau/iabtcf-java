@@ -69,7 +69,8 @@ public class BitReader {
         }
 
         if (is == null) {
-            throw new ByteParseException(String.format("read index %d out of bounds %d", offset, buffer.length));
+            throw new ByteParseException(String.format("read %d bytes at index %d out of bounds for buffer length %d",
+                    length, offset, buffer.length));
         }
 
         ensureCapacity(tlength);
