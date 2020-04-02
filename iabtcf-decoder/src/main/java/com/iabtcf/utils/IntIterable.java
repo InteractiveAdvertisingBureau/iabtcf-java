@@ -20,6 +20,8 @@ package com.iabtcf.utils;
  * #L%
  */
 
+import java.util.Arrays;
+
 /**
  * An int primitive memory optimized iterable.
  */
@@ -28,9 +30,17 @@ public interface IntIterable extends Iterable<Integer> {
 
     boolean contains(int value);
 
-    boolean containsAll(int... source);
+    default boolean containsAll(int... source) {
+        return Arrays
+                .stream(source)
+                .allMatch(this::contains);
+    }
 
-    boolean containsAny(int... source);
+    default boolean containsAny(int... source) {
+        return Arrays
+                .stream(source)
+                .anyMatch(this::contains);
+    }
 
     IntIterator intIterator();
 }

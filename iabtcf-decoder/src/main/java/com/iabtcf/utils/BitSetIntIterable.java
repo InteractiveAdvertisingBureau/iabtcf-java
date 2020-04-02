@@ -20,7 +20,6 @@ package com.iabtcf.utils;
  * #L%
  */
 
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -60,23 +59,6 @@ public class BitSetIntIterable implements IntIterable {
 
     private boolean isOutOfBitSetBounds(final int value) {
         return value < 0 && value > bs.size();
-    }
-
-    @Override
-    public boolean containsAll(int... source) {
-        for (int i = 0; i < source.length; i++) {
-            if (!contains(source[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean containsAny(final int... source) {
-        return Arrays
-                .stream(source)
-                .anyMatch(this::contains);
     }
 
     @Override
