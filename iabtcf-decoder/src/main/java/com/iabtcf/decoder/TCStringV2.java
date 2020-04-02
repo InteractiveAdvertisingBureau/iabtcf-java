@@ -186,8 +186,10 @@ class TCStringV2 implements TCString {
 
                 if (startOrOnlyVendorId > endVendorId) {
                     throw new InvalidRangeFieldException(String.format(
-                            "start vendor id (%d) is greater than endVendorId (%d)", startOrOnlyVendorId, endVendorId));
+                            "start vendor id (%d) is greater than endVendorId (%d)", startOrOnlyVendorId,
+                            endVendorId));
                 }
+
                 if (endVendorId > maxV) {
                     throw new InvalidRangeFieldException(
                             String.format("end vendor id (%d) is greater than max (%d)", endVendorId, maxV));
@@ -540,56 +542,56 @@ class TCStringV2 implements TCString {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("TCStringV2 [version=");
-        builder.append(version);
-        builder.append(", consentRecordCreated=");
-        builder.append(consentRecordCreated);
-        builder.append(", consentRecordLastUpdated=");
-        builder.append(consentRecordLastUpdated);
-        builder.append(", consentManagerProviderId=");
-        builder.append(consentManagerProviderId);
-        builder.append(", consentManagerProviderVersion=");
-        builder.append(consentManagerProviderVersion);
-        builder.append(", consentScreen=");
-        builder.append(consentScreen);
-        builder.append(", consentLanguage=");
-        builder.append(consentLanguage);
-        builder.append(", vendorListVersion=");
-        builder.append(vendorListVersion);
-        builder.append(", policyVersion=");
-        builder.append(policyVersion);
-        builder.append(", isServiceSpecific=");
-        builder.append(isServiceSpecific);
-        builder.append(", useNonStandardStacks=");
-        builder.append(useNonStandardStacks);
-        builder.append(", specialFeaturesOptInts=");
-        builder.append(specialFeaturesOptInts);
-        builder.append(", purposesConsent=");
-        builder.append(purposesConsent);
-        builder.append(", purposesLITransparency=");
-        builder.append(purposesLITransparency);
-        builder.append(", isPurposeOneTreatment=");
-        builder.append(isPurposeOneTreatment);
-        builder.append(", publisherCountryCode=");
-        builder.append(publisherCountryCode);
-        builder.append(", vendorConsents=");
-        builder.append(vendorConsents);
-        builder.append(", vendorLegitimateInterests=");
-        builder.append(vendorLegitimateInterests);
-        builder.append(", publisherRestrictions=");
-        builder.append(publisherRestrictions);
-        builder.append(", disclosedVendors=");
-        builder.append(disclosedVendors);
-        builder.append(", allowedVendors=");
-        builder.append(allowedVendors);
-        builder.append(", publisherPurposesConsent=");
-        builder.append(publisherPurposesConsent);
-        builder.append(", publisherPurposesLITransparency=");
-        builder.append(publisherPurposesLITransparency);
-        builder.append(", customPurposesConsent=");
-        builder.append(customPurposesConsent);
-        builder.append(", customPurposesLITransparency=");
-        builder.append(customPurposesLITransparency);
+        builder.append("TCStringV2 [getVersion()=");
+        builder.append(getVersion());
+        builder.append(", getCreated()=");
+        builder.append(getCreated());
+        builder.append(", getLastUpdated()=");
+        builder.append(getLastUpdated());
+        builder.append(", getCmpId()=");
+        builder.append(getCmpId());
+        builder.append(", getCmpVersion()=");
+        builder.append(getCmpVersion());
+        builder.append(", getConsentScreen()=");
+        builder.append(getConsentScreen());
+        builder.append(", getConsentLanguage()=");
+        builder.append(getConsentLanguage());
+        builder.append(", getVendorListVersion()=");
+        builder.append(getVendorListVersion());
+        builder.append(", getTcfPolicyVersion()=");
+        builder.append(getTcfPolicyVersion());
+        builder.append(", isServiceSpecific()=");
+        builder.append(isServiceSpecific());
+        builder.append(", getUseNonStandardStacks()=");
+        builder.append(getUseNonStandardStacks());
+        builder.append(", getSpecialFeatureOptIns()=");
+        builder.append(getSpecialFeatureOptIns());
+        builder.append(", getPurposesConsent()=");
+        builder.append(getPurposesConsent());
+        builder.append(", getPurposesLITransparency()=");
+        builder.append(getPurposesLITransparency());
+        builder.append(", getPurposeOneTreatment()=");
+        builder.append(getPurposeOneTreatment());
+        builder.append(", getPublisherCC()=");
+        builder.append(getPublisherCC());
+        builder.append(", getVendorConsent()=");
+        builder.append(getVendorConsent());
+        builder.append(", getVendorLegitimateInterest()=");
+        builder.append(getVendorLegitimateInterest());
+        builder.append(", getPublisherRestrictions()=");
+        builder.append(getPublisherRestrictions());
+        builder.append(", getDisclosedVendors()=");
+        builder.append(getDisclosedVendors());
+        builder.append(", getAllowedVendors()=");
+        builder.append(getAllowedVendors());
+        builder.append(", getPubPurposesConsent()=");
+        builder.append(getPubPurposesConsent());
+        builder.append(", getPubPurposesLITransparency()=");
+        builder.append(getPubPurposesLITransparency());
+        builder.append(", getCustomPurposesConsent()=");
+        builder.append(getCustomPurposesConsent());
+        builder.append(", getCustomPurposesLITransparency()=");
+        builder.append(getCustomPurposesLITransparency());
         builder.append("]");
         return builder.toString();
     }
