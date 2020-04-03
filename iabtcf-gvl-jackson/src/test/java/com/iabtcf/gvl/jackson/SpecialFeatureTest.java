@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,12 +20,13 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.SpecialFeature;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import com.iabtcf.gvl.SpecialFeature;
 
 public class SpecialFeatureTest {
 
@@ -37,8 +38,10 @@ public class SpecialFeatureTest {
         GvlLoader gvlLoader = new GvlLoader();
         List<SpecialFeature> specialFeatures = gvlLoader.load(GvlUtil.getGlobalVendorList()).getSpecialFeatures();
         specialFeatureOne =
-            specialFeatures.stream().filter(o -> o.getId() == SPECIAL_FEAUTRE_ID_SELECTED_FOR_TEST).findFirst()
-                .orElse(null);
+                specialFeatures.stream()
+                    .filter(o -> o.getId() == SPECIAL_FEAUTRE_ID_SELECTED_FOR_TEST)
+                    .findFirst()
+                    .orElse(null);
     }
 
     @Test
@@ -54,13 +57,15 @@ public class SpecialFeatureTest {
 
     @Test
     public void testGetDescription() {
-        String expectedDescription = "Your precise geolocation data can be used in support of one or more purposes. This means your location can be accurate to within several meters.";
+        String expectedDescription =
+                "Your precise geolocation data can be used in support of one or more purposes. This means your location can be accurate to within several meters.";
         Assert.assertEquals(expectedDescription, specialFeatureOne.getDescription());
     }
 
     @Test
     public void testGetDescriptionLegal() {
-        String expectedDescriptionLegal = "Vendors can:\n* Collect and process precise geolocation data in support of one or more purposes.\nN.B. Precise geolocation means that there are no restrictions on the precision of a user’s location; this can be accurate to within several meters.";
+        String expectedDescriptionLegal =
+                "Vendors can:\n* Collect and process precise geolocation data in support of one or more purposes.\nN.B. Precise geolocation means that there are no restrictions on the precision of a user’s location; this can be accurate to within several meters.";
         Assert.assertEquals(expectedDescriptionLegal, specialFeatureOne.getDescriptionLegal());
     }
 }

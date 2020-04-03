@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,7 +20,9 @@ package com.iabtcf.gvl;
  * #L%
  */
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface Vendor {
 
@@ -47,24 +49,26 @@ public interface Vendor {
     List<Integer> getPurposes();
 
     /**
-     * List of Purposes for which the vendor requires to be transparently disclosed as their legitimate interest
+     * List of Purposes for which the vendor requires to be transparently disclosed as their
+     * legitimate interest
      *
      * @return A {@link List} of purpose ids disclosed as legitimate interests
      */
     List<Integer> getLegIntPurposes();
 
     /**
-     * List of purposes where the vendor is flexible regarding the legal basis; they will perform the processing
-     * based on consent or a legitimate interest. The 'default' is determined by which of the other two
-     * mutually-exclusive purpose fields is used to declare the purpose for the vendor
+     * List of purposes where the vendor is flexible regarding the legal basis; they will perform
+     * the processing based on consent or a legitimate interest. The 'default' is determined by
+     * which of the other two mutually-exclusive purpose fields is used to declare the purpose for
+     * the vendor
      *
      * @return A {@link List} of flexible purpose ids
      */
     List<Integer> getFlexiblePurposes();
 
     /**
-     * List of Special Purposes that the vendor transparently discloses as their legitimate interest that a user
-     * has no right to object
+     * List of Special Purposes that the vendor transparently discloses as their legitimate interest
+     * that a user has no right to object
      *
      * @return A {@link List} of special purpose ids
      */
@@ -96,21 +100,21 @@ public interface Vendor {
      *
      * @return date string
      */
-    String getDeletedDate();
+    Optional<Instant> getDeletedDate();
 
     /**
-     * object specifying the vendor's http GET request length limit. It is optional.
-     * If a vendor entry does not include this attribute then the vendor has no
-     * overflow options and none can be inferred.
+     * object specifying the vendor's http GET request length limit. It is optional. If a vendor
+     * entry does not include this attribute then the vendor has no overflow options and none can be
+     * inferred.
      *
      * @return A {@link Overflow} object
      */
-    Overflow getOverflow();
+    Optional<Overflow> getOverflow();
 
     /**
-     * To check if the vendor is not deleted based on the current time
+     * Check if the vendor is deleted based on the current time (UTC)
      *
      * @return true, if the vendor is deleted
      */
-    boolean isActive();
+    boolean isDeleted();
 }

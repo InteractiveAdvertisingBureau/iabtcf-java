@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,13 +20,14 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.Overflow;
-import com.iabtcf.gvl.Vendor;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.List;
+import com.iabtcf.gvl.Overflow;
+import com.iabtcf.gvl.Vendor;
 
 public class OverflowTest {
 
@@ -39,7 +40,7 @@ public class OverflowTest {
         List<Vendor> vendors = gvlLoader.load(GvlUtil.getGlobalVendorList()).getVendors();
         Vendor vendor = vendors.stream().filter(o -> o.getId() == VENDOR_ID_SELECTED_FOR_TEST).findFirst().orElse(null);
         assert vendor != null;
-        vendorEightOverflow = vendor.getOverflow();
+        vendorEightOverflow = vendor.getOverflow().get();
     }
 
     @Test

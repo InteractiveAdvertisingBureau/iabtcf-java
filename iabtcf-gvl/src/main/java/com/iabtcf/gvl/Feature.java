@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,7 +20,8 @@ package com.iabtcf.gvl;
  * #L%
  */
 
-/* List of Features the Vendor may utilize when performing some declared Purposes processing
+/*
+ * List of Features the Vendor may utilize when performing some declared Purposes processing
  */
 public interface Feature {
 

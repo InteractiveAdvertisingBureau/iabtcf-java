@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -23,8 +23,8 @@ package com.iabtcf.gvl.jackson;
 import java.util.List;
 
 /*
- * Stacks may be used to substitute Initial Layer information about two or more Purposes
- * and/or Special Features
+ * Stacks may be used to substitute Initial Layer information about two or more Purposes and/or
+ * Special Features
  */
 public class Stack implements com.iabtcf.gvl.Stack {
 

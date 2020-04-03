@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,16 +20,17 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.Gvl;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.iabtcf.gvl.Gvl;
 
 public class GvlTest {
     private static Gvl gvl;
@@ -60,7 +61,7 @@ public class GvlTest {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         parser.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date parsed = parser.parse("2020-02-20T16:05:20");
-        Assert.assertEquals(parsed, gvl.getLastUpdated());
+        Assert.assertEquals(parsed.toInstant(), gvl.getLastUpdated());
     }
 
     @Test

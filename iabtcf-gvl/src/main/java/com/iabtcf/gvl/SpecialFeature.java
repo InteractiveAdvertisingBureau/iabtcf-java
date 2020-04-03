@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -21,10 +21,9 @@ package com.iabtcf.gvl;
  */
 
 /**
- * Special features differ from simple features in that CMPs MUST provide
- * users with a means to signal an opt-in choice as to whether vendors
- * may employ the feature when performing any purpose processing.
- * See Policies for specifics.
+ * Special features differ from simple features in that CMPs MUST provide users with a means to
+ * signal an opt-in choice as to whether vendors may employ the feature when performing any purpose
+ * processing. See Policies for specifics.
  */
 public interface SpecialFeature extends Feature {
 

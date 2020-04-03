@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,7 +20,7 @@ package com.iabtcf.gvl;
  * #L%
  */
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 public interface Gvl {
@@ -40,13 +40,7 @@ public interface Gvl {
     int getVendorListVersion();
 
     /**
-     * A TCF Policy Version. The TCF MO will increment this value whenever a GVL change
-     * (such as adding a new Purpose or Feature or a change in Purpose wording) legally invalidates existing
-     * TC Strings and requires CMPs to re-establish transparency and consent from users. TCF Policy changes
-     * should be relatively infrequent and only occur when necessary to support changes in global mandate.
-     * If the policy version number in the latest GVL is different from the value in your TC String, then you need
-     * to re-establish transparency and consent for that user. A version 1 format TC String is considered to have a
-     * version value of 1.
+     * A TCF Policy Version.
      *
      * @return tcf policy version
      */
@@ -57,7 +51,7 @@ public interface Gvl {
      *
      * @return timestamp when the record was last updated
      */
-    Date getLastUpdated();
+    Instant getLastUpdated();
 
     /**
      * A list of standard purposes
