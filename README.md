@@ -96,6 +96,22 @@ assertEquals(tcStr, TCString.decode(tcStrEncoded));
 
 The encoder attempts to catch some encoding issues such as field values that may result in overflow. It is the users responsibility to ensure that the encoded strings are compliant according to the iabtcf specification.
 
+
+#### GVL
+
+The `iabtcf-gvl` and `iabtcf-gvl-jackson` libraries provides an interface and ability to parse the GVL, respectively. The `iabtcf-gvl-jackson` library uses Jackson 2.10.3 to parse the GVL JSON.
+
+Example of parsing the GVL,
+
+```
+import com.iabtcf.gvl.jackson.GvlLoader.GvlLoader;
+import com.iabtcf.gvl.Gvl;
+
+String gvlContent = "...";
+GvlLoader gvlLoader = new GvlLoader();
+Gvl gvl = gvlLoader.load(gvlContent); 
+```
+
 ### About the Transparency & Consent Framework <a name="aboutTCframework"></a>
 
 IAB Europe Transparency & Consent Framework (TCF) has a simple objective to help all parties in the digital advertising chain ensure that they comply with the EU’s General Data Protection Regulation and ePrivacy Directive when processing personal data or accessing and/or storing information on a user’s device, such as cookies, advertising identifiers, device identifiers and other tracking technologies. IAB Tech Lab stewards the development of these technical specifications.

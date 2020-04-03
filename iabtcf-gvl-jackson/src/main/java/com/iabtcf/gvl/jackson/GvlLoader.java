@@ -21,7 +21,7 @@ package com.iabtcf.gvl.jackson;
  */
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,17 +52,28 @@ public class GvlLoader {
     }
 
     /**
-     * Gets the global vendor list json using the url and converts it into a POJO
+     * Gets the global vendor list json from the specified InputStream
      *
      * @param url url string
      * @return {@link com.iabtcf.gvl.Gvl} object
      */
-    public com.iabtcf.gvl.Gvl load(String url) throws IOException {
-        return objectMapper.readValue(new URL(url), com.iabtcf.gvl.Gvl.class);
+    public com.iabtcf.gvl.Gvl load(InputStream content) throws IOException {
+        return objectMapper.readValue(content, com.iabtcf.gvl.Gvl.class);
     }
 
     /**
-     * Converts global vendor list as a json byte array into a POJO
+     * Gets the global vendor list json using a json string
+     *
+     * @param json the gvl json as a string
+     * @return {@link com.iabtcf.gvl.Gvl} object
+     */
+    public com.iabtcf.gvl.Gvl load(String json) throws IOException {
+        return objectMapper.readValue(json, com.iabtcf.gvl.Gvl.class);
+    }
+
+
+    /**
+     * Converts global vendor list as a json byte array
      *
      * @return Gvl object
      * @see com.iabtcf.gvl.Gvl
