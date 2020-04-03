@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%

@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -38,8 +38,10 @@ public class SpecialPurposeTest {
         GvlLoader gvlLoader = new GvlLoader();
         List<SpecialPurpose> specialPurposes = gvlLoader.load(GvlUtil.getGlobalVendorList()).getSpecialPurposes();
         specialPurposeOne =
-            specialPurposes.stream().filter(o -> o.getId() == SPECIAL_PURPOSE_SELECTED_FOR_TEST).findFirst()
-                .orElse(null);
+                specialPurposes.stream()
+                    .filter(o -> o.getId() == SPECIAL_PURPOSE_SELECTED_FOR_TEST)
+                    .findFirst()
+                    .orElse(null);
     }
 
     @Test
@@ -55,13 +57,15 @@ public class SpecialPurposeTest {
 
     @Test
     public void testGetDescription() {
-        String expectedDescription = "Your data can be used to monitor for and prevent fraudulent activity, and ensure systems and processes work properly and securely.";
+        String expectedDescription =
+                "Your data can be used to monitor for and prevent fraudulent activity, and ensure systems and processes work properly and securely.";
         Assert.assertEquals(expectedDescription, specialPurposeOne.getDescription());
     }
 
     @Test
     public void testGetDescriptionLegal() {
-        String expectedDescriptionLegal = "To ensure security, prevent fraud and debug vendors can:\n* Ensure data are securely transmitted\n* Detect and prevent malicious, fraudulent, invalid, or illegal activity.\n* Ensure correct and efficient operation of systems and processes, including to monitor and enhance the performance of systems and processes engaged in permitted purposes\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose.";
+        String expectedDescriptionLegal =
+                "To ensure security, prevent fraud and debug vendors can:\n* Ensure data are securely transmitted\n* Detect and prevent malicious, fraudulent, invalid, or illegal activity.\n* Ensure correct and efficient operation of systems and processes, including to monitor and enhance the performance of systems and processes engaged in permitted purposes\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose.";
         Assert.assertEquals(expectedDescriptionLegal, specialPurposeOne.getDescriptionLegal());
     }
 

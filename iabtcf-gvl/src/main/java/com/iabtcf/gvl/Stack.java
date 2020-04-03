@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -23,8 +23,8 @@ package com.iabtcf.gvl;
 import java.util.List;
 
 /*
- * Stacks may be used to substitute Initial Layer information about two or more Purposes
- * and/or Special Features
+ * Stacks may be used to substitute Initial Layer information about two or more Purposes and/or
+ * Special Features
  */
 public interface Stack {
 

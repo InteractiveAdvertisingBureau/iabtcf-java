@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -29,14 +29,15 @@ public class Purpose implements com.iabtcf.gvl.Purpose {
     private String name;
     private String description;
     private String descriptionLegal;
-    private Boolean consentable;
-    private Boolean rightToObject;
+    private boolean consentable = true;
+    private boolean rightToObject = true;
 
     /**
      * A purpose id
      *
      * @return purpose id
      */
+    @Override
     public int getId() {
         return id;
     }
@@ -46,6 +47,7 @@ public class Purpose implements com.iabtcf.gvl.Purpose {
      *
      * @return purpose name string
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -55,6 +57,7 @@ public class Purpose implements com.iabtcf.gvl.Purpose {
      *
      * @return purpose description string
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -64,26 +67,30 @@ public class Purpose implements com.iabtcf.gvl.Purpose {
      *
      * @return legal description string
      */
+    @Override
     public String getDescriptionLegal() {
         return descriptionLegal;
     }
 
     /**
-     * An optional flag where false means CMPs should never afford users the means to provide
-     * an opt-in consent choice
+     * An optional flag where false means CMPs should never afford users the means to provide an
+     * opt-in consent choice
      *
      * @return consentable boolean
      */
-    public Boolean getConsentable() {
-        return consentable != null ?  consentable : true;
+    @Override
+    public boolean getConsentable() {
+        return consentable;
     }
 
     /**
-     * An optional flag where false means CMPs should never afford users the means to exercise a right to object
+     * An optional flag where false means CMPs should never afford users the means to exercise a
+     * right to object
      *
-     * @return consentable boolean
+     * @return right to object boolean
      */
-    public Boolean getRightToObject() {
-        return rightToObject != null ?  rightToObject : true;
+    @Override
+    public boolean getRightToObject() {
+        return rightToObject;
     }
 }

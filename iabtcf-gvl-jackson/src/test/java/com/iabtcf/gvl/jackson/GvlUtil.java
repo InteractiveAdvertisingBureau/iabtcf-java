@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * iabtcf-gvl-jackson
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 public class GvlUtil {
     public static byte[] getGlobalVendorList() throws IOException {
@@ -34,10 +33,9 @@ public class GvlUtil {
     }
 
     private static String readFromInputStream(InputStream inputStream)
-        throws IOException {
+            throws IOException {
         StringBuilder resultStringBuilder = new StringBuilder();
-        try (BufferedReader br
-                 = new BufferedReader(new InputStreamReader(inputStream))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             while ((line = br.readLine()) != null) {
                 resultStringBuilder.append(line).append("\n");

@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -53,13 +53,15 @@ public class FeatureTest {
 
     @Test
     public void testGetDescription() {
-        String expectedDescription = "Different devices can be determined as belonging to you or your household in support of one or more of purposes.";
+        String expectedDescription =
+                "Different devices can be determined as belonging to you or your household in support of one or more of purposes.";
         Assert.assertEquals(expectedDescription, featureTwo.getDescription());
     }
 
     @Test
     public void testGetDescriptionLegal() {
-        String expectedDescriptionLegal = "Vendors can:\n* Deterministically determine that two or more devices belong to the same user or household\n* Probabilistically determine that two or more devices belong to the same user or household\n* Actively scan device characteristics for identification for probabilistic identification if users have allowed vendors to actively scan device characteristics for identification (Special Feature 2)";
+        String expectedDescriptionLegal =
+                "Vendors can:\n* Deterministically determine that two or more devices belong to the same user or household\n* Probabilistically determine that two or more devices belong to the same user or household\n* Actively scan device characteristics for identification for probabilistic identification if users have allowed vendors to actively scan device characteristics for identification (Special Feature 2)";
         Assert.assertEquals(expectedDescriptionLegal, featureTwo.getDescriptionLegal());
     }
 }

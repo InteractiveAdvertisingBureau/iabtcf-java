@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,11 +20,11 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.Overflow;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+
+import com.iabtcf.gvl.Overflow;
 
 public class Vendor implements com.iabtcf.gvl.Vendor {
 
@@ -37,7 +37,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
     private List<Integer> features;
     private List<Integer> specialFeatures;
     private String policyUrl;
-    private String deletedDate;
+    private Instant deletedDate;
     private com.iabtcf.gvl.Overflow overflow;
 
     /**
@@ -46,6 +46,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return vendor id
      */
+    @Override
     public int getId() {
         return id;
     }
@@ -55,6 +56,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return vendor name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -64,36 +66,42 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return A {@link List} of purpose ids that require consent
      */
+    @Override
     public List<Integer> getPurposes() {
         return purposes;
     }
 
     /**
-     * List of Purposes for which the vendor requires to be transparently disclosed as their legitimate interest
+     * List of Purposes for which the vendor requires to be transparently disclosed as their
+     * legitimate interest
      *
      * @return A {@link List} of purpose ids disclosed as legitimate interests
      */
+    @Override
     public List<Integer> getLegIntPurposes() {
         return legIntPurposes;
     }
 
     /**
-     * List of purposes where the vendor is flexible regarding the legal basis; they will perform the processing
-     * based on consent or a legitimate interest. The 'default' is determined by which of the other two
-     * mutually-exclusive purpose fields is used to declare the purpose for the vendor
+     * List of purposes where the vendor is flexible regarding the legal basis; they will perform
+     * the processing based on consent or a legitimate interest. The 'default' is determined by
+     * which of the other two mutually-exclusive purpose fields is used to declare the purpose for
+     * the vendor
      *
      * @return A {@link List} of flexible purpose ids
      */
+    @Override
     public List<Integer> getFlexiblePurposes() {
         return flexiblePurposes;
     }
 
     /**
-     * List of Special Purposes that the vendor transparently discloses as their legitimate interest that a user
-     * has no right to object
+     * List of Special Purposes that the vendor transparently discloses as their legitimate interest
+     * that a user has no right to object
      *
      * @return A {@link List} of special purpose ids
      */
+    @Override
     public List<Integer> getSpecialPurposes() {
         return specialPurposes;
     }
@@ -103,6 +111,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return A {@link List} of features
      */
+    @Override
     public List<Integer> getFeatures() {
         return features;
     }
@@ -112,6 +121,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return A {@link List} of special features
      */
+    @Override
     public List<Integer> getSpecialFeatures() {
         return specialFeatures;
     }
@@ -121,6 +131,7 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return policy url string
      */
+    @Override
     public String getPolicyUrl() {
         return policyUrl;
     }
@@ -130,30 +141,32 @@ public class Vendor implements com.iabtcf.gvl.Vendor {
      *
      * @return date string
      */
-    public String getDeletedDate() {
-        return deletedDate;
+    @Override
+    public Optional<Instant> getDeletedDate() {
+        return Optional.ofNullable(deletedDate);
     }
 
     /**
-     * object specifying the vendor's http GET request length limit. It is optional.
-     * If a vendor entry does not include this attribute then the vendor has no
-     * overflow options and none can be inferred.
+     * object specifying the vendor's http GET request length limit. It is optional. If a vendor
+     * entry does not include this attribute then the vendor has no overflow options and none can be
+     * inferred.
      *
      * @return A {@link com.iabtcf.gvl.Overflow} object
      */
-    public Overflow getOverflow() {
-        return overflow;
+    @Override
+    public Optional<Overflow> getOverflow() {
+        return Optional.ofNullable(overflow);
     }
 
     /**
-     * A helper method to check if the vendor is deleted based on the current time
+     * A helper method to check if the vendor is deleted based on the current time (UTC)
      *
      * @return true, if the vendor is deleted
      */
-    public boolean isActive() {
+    @Override
+    public boolean isDeleted() {
         return Optional.ofNullable(this.deletedDate)
-            .map(Instant::parse)
-            .map(deleteAfterDate -> deleteAfterDate.isAfter(Instant.now()))
+            .map(deletedDate -> !deletedDate.isAfter(Instant.now()))
             .orElse(false);
     }
 }

@@ -2,7 +2,7 @@ package com.iabtcf.gvl;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -54,17 +54,18 @@ public interface Purpose {
     String getDescriptionLegal();
 
     /**
-     * An optional flag where false means CMPs should never afford users the means to provide
-     * an opt-in consent choice
+     * An optional flag where false means CMPs should never afford users the means to provide an
+     * opt-in consent choice
      *
      * @return consentable boolean
      */
-    Boolean getConsentable();
+    boolean getConsentable();
 
     /**
-     * An optional flag where false means CMPs should never afford users the means to exercise a right to object
+     * An optional flag where false means CMPs should never afford users the means to exercise a
+     * right to object
      *
      * @return consentable boolean
      */
-    Boolean getRightToObject();
+    boolean getRightToObject();
 }

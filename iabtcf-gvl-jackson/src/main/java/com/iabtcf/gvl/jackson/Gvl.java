@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,23 +20,24 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.iabtcf.gvl.Purpose;
 import com.iabtcf.gvl.SpecialFeature;
 import com.iabtcf.gvl.SpecialPurpose;
 import com.iabtcf.gvl.Stack;
 import com.iabtcf.gvl.Vendor;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 public class Gvl implements com.iabtcf.gvl.Gvl {
 
     private int gvlSpecificationVersion;
     private int vendorListVersion;
     private int tcfPolicyVersion;
-    private Date lastUpdated;
+    private Instant lastUpdated;
     private Map<Integer, com.iabtcf.gvl.Purpose> purposes;
     private Map<Integer, com.iabtcf.gvl.SpecialPurpose> specialPurposes;
     private Map<Integer, com.iabtcf.gvl.Feature> features;
@@ -49,6 +50,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return global vendor list specification version
      */
+    @Override
     public int getGvlSpecificationVersion() {
         return gvlSpecificationVersion;
     }
@@ -58,21 +60,23 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return global vendor list version
      */
+    @Override
     public int getVendorListVersion() {
         return vendorListVersion;
     }
 
     /**
-     * A TCF Policy Version. The TCF MO will increment this value whenever a GVL change
-     * (such as adding a new Purpose or Feature or a change in Purpose wording) legally invalidates existing
-     * TC Strings and requires CMPs to re-establish transparency and consent from users. TCF Policy changes
-     * should be relatively infrequent and only occur when necessary to support changes in global mandate.
-     * If the policy version number in the latest GVL is different from the value in your TC String, then you need
-     * to re-establish transparency and consent for that user. A version 1 format TC String is considered to have a
-     * version value of 1.
+     * A TCF Policy Version. The TCF MO will increment this value whenever a GVL change (such as
+     * adding a new Purpose or Feature or a change in Purpose wording) legally invalidates existing
+     * TC Strings and requires CMPs to re-establish transparency and consent from users. TCF Policy
+     * changes should be relatively infrequent and only occur when necessary to support changes in
+     * global mandate. If the policy version number in the latest GVL is different from the value in
+     * your TC String, then you need to re-establish transparency and consent for that user. A
+     * version 1 format TC String is considered to have a version value of 1.
      *
      * @return tcf policy version
      */
+    @Override
     public int getTcfPolicyVersion() {
         return tcfPolicyVersion;
     }
@@ -82,7 +86,8 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return timestamp when the record was last updated
      */
-    public Date getLastUpdated() {
+    @Override
+    public Instant getLastUpdated() {
         return lastUpdated;
     }
 
@@ -91,6 +96,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of standard {@link Purpose} objects
      */
+    @Override
     public List<Purpose> getPurposes() {
         return new ArrayList<>(purposes.values());
     }
@@ -100,6 +106,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of {@link SpecialPurpose} objects
      */
+    @Override
     public List<SpecialPurpose> getSpecialPurposes() {
         return new ArrayList<>(specialPurposes.values());
     }
@@ -109,6 +116,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of standard {@link com.iabtcf.gvl.Feature} objects
      */
+    @Override
     public List<com.iabtcf.gvl.Feature> getFeatures() {
         return new ArrayList<>(features.values());
     }
@@ -118,6 +126,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of special {@link SpecialFeature} objects
      */
+    @Override
     public List<SpecialFeature> getSpecialFeatures() {
         return new ArrayList<>(specialFeatures.values());
     }
@@ -127,6 +136,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of {@link Stack} objects
      */
+    @Override
     public List<Stack> getStacks() {
         return new ArrayList<>(stacks.values());
     }
@@ -136,6 +146,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      *
      * @return A {@link List} of {@link Vendor} objects
      */
+    @Override
     public List<Vendor> getVendors() {
         return new ArrayList<>(vendors.values());
     }
@@ -146,6 +157,7 @@ public class Gvl implements com.iabtcf.gvl.Gvl {
      * @param vendorId vendor id
      * @return A {@link Vendor} object
      */
+    @Override
     public Vendor getVendor(int vendorId) {
         return vendors.get(vendorId);
     }

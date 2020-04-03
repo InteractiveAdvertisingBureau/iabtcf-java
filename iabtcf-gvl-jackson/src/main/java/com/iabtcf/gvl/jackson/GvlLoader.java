@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,20 +20,20 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.fasterxml.jackson.core.Version;
+import java.io.IOException;
+import java.net.URL;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-
-import java.io.IOException;
-import java.net.URL;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class GvlLoader {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public GvlLoader() {
-        SimpleModule module = new SimpleModule("CustomModel", Version.unknownVersion());
+        SimpleModule module = new SimpleModule();
 
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(com.iabtcf.gvl.Gvl.class, Gvl.class);
@@ -47,6 +47,7 @@ public class GvlLoader {
 
         module.setAbstractTypes(resolver);
         objectMapper.registerModule(module);
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -62,6 +63,7 @@ public class GvlLoader {
 
     /**
      * Converts global vendor list as a json byte array into a POJO
+     *
      * @return Gvl object
      * @see com.iabtcf.gvl.Gvl
      */

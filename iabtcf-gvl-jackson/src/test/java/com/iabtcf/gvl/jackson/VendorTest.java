@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,12 +20,14 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.Vendor;
+import java.time.Instant;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
+import com.iabtcf.gvl.Vendor;
 
 public class VendorTest {
 
@@ -98,7 +100,7 @@ public class VendorTest {
 
     @Test
     public void testGetDeletedDate() {
-        Assert.assertEquals("2020-06-28T00:00:00Z", vendorEight.getDeletedDate());
+        Assert.assertEquals(Instant.parse("2020-06-28T00:00:00Z"), vendorEight.getDeletedDate().get());
     }
 
     @Test
@@ -107,7 +109,7 @@ public class VendorTest {
     }
 
     @Test
-    public void testIsActive() {
-        Assert.assertTrue(vendorEight.isActive());
+    public void testIsDeleted() {
+        Assert.assertFalse(vendorEight.isDeleted());
     }
 }

@@ -2,7 +2,7 @@ package com.iabtcf.gvl.jackson;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java GVL Jackson
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
@@ -20,14 +20,14 @@ package com.iabtcf.gvl.jackson;
  * #L%
  */
 
-import com.iabtcf.gvl.Feature;
-import com.iabtcf.gvl.Purpose;
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.List;
+import com.iabtcf.gvl.Purpose;
 
 public class PurposeTest {
 
@@ -54,17 +54,15 @@ public class PurposeTest {
 
     @Test
     public void testGetDescription() {
-        String
-            expectedDescription =
-            "Your data can be used to improve existing systems and software, and to develop new products";
+        String expectedDescription =
+                "Your data can be used to improve existing systems and software, and to develop new products";
         Assert.assertEquals(expectedDescription, purposeTen.getDescription());
     }
 
     @Test
     public void testGetDescriptionLegal() {
-        String
-            expectedDescriptionLegal =
-            "To develop new products and improve products vendors can:\n* Use information to improve their existing products with new features and to develop new products\n* Create new models and algorithms through machine learning\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose";
+        String expectedDescriptionLegal =
+                "To develop new products and improve products vendors can:\n* Use information to improve their existing products with new features and to develop new products\n* Create new models and algorithms through machine learning\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose";
         Assert.assertEquals(expectedDescriptionLegal, purposeTen.getDescriptionLegal());
     }
 
