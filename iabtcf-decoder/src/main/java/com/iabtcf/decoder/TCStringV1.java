@@ -9,9 +9,9 @@ package com.iabtcf.decoder;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,15 +31,14 @@ import static com.iabtcf.FieldDefs.V1_VENDOR_BITRANGE_FIELD;
 import static com.iabtcf.FieldDefs.V1_VENDOR_LIST_VERSION;
 import static com.iabtcf.FieldDefs.V1_VENDOR_MAX_VENDOR_ID;
 import static com.iabtcf.FieldDefs.V1_VERSION;
-import static com.iabtcf.utils.ByteBitVectorUtils.deciSeconds;
-import static com.iabtcf.utils.ByteBitVectorUtils.readStr2;
 
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import com.iabtcf.ByteBitVector;
+import com.iabtcf.BitReader;
 import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
 import com.iabtcf.utils.BitSetIntIterable;
@@ -48,13 +47,13 @@ import com.iabtcf.v2.PublisherRestriction;
 
 class TCStringV1 implements TCString {
 
-    private final ByteBitVector bbv;
+    private final BitReader bbv;
 
-    private TCStringV1(ByteBitVector bitVector) {
+    private TCStringV1(BitReader bitVector) {
         this.bbv = bitVector;
     }
 
-    public static TCStringV1 fromBitVector(ByteBitVector bitVector) {
+    public static TCStringV1 fromBitVector(BitReader bitVector) {
         return new TCStringV1(bitVector);
     }
 
@@ -65,12 +64,12 @@ class TCStringV1 implements TCString {
 
     @Override
     public Instant getCreated() {
-        return deciSeconds(bbv, V1_CREATED);
+        return Instant.ofEpochMilli(bbv.readBits36(V1_CREATED) * 100);
     }
 
     @Override
     public Instant getLastUpdated() {
-        return deciSeconds(bbv, V1_LAST_UPDATED);
+        return Instant.ofEpochMilli(bbv.readBits36(V1_LAST_UPDATED) * 100);
     }
 
     @Override
@@ -90,7 +89,7 @@ class TCStringV1 implements TCString {
 
     @Override
     public String getConsentLanguage() {
-        return readStr2(bbv, V1_CONSENT_LANGUAGE);
+        return bbv.readStr2(V1_CONSENT_LANGUAGE);
     }
 
     @Override
@@ -192,7 +191,7 @@ class TCStringV1 implements TCString {
     /**
      * @throws InvalidRangeFieldException
      */
-    private IntIterable fillVendorsV1(ByteBitVector bbv, FieldDefs maxVendor, FieldDefs vendorField) {
+    private IntIterable fillVendorsV1(BitReader bbv, FieldDefs maxVendor, FieldDefs vendorField) {
         BitSet bs = new BitSet();
 
         int maxV = bbv.readBits16(maxVendor);
@@ -215,6 +214,67 @@ class TCStringV1 implements TCString {
             }
         }
 
-        return new BitSetIntIterable(bs);
+        return BitSetIntIterable.from(bs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getVersion(), getCreated(), getLastUpdated(), getCmpId(), getCmpVersion(),
+                getConsentScreen(), getConsentLanguage(), getVendorListVersion(), getVendorConsent(),
+                getDefaultVendorConsent(), getPurposesConsent());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TCStringV1 other = (TCStringV1) obj;
+        return getVersion() == other.getVersion()
+                && Objects.equals(getCreated(), other.getCreated())
+                && Objects.equals(getLastUpdated(), other.getLastUpdated())
+                && getCmpId() == other.getCmpId()
+                && getCmpVersion() == other.getCmpVersion()
+                && getConsentScreen() == other.getConsentScreen()
+                && Objects.equals(getConsentLanguage(), other.getConsentLanguage())
+                && getVendorListVersion() == other.getVendorListVersion()
+                && Objects.equals(getVendorConsent(), other.getVendorConsent())
+                && getDefaultVendorConsent() == other.getDefaultVendorConsent()
+                && Objects.equals(getPurposesConsent(), other.getPurposesConsent());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TCStringV1 [getVersion()=");
+        builder.append(getVersion());
+        builder.append(", getCreated()=");
+        builder.append(getCreated());
+        builder.append(", getLastUpdated()=");
+        builder.append(getLastUpdated());
+        builder.append(", getCmpId()=");
+        builder.append(getCmpId());
+        builder.append(", getCmpVersion()=");
+        builder.append(getCmpVersion());
+        builder.append(", getConsentScreen()=");
+        builder.append(getConsentScreen());
+        builder.append(", getConsentLanguage()=");
+        builder.append(getConsentLanguage());
+        builder.append(", getVendorListVersion()=");
+        builder.append(getVendorListVersion());
+        builder.append(", getVendorConsent()=");
+        builder.append(getVendorConsent());
+        builder.append(", getDefaultVendorConsent()=");
+        builder.append(getDefaultVendorConsent());
+        builder.append(", getPurposesConsent()=");
+        builder.append(getPurposesConsent());
+        builder.append("]");
+        return builder.toString();
     }
 }

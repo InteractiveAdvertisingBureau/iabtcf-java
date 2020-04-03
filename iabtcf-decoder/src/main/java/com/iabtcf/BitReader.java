@@ -26,20 +26,20 @@ import java.util.BitSet;
 
 import com.iabtcf.exceptions.ByteParseException;
 
-public class ByteBitVector {
+public class BitReader {
     private byte[] buffer;
     private int isrpos;
     private final InputStream is;
     final LengthOffsetCache cache;
 
-    public ByteBitVector(InputStream is) {
+    public BitReader(InputStream is) {
         this.buffer = new byte[4096];
         this.is = is;
         this.isrpos = 0;
         cache = new LengthOffsetCache(this);
     }
 
-    public ByteBitVector(byte[] buffer) {
+    public BitReader(byte[] buffer) {
         this.buffer = buffer;
         this.isrpos = buffer.length;
         this.is = null;
@@ -69,7 +69,8 @@ public class ByteBitVector {
         }
 
         if (is == null) {
-            throw new ByteParseException(String.format("read index %d out of bounds %d", offset, buffer.length));
+            throw new ByteParseException(String.format("read %d bytes at index %d out of bounds for buffer length %d",
+                    length, offset, buffer.length));
         }
 
         ensureCapacity(tlength);
@@ -89,6 +90,15 @@ public class ByteBitVector {
         }
 
         return true;
+    }
+
+    public String readStr2(int offset) {
+        return String
+            .valueOf(new char[] {(char) ('A' + readBits6(offset)), (char) ('A' + readBits6(offset + 6))});
+    }
+
+    public String readStr2(FieldDefs field) {
+        return readStr2(field.getOffset(this));
     }
 
     /**

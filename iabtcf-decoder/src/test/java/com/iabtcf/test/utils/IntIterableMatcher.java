@@ -9,9 +9,9 @@ package com.iabtcf.test.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,11 +28,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import com.iabtcf.utils.IntIterable;
-import com.iabtcf.utils.IntIterableUtils;
 
 public class IntIterableMatcher extends BaseMatcher<IntIterable> {
 
-    private Matcher<Set<Integer>> baseM;
+    private final Matcher<Set<Integer>> baseM;
 
     public static IntIterableMatcher matchInts(Set<Integer> values) {
         return new IntIterableMatcher(values);
@@ -62,12 +61,11 @@ public class IntIterableMatcher extends BaseMatcher<IntIterable> {
 
     @Override
     public void describeMismatch(Object item, Description description) {
-        super.describeMismatch(IntIterableUtils.toSet((IntIterable) item), description);
+        super.describeMismatch(((IntIterable) item).toSet(), description);
     }
 
     @Override
     public boolean matches(Object item) {
-        IntIterable i = (IntIterable) item;
-        return baseM.matches(IntIterableUtils.toSet(i));
+        return baseM.matches(((IntIterable) item).toSet());
     }
 }

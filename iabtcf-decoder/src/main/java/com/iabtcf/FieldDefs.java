@@ -85,7 +85,7 @@ public enum FieldDefs {
     PPTC_NUM_CUSTOM_PURPOSES(6),
     PPTC_CUSTOM_PURPOSES_CONSENT(new LengthSupplier() {
         @Override
-        public Integer apply(ByteBitVector t) {
+        public Integer apply(BitReader t) {
             return Integer.valueOf(t.readBits6(PPTC_NUM_CUSTOM_PURPOSES.getOffset(t)));
         }
 
@@ -96,7 +96,7 @@ public enum FieldDefs {
     }),
     PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY(new LengthSupplier() {
         @Override
-        public Integer apply(ByteBitVector t) {
+        public Integer apply(BitReader t) {
             // same length as PPTC_CUSTOM_PURPOSES_CONSENT
             return PPTC_CUSTOM_PURPOSES_CONSENT.getLength(t);
         }
@@ -112,6 +112,7 @@ public enum FieldDefs {
     IS_A_RANGE(1, OffsetSupplier.NOT_SUPPORTED),
     START_OR_ONLY_VENDOR_ID(16, OffsetSupplier.NOT_SUPPORTED),
     END_VENDOR_ID(16, OffsetSupplier.NOT_SUPPORTED),
+    TIMESTAMP(36, OffsetSupplier.NOT_SUPPORTED),
 
     // publish restriction fields, only field lengths are supported
     PURPOSE_ID(6, OffsetSupplier.NOT_SUPPORTED),
@@ -181,27 +182,32 @@ public enum FieldDefs {
     }
 
     /**
+     * Returns the length of a non-dynamic field.
+     */
+    public int getLength() {
+        assert (length.isDynamic() == false);
+
+        return length.apply(null);
+    }
+
+    /**
      * Returns the length of the field.
      */
-    public int getLength(ByteBitVector bbv) {
-        if (isDynamic) {
-            return bbv.cache.getLength(this, length);
-        } else {
-            return length.apply(bbv);
-        }
+    public int getLength(BitReader bbv) {
+        return bbv.cache.getLength(this, length);
     }
 
     /**
      * Returns the offset of the field.
      */
-    public int getOffset(ByteBitVector bbv) {
+    public int getOffset(BitReader bbv) {
         return bbv.cache.getOffset(this, offset);
     }
 
     /**
      * Returns the offset of the next field.
      */
-    public int getEnd(ByteBitVector bbv) {
+    public int getEnd(BitReader bbv) {
         return getLength(bbv) + getOffset(bbv);
     }
 
@@ -212,18 +218,18 @@ public enum FieldDefs {
      * Both the value and it's dynamic state are cached.
      */
     private static abstract class MemoizingFunction
-            implements LengthSupplier, OffsetSupplier, Function<ByteBitVector, Integer> {
+            implements LengthSupplier, OffsetSupplier, Function<BitReader, Integer> {
         private boolean dynamicInitialized = false;
         private boolean isDynamic = false;
         private Integer value;
 
-        public abstract Integer doCompute(ByteBitVector t);
+        public abstract Integer doCompute(BitReader t);
 
         @Override
         public abstract boolean isDynamic();
 
         @Override
-        public Integer apply(ByteBitVector t) {
+        public Integer apply(BitReader t) {
             if (value == null || isDynamicPvt()) {
                 value = doCompute(t);
 
@@ -243,15 +249,15 @@ public enum FieldDefs {
         }
     }
 
-    private interface OffsetSupplier extends Function<ByteBitVector, Integer> {
+    private interface OffsetSupplier extends Function<BitReader, Integer> {
 
         /**
          * This is used when we don't want a field to support offsets.
          */
-        public static final OffsetSupplier NOT_SUPPORTED = new OffsetSupplier() {
+        OffsetSupplier NOT_SUPPORTED = new OffsetSupplier() {
 
             @Override
-            public Integer apply(ByteBitVector t) {
+            public Integer apply(BitReader t) {
                 throw new UnsupportedOperationException();
             }
 
@@ -264,11 +270,11 @@ public enum FieldDefs {
         /**
          * A constant offset for static fields.
          */
-        public static OffsetSupplier constant(int offset) {
+        static OffsetSupplier constant(int offset) {
             return new OffsetSupplier() {
 
                 @Override
-                public Integer apply(ByteBitVector t) {
+                public Integer apply(BitReader t) {
                     return offset;
                 }
 
@@ -283,7 +289,7 @@ public enum FieldDefs {
          * Supplies the offset that's based on the specified field. The offset value is stored to
          * avoid re-computing.
          */
-        public static OffsetSupplier from(final FieldDefs thisEnum) {
+        static OffsetSupplier from(final FieldDefs thisEnum) {
             return new MemoizingFunction() {
                 @Override
                 public boolean isDynamic() {
@@ -291,7 +297,7 @@ public enum FieldDefs {
                 }
 
                 @Override
-                public Integer doCompute(ByteBitVector t) {
+                public Integer doCompute(BitReader t) {
                     return thisEnum.getLength(t) + thisEnum.getOffset(t);
                 }
             };
@@ -301,7 +307,7 @@ public enum FieldDefs {
          * Supplies the offset that's based on the the fields previous field. The offset value is
          * stored to avoid re-computing.
          */
-        public static OffsetSupplier fromPrevious(final FieldDefs thisEnum) {
+        static OffsetSupplier fromPrevious(final FieldDefs thisEnum) {
             return new MemoizingFunction() {
 
                 @Override
@@ -310,26 +316,26 @@ public enum FieldDefs {
                 }
 
                 @Override
-                public Integer doCompute(ByteBitVector t) {
+                public Integer doCompute(BitReader t) {
                     FieldDefs prevEnum = FieldDefs.values()[thisEnum.ordinal() - 1];
                     return prevEnum.getLength(t) + prevEnum.getOffset(t);
                 }
             };
         }
 
-        public boolean isDynamic();
+        boolean isDynamic();
     }
 
-    private interface LengthSupplier extends Function<ByteBitVector, Integer> {
+    private interface LengthSupplier extends Function<BitReader, Integer> {
 
         /**
          * A constant length for static fields.
          */
-        public static LengthSupplier constant(int length) {
+        static LengthSupplier constant(int length) {
             return new LengthSupplier() {
 
                 @Override
-                public Integer apply(ByteBitVector t) {
+                public Integer apply(BitReader t) {
                     return length;
                 }
 
@@ -340,14 +346,14 @@ public enum FieldDefs {
             };
         }
 
-        public boolean isDynamic();
+        boolean isDynamic();
     }
 
     /**
      * Utility class to handle publisher restrictions
      */
     private static class PublisherRestrictionUtils {
-        public static int calculateBitRangelength(ByteBitVector t, int numPubRestrictionsOffset) {
+        public static int calculateBitRangelength(BitReader t, int numPubRestrictionsOffset) {
             int cptr = numPubRestrictionsOffset;
             int numPubRestrictions = t.readBits12(numPubRestrictionsOffset);
             cptr += CORE_NUM_PUB_RESTRICTION.getLength(t);
@@ -363,7 +369,7 @@ public enum FieldDefs {
         public static LengthSupplier lengthSupplier(FieldDefs numPubRestrictionsOffset) {
             return new LengthSupplier() {
                 @Override
-                public Integer apply(ByteBitVector t) {
+                public Integer apply(BitReader t) {
                     return calculateBitRangelength(t, numPubRestrictionsOffset.getOffset(t));
                 }
 
@@ -379,7 +385,7 @@ public enum FieldDefs {
      * Utility class to handle bit / range fields.
      */
     private static class BitRangeFieldUtils {
-        public static int calculateRangeLength(ByteBitVector t, int numEntriesOffset) {
+        public static int calculateRangeLength(BitReader t, int numEntriesOffset) {
             int cptr = numEntriesOffset;
             int numEntries = t.readBits12(cptr);
             cptr += NUM_ENTRIES.getLength(t);
@@ -393,11 +399,11 @@ public enum FieldDefs {
             return cptr - numEntriesOffset;
         }
 
-        public static int calculateBitLength(ByteBitVector t, int maxVendorIdOffset) {
+        public static int calculateBitLength(BitReader t, int maxVendorIdOffset) {
             return t.readBits16(maxVendorIdOffset);
         }
 
-        public static int calculateBitRangeLength(ByteBitVector t, int isRangeEncodingOffset, int maxVendorIdOffset) {
+        public static int calculateBitRangeLength(BitReader t, int isRangeEncodingOffset, int maxVendorIdOffset) {
             boolean isRangeEncoding = t.readBits1(isRangeEncodingOffset);
             if (!isRangeEncoding) {
                 return calculateBitLength(t, maxVendorIdOffset);
@@ -409,7 +415,7 @@ public enum FieldDefs {
         public static LengthSupplier lengthSupplier(FieldDefs isRangeEncoding, FieldDefs maxVendorId) {
             return new LengthSupplier() {
                 @Override
-                public Integer apply(ByteBitVector t) {
+                public Integer apply(BitReader t) {
                     return calculateBitRangeLength(t, isRangeEncoding.getOffset(t), maxVendorId.getOffset(t));
                 }
 
@@ -423,7 +429,7 @@ public enum FieldDefs {
         public static LengthSupplier lengthSupplierV1() {
             return new LengthSupplier() {
                 @Override
-                public Integer apply(ByteBitVector t) {
+                public Integer apply(BitReader t) {
                     int isRangeEncodingOffset = FieldDefs.V1_VENDOR_IS_RANGE_ENCODING.getOffset(t);
                     if (!t.readBits1(isRangeEncodingOffset)) {
                         return calculateBitLength(t, FieldDefs.V1_VENDOR_MAX_VENDOR_ID.getOffset(t));

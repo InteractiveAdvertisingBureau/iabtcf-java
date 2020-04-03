@@ -12,7 +12,6 @@
 
     <artifactId>iabtcf-encoder</artifactId>
     <name>IAB TCF Java Encoder Library</name>
-    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

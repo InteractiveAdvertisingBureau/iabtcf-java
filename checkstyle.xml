@@ -107,12 +107,6 @@
       <property name="severity" value="error"/>
     </module>
 
-    <!-- Cyclomatic complexity limit of 12. -->
-    <module name="CyclomaticComplexity">
-      <property name="max" value="12"/>
-      <property name="severity" value="warning"/>
-    </module>
-
     <!-- Checks that long constants are defined with an upper ell. 'l' looks too much like '1'. -->
     <module name="UpperEll">
       <property name="severity" value="error"/>
