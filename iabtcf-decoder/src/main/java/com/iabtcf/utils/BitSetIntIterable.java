@@ -50,15 +50,11 @@ public class BitSetIntIterable implements IntIterable {
     }
 
     @Override
-    public boolean contains(int value) {
-        if (isOutOfBitSetBounds(value)) {
+    public boolean contains(final int value) {
+        if (value < 0) {
             return false;
         }
         return bs.get(value);
-    }
-
-    private boolean isOutOfBitSetBounds(final int value) {
-        return value < 0 && value > bs.size();
     }
 
     @Override
