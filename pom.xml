@@ -7,6 +7,7 @@
     <version>2.0.3-alpha.0-SNAPSHOT</version>
     <url>https://github.com/InteractiveAdvertisingBureau/iabtcf-java</url>
     <name>IAB TCF Core Library</name>
+    <description>Encode and decode consent information with the IAB EU Transparency and Consent Framework v2.0.</description>
     <packaging>pom</packaging>
 
     <licenses>
@@ -15,6 +16,15 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Sam Tingleff</name>
+            <email>sam@iabtechlab.com</email>
+            <organization>IAB Tech Lab</organization>
+            <organizationUrl>https://www.iabtechlab.com</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:git@github.com:InteractiveAdvertisingBureau/iabtcf-java.git</connection>
