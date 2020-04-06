@@ -14,6 +14,12 @@
     <property name="severity" value="error"/>
   </module>
 
+  <!-- Checks if a line it too long. -->
+  <module name="LineLength">
+    <property name="max" value="120"/>
+<!--    <property name="severity" value="ignore"/> -->
+  </module>
+
   <!-- Check each Java file for violations. -->
   <module name="TreeWalker">
 
@@ -101,12 +107,6 @@
       <property name="severity" value="error"/>
     </module>
 
-    <!-- Cyclomatic complexity limit of 8. -->
-    <module name="CyclomaticComplexity">
-      <property name="max" value="8"/>
-      <property name="severity" value="warning"/>
-    </module>
-
     <!-- Checks that long constants are defined with an upper ell. 'l' looks too much like '1'. -->
     <module name="UpperEll">
       <property name="severity" value="error"/>
@@ -132,20 +132,13 @@
     <!-- Checks the Javadoc of a method or constructor. -->
     <module name="JavadocMethod">
       <property name="scope" value="protected"/>
-      <property name="allowThrowsTagsForSubclasses" value="true"/>
-      <property name="allowUndeclaredRTE" value="true"/>
+      <property name="validateThrows" value="true"/>
       <property name="severity" value="ignore"/>
     </module>
 
     <!-- Checks that variables have Javadoc comments. -->
     <module name="JavadocVariable">
       <property name="scope" value="protected"/>
-      <property name="severity" value="ignore"/>
-    </module>
-
-    <!-- Checks if a line it too long. -->
-    <module name="LineLength">
-      <property name="max" value="120"/>
       <property name="severity" value="ignore"/>
     </module>
 
