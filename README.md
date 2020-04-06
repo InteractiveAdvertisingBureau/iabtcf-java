@@ -17,14 +17,99 @@ Framework Technical specifications available at: https://github.com/InteractiveA
 
 #### Maven
 
-Please [search maven central](https://search.maven.org/search?q=a:iabtcf-core) for the current release version.
+The official iabtcf java library is distributed through maven central. Please [search maven central](https://search.maven.org/search?q=a:iabtcf-core) for the current release version.
+
+#### Decoding
+
+The latest version of the library support decoding both v1 and v2 strings using the same interface. Decoding requires the iabtcf-decoder module dependency,
 
 ```
 <dependency>
   <groupId>com.iabtcf</groupId>
-  <artifactId>iabtcf-core</artifactId>
+  <artifactId>iabtcf-encoder</artifactId>
   <version>VERSION</version>
 </dependency>
+```
+
+Example of decoding a consent string,
+
+```
+import com.iabtcf.decoder.TCString;
+
+TCString tcString = TCString.decode("COwxsONOwxsONKpAAAENAdCAAMAAAAAAAAAAAAAAAAAA");
+tcString.getVersion() => 2
+tcString.getVendorConsent().contains(10) => false
+```
+
+The `TCString#decode` method can throw a number of runtime exceptions when encountering errors during parsing. See javadoc for more details.
+
+#### Encoding
+
+The latest version of the library supports encoding both v1 and v2 strings using the same interface. Encoding requires the iabtcf-decoder and iabtcf-encoder module dependencies,
+
+
+```
+<dependency>
+  <groupId>com.iabtcf</groupId>
+  <artifactId>iabtcf-encoder</artifactId>
+  <version>VERSION</version>
+</dependency>
+
+<dependency>
+  <groupId>com.iabtcf</groupId>
+  <artifactId>iabtcf-decoder</artifactId>
+  <version>VERSION</version>
+</dependency>
+```
+
+Example of encoding a consent string,
+
+```
+import com.iabtcf.encoder.TCStringEncoder.Builder;
+import com.iabtcf.utils.BitSetIntIterable;
+
+TCStringEncoder.Builder tcStrBuilder = TCStringEncoder.newBuilder()
+    .version(2)
+    .created(Instant.now())
+    .lastUpdated(Instant.now())
+    .cmpId(1)
+    .cmpVersion(12)
+    .consentScreen(1)
+    .consentLanguage("FR")
+    .vendorListVersion(2)
+    .tcfPolicyVersion(1)
+    .isServiceSpecific(true)
+    .useNonStandardStacks(false)
+    .addSpecialFeatureOptIns(BitSetIntIterable.from(1, 2))
+    .addPurposesConsent(BitSetIntIterable.from(4, 8))
+    .addPurposesLITransparency(BitSetIntIterable.from(11, 20))
+    .purposeOneTreatment(true)
+    .publisherCC("DE")
+    .addVendorConsent(BitSetIntIterable.from(1, 4))
+    .addVendorLegitimateInterest(BitSetIntIterable.from(2, 6));
+
+TCString tcStr = tcStrBuilder.toTCString();
+String tcStrEncoded = tcStrBuilder.encode();
+
+assertEquals(tcStr, TCString.decode(tcStrEncoded));
+```
+
+The encoder attempts to catch some encoding issues such as field values that may result in overflow. It is the users responsibility to ensure that the encoded strings are compliant according to the iabtcf specification.
+
+
+#### GVL
+
+The `iabtcf-gvl` and `iabtcf-gvl-jackson` libraries provides an interface and ability to parse the GVL, respectively. The `iabtcf-gvl-jackson` library uses Jackson 2.10.3 to parse the GVL JSON.
+
+Example of parsing the GVL,
+
+```
+import com.iabtcf.gvl.jackson.GvlLoader.GvlLoader;
+import com.iabtcf.gvl.Gvl;
+
+String gvlContent = "...";
+GvlLoader gvlLoader = new GvlLoader();
+Gvl gvl = gvlLoader.load(gvlContent); 
 ```
 
 ### About the Transparency & Consent Framework <a name="aboutTCframework"></a>

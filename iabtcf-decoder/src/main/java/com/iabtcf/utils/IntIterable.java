@@ -1,5 +1,13 @@
 package com.iabtcf.utils;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
+
 /*-
  * #%L
  * IAB TCF Core Library
@@ -9,9 +17,9 @@ package com.iabtcf.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,22 +33,63 @@ import java.util.Arrays;
 /**
  * An int primitive memory optimized iterable.
  */
-public interface IntIterable extends Iterable<Integer> {
-    boolean isEmpty();
+public abstract class IntIterable implements Iterable<Integer> {
+    /**
+     * Returns a set representation of the IntIterable.
+     */
+    public Set<Integer> toSet() {
+        Set<Integer> ts = new HashSet<>();
 
-    boolean contains(int value);
+        for (IntIterator bit = intIterator(); bit.hasNext();) {
+            ts.add(bit.next());
+        }
 
-    default boolean containsAll(int... source) {
+        return ts;
+    }
+
+    /**
+     * Returns a stream representation of the IntIterable.
+     */
+    public IntStream toStream() {
+        return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(
+                intIterator(),
+                Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
+    }
+
+    public boolean isEmpty() {
+        return !intIterator().hasNext();
+    }
+
+    public boolean containsAll(int... source) {
         return Arrays
                 .stream(source)
                 .allMatch(this::contains);
     }
 
-    default boolean containsAny(int... source) {
+    public boolean containsAny(int... source) {
         return Arrays
                 .stream(source)
                 .anyMatch(this::contains);
     }
 
-    IntIterator intIterator();
+    public abstract boolean contains(int value);
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new Iterator<Integer>() {
+            final IntIterator internal = intIterator();
+
+            @Override
+            public boolean hasNext() {
+                return internal.hasNext();
+            }
+
+            @Override
+            public Integer next() {
+                return internal.next();
+            }
+        };
+    }
+
+    public abstract IntIterator intIterator();
 }

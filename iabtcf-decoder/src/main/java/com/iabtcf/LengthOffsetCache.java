@@ -24,24 +24,24 @@ import java.util.EnumMap;
 import java.util.function.Function;
 
 class LengthOffsetCache {
-    private final ByteBitVector bbv;
+    private final BitReader bbv;
     private final EnumMap<FieldDefs, Integer> lengthCache = new EnumMap<>(FieldDefs.class);
     private final EnumMap<FieldDefs, Integer> offsetCache = new EnumMap<>(FieldDefs.class);
 
-    public LengthOffsetCache(ByteBitVector bbv) {
+    public LengthOffsetCache(BitReader bbv) {
         this.bbv = bbv;
     }
 
-    public Integer getLength(FieldDefs field, Function<ByteBitVector, Integer> f) {
+    public Integer getLength(FieldDefs field, Function<BitReader, Integer> f) {
         return memoize(field, lengthCache, f);
     }
 
-    public Integer getOffset(FieldDefs field, Function<ByteBitVector, Integer> f) {
+    public Integer getOffset(FieldDefs field, Function<BitReader, Integer> f) {
         return memoize(field, offsetCache, f);
     }
 
     private Integer memoize(FieldDefs field, EnumMap<FieldDefs, Integer> cache,
-            Function<ByteBitVector, Integer> f) {
+            Function<BitReader, Integer> f) {
         if (!field.isDynamic()) {
             return f.apply(bbv);
         }

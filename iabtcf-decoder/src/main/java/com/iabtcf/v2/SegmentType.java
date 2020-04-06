@@ -9,9 +9,9 @@ package com.iabtcf.v2;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,11 +21,37 @@ package com.iabtcf.v2;
  */
 
 public enum SegmentType {
-    DEFAULT,
-    DISCLOSED_VENDOR,
-    ALLOWED_VENDOR,
-    PUBLISHER_TC,
-    INVALID;
+
+    DEFAULT {
+        @Override
+        public int value() {
+            return 0;
+        }
+    },
+    DISCLOSED_VENDOR {
+        @Override
+        public int value() {
+            return 1;
+        }
+    },
+    ALLOWED_VENDOR {
+        @Override
+        public int value() {
+            return 2;
+        }
+    },
+    PUBLISHER_TC {
+        @Override
+        public int value() {
+            return 3;
+        }
+    },
+    INVALID {
+        @Override
+        public int value() {
+            return -1;
+        }
+    };
 
     public static SegmentType from(int id) {
         switch (id) {
@@ -41,4 +67,5 @@ public enum SegmentType {
                 return INVALID;
         }
     }
+    public abstract int value();
 }
