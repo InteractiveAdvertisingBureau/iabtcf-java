@@ -22,7 +22,7 @@ package com.iabtcf.encoder.exceptions;
 
 import java.util.Optional;
 
-import com.iabtcf.FieldDefs;
+import com.iabtcf.utils.FieldDefs;
 
 public class ValueOverflowException extends RuntimeException {
     private static final long serialVersionUID = 8604885489107552868L;

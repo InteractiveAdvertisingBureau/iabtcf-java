@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.utils;
 
 /*-
  * #%L
@@ -26,6 +26,9 @@ import java.util.BitSet;
 
 import com.iabtcf.exceptions.ByteParseException;
 
+/**
+ * This is an internal only class and subject to change.
+ */
 public class BitReader {
     private byte[] buffer;
     private int isrpos;

@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.utils;
 
 /*-
  * #%L

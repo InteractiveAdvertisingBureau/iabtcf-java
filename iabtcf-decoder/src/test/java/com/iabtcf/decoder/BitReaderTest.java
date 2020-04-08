@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.decoder;
 
 /*-
  * #%L
@@ -39,6 +39,8 @@ import org.junit.Test;
 
 import com.iabtcf.decoder.TCString;
 import com.iabtcf.exceptions.ByteParseException;
+import com.iabtcf.utils.BitReader;
+import com.iabtcf.utils.FieldDefs;
 
 public class BitReaderTest {
     Random r = new Random();

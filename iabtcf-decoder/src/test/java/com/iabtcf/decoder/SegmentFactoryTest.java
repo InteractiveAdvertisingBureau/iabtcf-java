@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.decoder;
 
 /*-
  * #%L
@@ -29,6 +29,8 @@ import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
+import com.iabtcf.decoder.LazySegmentFactory;
 
 public class SegmentFactoryTest {
     @Test

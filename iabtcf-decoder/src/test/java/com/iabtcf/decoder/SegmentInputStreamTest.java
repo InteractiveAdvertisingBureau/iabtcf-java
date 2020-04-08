@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.decoder;
 
 /*-
  * #%L
@@ -32,6 +32,8 @@ import java.util.Base64;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
+import com.iabtcf.decoder.SegmentInputStream;
 
 public class SegmentInputStreamTest {
 
