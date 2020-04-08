@@ -99,25 +99,33 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
     </profiles>
 
     <build>
-      <plugins>
-	<plugin>
-	  <groupId>de.qaware.maven</groupId>
-	  <artifactId>go-offline-maven-plugin</artifactId>
-	  <version>1.2.5</version>
-	  <configuration>
-	    <downloadSources>false</downloadSources>
-	    <downloadJavadoc>false</downloadJavadoc>
-	  </configuration>
-	</plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                </plugin>
-      </plugins>
+        <plugins>
+	    <plugin>
+	        <groupId>de.qaware.maven</groupId>
+	        <artifactId>go-offline-maven-plugin</artifactId>
+	        <version>1.2.5</version>
+	        <configuration>
+	            <downloadSources>false</downloadSources>
+	            <downloadJavadoc>false</downloadJavadoc>
+	        </configuration>
+	    </plugin>
+        </plugins>
 
         <pluginManagement>
             <plugins>
