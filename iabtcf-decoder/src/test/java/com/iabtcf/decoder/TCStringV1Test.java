@@ -62,7 +62,6 @@ public class TCStringV1Test {
         assertEquals(141, model.getVendorListVersion());
         assertTrue(model.getPurposesConsent().isEmpty());
         assertFalse(model.getPurposesConsent().contains(1));
-        assertFalse(model.getVendorConsent().contains(1));
     }
 
     @Test
@@ -70,14 +69,9 @@ public class TCStringV1Test {
         TCString model = parse("BOOzQoAOOzQoAAPAFSENCW-AIBA=");
         assertThat(model.getPurposesConsent(), matchInts(1, 2, 3, 4, 5, 15, 24));
         assertTrue(model.getPurposesConsent().contains(1));
-        assertTrue(model.getPurposesConsent().contains(1));
-        assertTrue(model.getPurposesConsent().contains(2));
         assertTrue(model.getPurposesConsent().contains(2));
         assertTrue(model.getPurposesConsent().contains(3));
-        assertTrue(model.getPurposesConsent().contains(3));
         assertTrue(model.getPurposesConsent().contains(4));
-        assertTrue(model.getPurposesConsent().contains(4));
-        assertTrue(model.getPurposesConsent().contains(5));
         assertTrue(model.getPurposesConsent().contains(5));
         assertTrue(model.getPurposesConsent().contains(15));
         assertTrue(model.getPurposesConsent().contains(24));
