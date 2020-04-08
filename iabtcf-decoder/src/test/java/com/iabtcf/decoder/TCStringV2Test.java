@@ -23,6 +23,7 @@ package com.iabtcf.decoder;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -237,5 +238,43 @@ public class TCStringV2Test {
         TCString tcModel = parse(consent);
 
         assertTrue(tcModel.getPurposesConsent().containsAll(1, 2));
+    }
+
+    @Test
+    public void testHashCodeEquals() {
+        String consent1 =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+        TCString tcModel1 = parse(consent1);
+
+        String consent2 =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+        TCString tcModel2 = parse(consent2);
+
+        assertEquals(tcModel1.hashCode(), tcModel2.hashCode());
+    }
+
+    @Test
+    public void testHashCodeNotEquals() {
+        String consent1 = "COwxsONOwxsONKpAAAENAdCAAMAAAAAAAAAAAAAAAAAA";
+        TCString tcModel1 = parse(consent1);
+
+        String consent2 =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+        TCString tcModel2 = parse(consent2);
+
+        assertNotEquals(tcModel1.hashCode(), tcModel2.hashCode());
+    }
+
+    @Test
+    public void testHashCodeSegments() {
+        String consent1 =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA";
+        TCString tcModel1 = parse(consent1);
+
+        String consent2 =
+                "COwBOpCOwBOpCLqAAAENAPCAAAAAAAAAAAAAFfwAQFfgUbABAUaAAA.IFoEUQQgAIQwgIwQABAEAAAAOIAACAIAAAAQAIAgEAACEAAAAAgAQBAAAAAAAGBAAgAAAAAAAFAAECAAAgAAQARAEQAAAAAJAAIAAgAAAYQEAAAQmAgBC3ZAYzUw";
+        TCString tcModel2 = parse(consent2);
+
+        assertNotEquals(tcModel1.hashCode(), tcModel2.hashCode());
     }
 }

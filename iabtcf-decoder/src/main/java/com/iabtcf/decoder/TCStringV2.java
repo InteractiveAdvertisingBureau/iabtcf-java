@@ -492,12 +492,32 @@ class TCStringV2 implements TCString {
 
     @Override
     public int hashCode() {
-        return Objects.hash(allowedVendors, consentLanguage, consentManagerProviderId, consentManagerProviderVersion,
-                consentRecordCreated, consentRecordLastUpdated, consentScreen, customPurposesConsent,
-                customPurposesLITransparency, disclosedVendors, isPurposeOneTreatment, isServiceSpecific, policyVersion,
-                publisherCountryCode, publisherPurposesConsent, publisherPurposesLITransparency, publisherRestrictions,
-                purposesConsent, purposesLITransparency, specialFeaturesOptInts, useNonStandardStacks, vendorConsents,
-                vendorLegitimateInterests, vendorListVersion, version);
+        return Objects.hash(
+                getAllowedVendors(),
+                getConsentLanguage(),
+                getCmpId(),
+                getCmpVersion(),
+                getCreated(),
+                getLastUpdated(),
+                getConsentScreen(),
+                getCustomPurposesConsent(),
+                getCustomPurposesLITransparency(),
+                getDisclosedVendors(),
+                getPurposeOneTreatment(),
+                isServiceSpecific(),
+                getTcfPolicyVersion(),
+                getPublisherCC(),
+                getPubPurposesConsent(),
+                getPubPurposesLITransparency(),
+                getPublisherRestrictions(),
+                getPurposesConsent(),
+                getPurposesLITransparency(),
+                getSpecialFeatureOptIns(),
+                getUseNonStandardStacks(),
+                getVendorConsent(),
+                getVendorLegitimateInterest(),
+                getVendorListVersion(),
+                getVersion());
     }
 
     @Override
