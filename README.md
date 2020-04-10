@@ -94,22 +94,35 @@ String tcStrEncoded = tcStrBuilder.encode();
 assertEquals(tcStr, TCString.decode(tcStrEncoded));
 ```
 
-The encoder attempts to catch some encoding issues such as field values that may result in overflow. It is the users responsibility to ensure that the encoded strings are compliant according to the iabtcf specification.
+The encoder attempts to catch some encoding issues such as field values that may result in overflow. It is the users 
+responsibility to ensure that the encoded strings are compliant according to the iabtcf specification. 
 
 
-#### GVL
+#### GVL & CMP List
 
-The `iabtcf-gvl` and `iabtcf-gvl-jackson` libraries provides an interface and ability to parse the GVL, respectively. The `iabtcf-gvl-jackson` library uses Jackson 2.10.3 to parse the GVL JSON.
+The `iabtcf-extras` and `iabtcf-extras-jackson` libraries provides an interface and ability to parse the GVL and CMP 
+List respectively. The `iabtcf-extras-jackson` library uses Jackson 2.10.3 to parse the GVL and CMP List JSON.
 
 Example of parsing the GVL,
 
 ```
-import com.iabtcf.gvl.jackson.GvlLoader.GvlLoader;
-import com.iabtcf.gvl.Gvl;
+import com.iabtcf.extras.jackson.Loader;
+import com.iabtcf.extras.gvl.Gvl;
 
 String gvlContent = "...";
-GvlLoader gvlLoader = new GvlLoader();
-Gvl gvl = gvlLoader.load(gvlContent); 
+Loader loader = new Loader();
+Gvl gvl = loader.loadGlobalVendorList(gvlContent); 
+```
+
+Example of parsing the CMP List,
+
+```
+import com.iabtcf.extras.jackson.Loader;
+import com.iabtcf.extras.cmp.CmpList;
+
+String cmpListContent = "...";
+Loader loader = new Loader();
+CmpList cmpList = loader.loadCmpList(cmpListContent); 
 ```
 
 ### About the Transparency & Consent Framework <a name="aboutTCframework"></a>
