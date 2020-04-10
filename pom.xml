@@ -56,8 +56,8 @@
     <modules>
         <module>iabtcf-decoder</module>
         <module>iabtcf-encoder</module>
-        <module>iabtcf-gvl</module>
-        <module>iabtcf-gvl-jackson</module>
+        <module>iabtcf-extras</module>
+        <module>iabtcf-extras-jackson</module>
     </modules>
 
     <profiles>
