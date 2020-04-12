@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.iabtcf.BitReader;
-import com.iabtcf.FieldDefs;
 import com.iabtcf.decoder.TCString;
+import com.iabtcf.utils.BitReader;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
 
 public class VendorFieldEncoderTest {

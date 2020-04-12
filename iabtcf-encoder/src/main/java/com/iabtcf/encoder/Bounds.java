@@ -22,9 +22,9 @@ package com.iabtcf.encoder;
 
 import java.util.List;
 
-import com.iabtcf.FieldDefs;
 import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 
 class Bounds {
     /**

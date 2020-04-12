@@ -33,11 +33,11 @@ import java.util.Base64;
 
 import org.junit.Test;
 
-import com.iabtcf.BitReader;
-import com.iabtcf.FieldDefs;
 import com.iabtcf.decoder.TCString;
 import com.iabtcf.encoder.exceptions.ValueOverflowException;
+import com.iabtcf.utils.BitReader;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 
 public class BitWriterTest {
     @Test

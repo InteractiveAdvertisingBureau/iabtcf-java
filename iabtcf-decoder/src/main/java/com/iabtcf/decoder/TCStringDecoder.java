@@ -22,10 +22,10 @@ package com.iabtcf.decoder;
 
 import java.util.Base64;
 
-import com.iabtcf.BitReader;
-import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.ByteParseException;
 import com.iabtcf.exceptions.UnsupportedVersionException;
+import com.iabtcf.utils.BitReader;
+import com.iabtcf.utils.FieldDefs;
 
 class TCStringDecoder {
     static BitReader vectorFromString(String base64UrlEncodedString) {

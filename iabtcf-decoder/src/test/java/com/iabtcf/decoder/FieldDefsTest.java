@@ -1,4 +1,4 @@
-package com.iabtcf;
+package com.iabtcf.decoder;
 
 /*-
  * #%L
@@ -26,6 +26,10 @@ import java.io.InputStream;
 import java.util.Base64;
 
 import org.junit.Test;
+
+import com.iabtcf.decoder.SegmentInputStream;
+import com.iabtcf.utils.BitReader;
+import com.iabtcf.utils.FieldDefs;
 
 public class FieldDefsTest {
 

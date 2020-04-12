@@ -2,16 +2,16 @@ package com.iabtcf.decoder;
 
 /*-
  * #%L
- * IAB TCF Core Library
+ * IAB TCF Java Decoder Library
  * %%
  * Copyright (C) 2020 IAB Technology Laboratory, Inc
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,37 +20,37 @@ package com.iabtcf.decoder;
  * #L%
  */
 
-import static com.iabtcf.FieldDefs.AV_MAX_VENDOR_ID;
-import static com.iabtcf.FieldDefs.AV_VENDOR_BITRANGE_FIELD;
-import static com.iabtcf.FieldDefs.CORE_CMP_ID;
-import static com.iabtcf.FieldDefs.CORE_CMP_VERSION;
-import static com.iabtcf.FieldDefs.CORE_CONSENT_LANGUAGE;
-import static com.iabtcf.FieldDefs.CORE_CONSENT_SCREEN;
-import static com.iabtcf.FieldDefs.CORE_CREATED;
-import static com.iabtcf.FieldDefs.CORE_IS_SERVICE_SPECIFIC;
-import static com.iabtcf.FieldDefs.CORE_LAST_UPDATED;
-import static com.iabtcf.FieldDefs.CORE_NUM_PUB_RESTRICTION;
-import static com.iabtcf.FieldDefs.CORE_PUBLISHER_CC;
-import static com.iabtcf.FieldDefs.CORE_PUB_RESTRICTION_ENTRY;
-import static com.iabtcf.FieldDefs.CORE_PURPOSES_CONSENT;
-import static com.iabtcf.FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY;
-import static com.iabtcf.FieldDefs.CORE_PURPOSE_ONE_TREATMENT;
-import static com.iabtcf.FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS;
-import static com.iabtcf.FieldDefs.CORE_TCF_POLICY_VERSION;
-import static com.iabtcf.FieldDefs.CORE_USE_NON_STANDARD_STOCKS;
-import static com.iabtcf.FieldDefs.CORE_VENDOR_BITRANGE_FIELD;
-import static com.iabtcf.FieldDefs.CORE_VENDOR_LIST_VERSION;
-import static com.iabtcf.FieldDefs.CORE_VENDOR_LI_BITRANGE_FIELD;
-import static com.iabtcf.FieldDefs.CORE_VENDOR_LI_MAX_VENDOR_ID;
-import static com.iabtcf.FieldDefs.CORE_VENDOR_MAX_VENDOR_ID;
-import static com.iabtcf.FieldDefs.CORE_VERSION;
-import static com.iabtcf.FieldDefs.DV_MAX_VENDOR_ID;
-import static com.iabtcf.FieldDefs.DV_VENDOR_BITRANGE_FIELD;
-import static com.iabtcf.FieldDefs.OOB_SEGMENT_TYPE;
-import static com.iabtcf.FieldDefs.PPTC_CUSTOM_PURPOSES_CONSENT;
-import static com.iabtcf.FieldDefs.PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY;
-import static com.iabtcf.FieldDefs.PPTC_PUB_PURPOSES_CONSENT;
-import static com.iabtcf.FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY;
+import static com.iabtcf.utils.FieldDefs.AV_MAX_VENDOR_ID;
+import static com.iabtcf.utils.FieldDefs.AV_VENDOR_BITRANGE_FIELD;
+import static com.iabtcf.utils.FieldDefs.CORE_CMP_ID;
+import static com.iabtcf.utils.FieldDefs.CORE_CMP_VERSION;
+import static com.iabtcf.utils.FieldDefs.CORE_CONSENT_LANGUAGE;
+import static com.iabtcf.utils.FieldDefs.CORE_CONSENT_SCREEN;
+import static com.iabtcf.utils.FieldDefs.CORE_CREATED;
+import static com.iabtcf.utils.FieldDefs.CORE_IS_SERVICE_SPECIFIC;
+import static com.iabtcf.utils.FieldDefs.CORE_LAST_UPDATED;
+import static com.iabtcf.utils.FieldDefs.CORE_NUM_PUB_RESTRICTION;
+import static com.iabtcf.utils.FieldDefs.CORE_PUBLISHER_CC;
+import static com.iabtcf.utils.FieldDefs.CORE_PUB_RESTRICTION_ENTRY;
+import static com.iabtcf.utils.FieldDefs.CORE_PURPOSES_CONSENT;
+import static com.iabtcf.utils.FieldDefs.CORE_PURPOSES_LI_TRANSPARENCY;
+import static com.iabtcf.utils.FieldDefs.CORE_PURPOSE_ONE_TREATMENT;
+import static com.iabtcf.utils.FieldDefs.CORE_SPECIAL_FEATURE_OPT_INS;
+import static com.iabtcf.utils.FieldDefs.CORE_TCF_POLICY_VERSION;
+import static com.iabtcf.utils.FieldDefs.CORE_USE_NON_STANDARD_STOCKS;
+import static com.iabtcf.utils.FieldDefs.CORE_VENDOR_BITRANGE_FIELD;
+import static com.iabtcf.utils.FieldDefs.CORE_VENDOR_LIST_VERSION;
+import static com.iabtcf.utils.FieldDefs.CORE_VENDOR_LI_BITRANGE_FIELD;
+import static com.iabtcf.utils.FieldDefs.CORE_VENDOR_LI_MAX_VENDOR_ID;
+import static com.iabtcf.utils.FieldDefs.CORE_VENDOR_MAX_VENDOR_ID;
+import static com.iabtcf.utils.FieldDefs.CORE_VERSION;
+import static com.iabtcf.utils.FieldDefs.DV_MAX_VENDOR_ID;
+import static com.iabtcf.utils.FieldDefs.DV_VENDOR_BITRANGE_FIELD;
+import static com.iabtcf.utils.FieldDefs.OOB_SEGMENT_TYPE;
+import static com.iabtcf.utils.FieldDefs.PPTC_CUSTOM_PURPOSES_CONSENT;
+import static com.iabtcf.utils.FieldDefs.PPTC_CUSTOM_PURPOSES_LI_TRANSPARENCY;
+import static com.iabtcf.utils.FieldDefs.PPTC_PUB_PURPOSES_CONSENT;
+import static com.iabtcf.utils.FieldDefs.PPTC_PUB_PURPOSES_LI_TRANSPARENCY;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -62,10 +62,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.iabtcf.BitReader;
-import com.iabtcf.FieldDefs;
 import com.iabtcf.exceptions.InvalidRangeFieldException;
+import com.iabtcf.utils.BitReader;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.RestrictionType;
