@@ -39,6 +39,7 @@ public class Stack implements com.iabtcf.gvl.Stack {
      *
      * @return stack id
      */
+    @Override
     public int getId() {
         return id;
     }
@@ -48,6 +49,7 @@ public class Stack implements com.iabtcf.gvl.Stack {
      *
      * @return A {@link List} of special feature ids
      */
+    @Override
     public List<Integer> getSpecialFeatures() {
         return specialFeatures;
     }
@@ -57,6 +59,7 @@ public class Stack implements com.iabtcf.gvl.Stack {
      *
      * @return A {@link List} of purpose ids
      */
+    @Override
     public List<Integer> getPurposes() {
         return purposes;
     }
@@ -66,6 +69,7 @@ public class Stack implements com.iabtcf.gvl.Stack {
      *
      * @return stack name string
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -75,6 +79,7 @@ public class Stack implements com.iabtcf.gvl.Stack {
      *
      * @return stack description string
      */
+    @Override
     public String getDescription() {
         return description;
     }
