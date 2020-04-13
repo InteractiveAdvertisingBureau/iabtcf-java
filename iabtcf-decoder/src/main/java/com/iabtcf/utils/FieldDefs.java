@@ -134,7 +134,24 @@ public enum FieldDefs {
     V1_VENDOR_IS_RANGE_ENCODING(1),
     V1_VENDOR_BITRANGE_FIELD(BitRangeFieldUtils.lengthSupplierV1()),
     V1_VENDOR_DEFAULT_CONSENT(1, V1_VENDOR_IS_RANGE_ENCODING),
-    V1_VENDOR_NUM_ENTRIES(12);
+    V1_VENDOR_NUM_ENTRIES(12),
+
+    // v1 Publisher Purposes Consent String Format
+    V1_PPC_PUBLISHER_PURPOSES_VERSION(12, V1_VENDOR_LIST_VERSION),
+    V1_PPC_STANDARD_PURPOSES_ALLOWED(24),
+    V1_PPC_NUMBER_CUSTOM_PURPOSES(6),
+    V1_PPC_CUSTOM_PURPOSES_BITFIELD(new LengthSupplier() {
+
+        @Override
+        public Integer apply(BitReader t) {
+            return Byte.toUnsignedInt(t.readBits6(FieldDefs.V1_PPC_NUMBER_CUSTOM_PURPOSES.getOffset(t)));
+        }
+
+        @Override
+        public boolean isDynamic() {
+            return true;
+        }
+    });
 
     private OffsetSupplier offset;
     private LengthSupplier length;
