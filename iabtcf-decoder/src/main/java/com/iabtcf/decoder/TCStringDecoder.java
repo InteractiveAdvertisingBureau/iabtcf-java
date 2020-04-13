@@ -21,6 +21,7 @@ package com.iabtcf.decoder;
  */
 
 import java.util.Base64;
+import java.util.EnumSet;
 
 import com.iabtcf.exceptions.ByteParseException;
 import com.iabtcf.exceptions.UnsupportedVersionException;
@@ -38,12 +39,19 @@ class TCStringDecoder {
     }
 
     /**
+     * Decodes the consent string with the specified options.
+     *
      * @throws ByteParseException if version field failed to parse
      * @throws UnsupportedVersionException invalid version field
      * @throws IllegalArgumentException if consentString is not in valid Base64 scheme
      */
-    public static TCString decode(String consentString)
+    public static TCString decode(String consentString, DecoderOption... options)
             throws IllegalArgumentException, ByteParseException, UnsupportedVersionException {
+        EnumSet<DecoderOption> optSet = EnumSet.noneOf(DecoderOption.class);
+        for (DecoderOption opt : options) {
+            optSet.add(opt);
+        }
+
         String[] split = consentString.split("\\.");
         String base64UrlEncodedString = split[0];
         BitReader bitVector = vectorFromString(base64UrlEncodedString);
@@ -54,15 +62,22 @@ class TCStringDecoder {
             case 1:
                 return TCStringV1.fromBitVector(bitVector);
             case 2:
+                TCString tcString = null;
                 if (split.length > 1) {
                     BitReader[] remaining = new BitReader[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
                         remaining[i - 1] = vectorFromString(split[i]);
                     }
-                    return TCStringV2.fromBitVector(bitVector, remaining);
+                    tcString = TCStringV2.fromBitVector(bitVector, remaining);
                 } else {
-                    return TCStringV2.fromBitVector(bitVector);
+                    tcString = TCStringV2.fromBitVector(bitVector);
                 }
+
+                if (!optSet.contains(DecoderOption.LAZY)) {
+                    tcString.hashCode();
+                }
+
+                return tcString;
             default:
                 throw new UnsupportedVersionException("Version " + version + "is unsupported yet");
         }
