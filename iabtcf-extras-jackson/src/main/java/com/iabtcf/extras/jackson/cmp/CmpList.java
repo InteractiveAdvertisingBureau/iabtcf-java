@@ -56,6 +56,7 @@ public class CmpList implements com.iabtcf.extras.cmp.CmpList {
      * @param cmpId CMP id
      * @return {@link com.iabtcf.extras.cmp.Cmp} object
      */
+    @Override
     public com.iabtcf.extras.cmp.Cmp getCmp(int cmpId) {
         return cmps.get(cmpId);
     }
