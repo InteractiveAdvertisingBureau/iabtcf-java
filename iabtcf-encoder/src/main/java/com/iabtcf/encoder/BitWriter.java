@@ -28,8 +28,8 @@ import java.util.Base64;
 import java.util.BitSet;
 import java.util.PrimitiveIterator.OfLong;
 
-import com.iabtcf.FieldDefs;
 import com.iabtcf.encoder.exceptions.ValueOverflowException;
+import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
 

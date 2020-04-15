@@ -33,11 +33,12 @@ import java.util.Base64;
 
 import org.junit.Test;
 
-import com.iabtcf.BitReader;
-import com.iabtcf.FieldDefs;
+import com.iabtcf.decoder.DecoderOption;
 import com.iabtcf.decoder.TCString;
 import com.iabtcf.encoder.exceptions.ValueOverflowException;
+import com.iabtcf.utils.BitReader;
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 
 public class BitWriterTest {
     @Test
@@ -379,7 +380,7 @@ public class BitWriterTest {
 
         // verify
         String str = Base64.getUrlEncoder().encodeToString(bw1.toByteArray());
-        tcModel = TCString.decode(str);
+        tcModel = TCString.decode(str, DecoderOption.LAZY);
 
         assertEquals(2, tcModel.getVersion());
         assertEquals(Instant.parse("2020-01-26T17:01:00Z"), tcModel.getCreated());

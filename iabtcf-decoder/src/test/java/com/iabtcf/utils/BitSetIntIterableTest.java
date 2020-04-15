@@ -123,6 +123,30 @@ public class BitSetIntIterableTest {
     }
 
     @Test
+    public void shouldReturnTrueIfContainsAny() {
+        //given
+        BitSet bs = new BitSet();
+        bs.set(0);
+        bs.set(4);
+        bs.set(5);
+        //when
+        BitSetIntIterable e = BitSetIntIterable.from(bs);
+        //then
+        assertTrue(e.containsAny(0, 4));
+        assertTrue(e.containsAny(4, 5));
+        assertTrue(e.containsAny(0, 4, 5));
+        assertTrue(e.containsAny(4, 0, 5));
+        assertTrue(e.containsAny(4, 0, 5, 5, 0));
+        assertTrue(e.containsAny(0, 4, 10));
+        assertTrue(e.containsAny(5, 0, 1));
+
+        assertFalse(e.containsAny(1));
+        assertFalse(e.containsAny(10));
+        assertFalse(e.containsAny(10, 1));
+        assertFalse(e.containsAny(6, 10));
+    }
+
+    @Test
     public void testToEmptySet() {
         BitSet bs = new BitSet();
         BitSetIntIterable e = BitSetIntIterable.from(bs);

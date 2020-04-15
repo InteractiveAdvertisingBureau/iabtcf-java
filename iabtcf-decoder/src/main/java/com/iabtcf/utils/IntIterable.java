@@ -28,6 +28,8 @@ import java.util.stream.StreamSupport;
  * #L%
  */
 
+import java.util.Arrays;
+
 /**
  * An int primitive memory optimized iterable.
  */
@@ -59,12 +61,15 @@ public abstract class IntIterable implements Iterable<Integer> {
     }
 
     public boolean containsAll(int... source) {
-        for (int i = 0; i < source.length; i++) {
-            if (!contains(source[i])) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays
+                .stream(source)
+                .allMatch(this::contains);
+    }
+
+    public boolean containsAny(int... source) {
+        return Arrays
+                .stream(source)
+                .anyMatch(this::contains);
     }
 
     public abstract boolean contains(int value);

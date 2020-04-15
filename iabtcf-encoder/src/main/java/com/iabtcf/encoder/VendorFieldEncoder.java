@@ -23,7 +23,7 @@ package com.iabtcf.encoder;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import com.iabtcf.FieldDefs;
+import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
 

@@ -82,12 +82,11 @@ public class BitSetIntIterable extends IntIterable {
     }
 
     @Override
-    public boolean contains(int value) {
-        try {
-            return bs.get(value);
-        } catch (IndexOutOfBoundsException e) {
+    public boolean contains(final int value) {
+        if (value < 0) {
             return false;
         }
+        return bs.get(value);
     }
 
     @Override

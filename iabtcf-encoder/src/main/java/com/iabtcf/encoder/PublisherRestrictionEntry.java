@@ -1,7 +1,5 @@
 package com.iabtcf.encoder;
 
-import com.iabtcf.FieldDefs;
-
 /*-
  * #%L
  * IAB TCF Java Encoder Library
@@ -23,6 +21,7 @@ import com.iabtcf.FieldDefs;
  */
 
 import com.iabtcf.utils.BitSetIntIterable;
+import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
 import com.iabtcf.v2.RestrictionType;

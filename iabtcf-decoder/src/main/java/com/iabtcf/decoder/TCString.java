@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.iabtcf.exceptions.ByteParseException;
+import com.iabtcf.exceptions.TCStringDecodeException;
 import com.iabtcf.exceptions.UnsupportedVersionException;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.v2.PublisherRestriction;
@@ -37,15 +38,16 @@ public interface TCString {
      * @throws UnsupportedVersionException invalid version field
      * @throws IllegalArgumentException if consentString is not in valid Base64 scheme
      */
-    static TCString decode(String consentString)
+    static TCString decode(String consentString, DecoderOption... options)
             throws IllegalArgumentException, ByteParseException, UnsupportedVersionException {
-        return TCStringDecoder.decode(consentString);
+        return TCStringDecoder.decode(consentString, options);
     }
 
     /**
      * Version number of the encoding format
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the version number
      */
     int getVersion();
@@ -54,6 +56,7 @@ public interface TCString {
      * Epoch deciseconds (0.1 of a second) when this TC String was first created
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return timestamp the record was first created
      */
     Instant getCreated();
@@ -62,6 +65,7 @@ public interface TCString {
      * Epoch deciseconds (0.1 of a second) when TC String was last updated
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return timestamp record was last updated
      */
     Instant getLastUpdated();
@@ -70,6 +74,7 @@ public interface TCString {
      * Consent Management Platform ID that last updated the TC String
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the Consent Management Platform ID
      */
     int getCmpId();
@@ -78,6 +83,7 @@ public interface TCString {
      * Consent Management Platform version of the CMP that last updated this TC String
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return version of the Consent Management Platform that updated this record
      */
     int getCmpVersion();
@@ -91,6 +97,7 @@ public interface TCString {
      * identifying on which screen a user gave consent as a record.
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the screen number identifier
      */
     int getConsentScreen();
@@ -99,6 +106,7 @@ public interface TCString {
      * Two-letter ISO 639-1 language code in which the CMP UI was presented.
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the language string
      */
     String getConsentLanguage();
@@ -108,6 +116,7 @@ public interface TCString {
      * String.
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the version number
      */
     int getVendorListVersion();
@@ -119,6 +128,7 @@ public interface TCString {
      * An alias for PurposesAllowed
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return The integer values for each established Purpose.
      */
     IntIterable getPurposesConsent();
@@ -128,6 +138,7 @@ public interface TCString {
      * identifiers are published in the GVL.
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return the vendor identifiers.
      */
     IntIterable getVendorConsent();
@@ -140,6 +151,7 @@ public interface TCString {
      * returns false.
      *
      * @since 1.0
+     * @throws TCStringDecodeException
      * @return all vendors that have consent to process this users personal data
      */
     boolean getDefaultVendorConsent();
@@ -150,6 +162,7 @@ public interface TCString {
      * consent from users.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return version of policy used within GVL
      */
     int getTcfPolicyVersion();
@@ -159,6 +172,7 @@ public interface TCString {
      * global consesu.org shared storage.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return if signals are service-specific or global
      */
     boolean isServiceSpecific();
@@ -170,6 +184,7 @@ public interface TCString {
      * this value to false.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return true if if the CMP used non-IAB standard stacks during consent gathering; false
      *         otherwise.
      */
@@ -181,6 +196,7 @@ public interface TCString {
      * identified in the Global Vendor List separately from normal Features.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return the Special Features the Vendor may utilize when performing some declared Purposes
      *         processing.
      */
@@ -194,6 +210,7 @@ public interface TCString {
      * corresponding identifier for that Purpose is set to false.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return The purpose identifiers for which the legal basis of legitimate interest are
      *         established.
      */
@@ -208,6 +225,7 @@ public interface TCString {
      * considered invalid and the CMP must discard it and re-establish transparency and consent.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return true if Purpose 1 was NOT disclosed; false otherwise.
      */
     boolean getPurposeOneTreatment();
@@ -217,6 +235,7 @@ public interface TCString {
      * corresponds to the country in which the publisher’s business entity is established.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return ISO 3166-1 alpha-2 country code
      */
     String getPublisherCC();
@@ -226,6 +245,7 @@ public interface TCString {
      * interest.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return vendor identifiers that can process this user based on legitimate interest
      */
     IntIterable getVendorLegitimateInterest();
@@ -235,6 +255,7 @@ public interface TCString {
      * trafficking their digital property.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return the list of publisher restrictions.
      */
     List<PublisherRestriction> getPublisherRestrictions();
@@ -244,6 +265,7 @@ public interface TCString {
      * process personal data.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return A list of Vendors that the publisher allows to use out-of-band legal bases.
      */
     IntIterable getAllowedVendors();
@@ -253,6 +275,7 @@ public interface TCString {
      * process personal data.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return A list of Vendors that disclosed to the user.
      */
     IntIterable getDisclosedVendors();
@@ -268,6 +291,7 @@ public interface TCString {
      * The Purposes are numerically identified and published in the Global Vendor List.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return the consent value for each Purpose
      */
     IntIterable getPubPurposesConsent();
@@ -285,6 +309,7 @@ public interface TCString {
      * corresponding identifier for that Purpose is set to false.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return The consent value for each Purpose where legitimate interest was established.
      */
     IntIterable getPubPurposesLITransparency();
@@ -298,6 +323,7 @@ public interface TCString {
      * interface.
      *
      * @since 2.0
+     * @throws TCStringDecodeException
      * @return The established custom purpose consent values
      */
     IntIterable getCustomPurposesConsent();
@@ -307,6 +333,7 @@ public interface TCString {
      * to establish transparency with and receive consent from users for their own legal bases to
      * process personal data or to share with vendors if they so choose.
      *
+     * @throws TCStringDecodeException
      * @return The custom purpose consent values with established legitimate interest disclosure.
      */
     IntIterable getCustomPurposesLITransparency();

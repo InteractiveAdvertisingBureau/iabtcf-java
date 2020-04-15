@@ -1,0 +1,66 @@
+{
+  "lastUpdated": "2020-04-09T17:03:06Z",
+  "cmps": {
+    "3": {
+      "id": 3,
+      "name": "LiveRamp",
+      "isCommercial": true
+    },
+    "23": {
+      "id": 23,
+      "name": "Conversant Europe Ltd.",
+      "isCommercial": true,
+      "deletedDate" : "2020-04-09T00:00:00Z"
+    },
+    "25": {
+      "id": 25,
+      "name": "ShareThis, Inc.",
+      "isCommercial": true
+    },
+    "28": {
+      "id": 28,
+      "name": "OneTrust LLC",
+      "isCommercial": true
+    },
+    "63": {
+      "id": 63,
+      "name": "ALZ Software Ltd (trading as Clickio)",
+      "isCommercial": true
+    },
+    "68": {
+      "id": 68,
+      "name": "Transfon Ltd",
+      "isCommercial": true
+    },
+    "92": {
+      "id": 92,
+      "name": "SIRDATA",
+      "isCommercial": true
+    },
+    "96": {
+      "id": 96,
+      "name": "Triboo Data Analytics",
+      "isCommercial": true
+    },
+    "123": {
+      "id": 123,
+      "name": "iubenda",
+      "isCommercial": true
+    },
+    "273": {
+      "id": 273,
+      "name": "Next14 SpA",
+      "isCommercial": true
+    },
+    "291": {
+      "id": 291,
+      "name": "Consent Desk LLC",
+      "isCommercial": true
+    },
+    "299": {
+      "id": 299,
+      "name": "Ezoic",
+      "isCommercial": true
+    }
+  }
+}
