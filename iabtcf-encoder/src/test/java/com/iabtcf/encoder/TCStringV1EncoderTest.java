@@ -38,6 +38,9 @@ import com.iabtcf.utils.BitSetIntIterable;
 
 public class TCStringV1EncoderTest {
 
+    private static final Instant CREATED = Instant.now();
+    private static final Instant UPDATED = CREATED.plus(1, ChronoUnit.HOURS);
+
     @Test
     public void testEncodeDefault() {
         String tcf = TCStringEncoder.newBuilder().version(1).encode();
@@ -46,36 +49,15 @@ public class TCStringV1EncoderTest {
 
     @Test
     public void testCanEncodeV1String() {
-        BitSet purposeConsent = new BitSet();
-        purposeConsent.set(1);
-
-        BitSet vendorConsent = new BitSet();
-        vendorConsent.set(1);
-        vendorConsent.set(2);
-        vendorConsent.set(8);
-
-        Instant created = Instant.now();
-        Instant updated = created.plus(1, ChronoUnit.HOURS);
-
-        TCStringEncoder tcStrE = TCStringEncoder.newBuilder()
-            .version(1)
-            .cmpId(2)
-            .created(created)
-            .lastUpdated(updated)
-            .cmpVersion(3)
-            .consentScreen(4)
-            .consentLanguage("DE")
-            .vendorListVersion(5)
-            .addPurposesConsent(BitSetIntIterable.from(purposeConsent))
-            .addVendorConsent(BitSetIntIterable.from(vendorConsent));
+        TCStringEncoder tcStrE = builder();
 
         String str = tcStrE.encode();
 
         TCString decodedTCString = TCString.decode(str);
         Assert.assertEquals(1, decodedTCString.getVersion());
         Assert.assertEquals(2, decodedTCString.getCmpId());
-        Assert.assertEquals(toDeci(created), decodedTCString.getCreated());
-        Assert.assertEquals(toDeci(updated), decodedTCString.getLastUpdated());
+        Assert.assertEquals(toDeci(CREATED), decodedTCString.getCreated());
+        Assert.assertEquals(toDeci(UPDATED), decodedTCString.getLastUpdated());
         Assert.assertEquals(3, decodedTCString.getCmpVersion());
         Assert.assertEquals(4, decodedTCString.getConsentScreen());
         Assert.assertEquals("DE", decodedTCString.getConsentLanguage());
@@ -83,6 +65,46 @@ public class TCStringV1EncoderTest {
         Assert.assertThat(decodedTCString.getPurposesConsent(), matchInts(1));
 
         assertEquals(decodedTCString, tcStrE.toTCString());
+    }
+
+    @Test
+    public void testCanEncodeV1StringFromTCString() {
+        TCString tcString = builder().toTCString();
+
+        String str = TCStringEncoder.newBuilder(tcString).encode();
+
+        TCString decodedTCString = TCString.decode(str);
+        Assert.assertEquals(1, decodedTCString.getVersion());
+        Assert.assertEquals(2, decodedTCString.getCmpId());
+        Assert.assertEquals(toDeci(CREATED), decodedTCString.getCreated());
+        Assert.assertEquals(toDeci(UPDATED), decodedTCString.getLastUpdated());
+        Assert.assertEquals(3, decodedTCString.getCmpVersion());
+        Assert.assertEquals(4, decodedTCString.getConsentScreen());
+        Assert.assertEquals("DE", decodedTCString.getConsentLanguage());
+        Assert.assertThat(decodedTCString.getVendorConsent(), matchInts(1, 2, 8));
+        Assert.assertThat(decodedTCString.getPurposesConsent(), matchInts(1));
+
+        assertEquals(decodedTCString, tcString);
+    }
+
+    @Test
+    public void testCanEncodeV1StringFromBuilder() {
+        TCStringEncoder.Builder builder = builder();
+
+        String str = TCStringEncoder.newBuilder(builder).encode();
+
+        TCString decodedTCString = TCString.decode(str);
+        Assert.assertEquals(1, decodedTCString.getVersion());
+        Assert.assertEquals(2, decodedTCString.getCmpId());
+        Assert.assertEquals(toDeci(CREATED), decodedTCString.getCreated());
+        Assert.assertEquals(toDeci(UPDATED), decodedTCString.getLastUpdated());
+        Assert.assertEquals(3, decodedTCString.getCmpVersion());
+        Assert.assertEquals(4, decodedTCString.getConsentScreen());
+        Assert.assertEquals("DE", decodedTCString.getConsentLanguage());
+        Assert.assertThat(decodedTCString.getVendorConsent(), matchInts(1, 2, 8));
+        Assert.assertThat(decodedTCString.getPurposesConsent(), matchInts(1));
+
+        assertEquals(decodedTCString, builder.toTCString());
     }
 
     @Test
@@ -104,6 +126,28 @@ public class TCStringV1EncoderTest {
 
         assertTrue(tcStrE.toTCString().getVendorConsent().contains(2));
         assertFalse(tcStrE.toTCString().getVendorConsent().contains(30));
+    }
+
+    private TCStringEncoder.Builder builder() {
+        BitSet purposeConsent = new BitSet();
+        purposeConsent.set(1);
+
+        BitSet vendorConsent = new BitSet();
+        vendorConsent.set(1);
+        vendorConsent.set(2);
+        vendorConsent.set(8);
+
+        return TCStringEncoder.newBuilder()
+            .version(1)
+            .cmpId(2)
+            .created(CREATED)
+            .lastUpdated(UPDATED)
+            .cmpVersion(3)
+            .consentScreen(4)
+            .consentLanguage("DE")
+            .vendorListVersion(5)
+            .addPurposesConsent(BitSetIntIterable.from(purposeConsent))
+            .addVendorConsent(BitSetIntIterable.from(vendorConsent));
     }
 
 }

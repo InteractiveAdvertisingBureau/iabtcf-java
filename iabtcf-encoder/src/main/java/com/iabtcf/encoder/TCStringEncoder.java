@@ -397,16 +397,19 @@ public interface TCStringEncoder {
             vendorListVersion = tcString.getVendorListVersion();
             purposesConsent = BitSetIntIterable.newBuilder(tcString.getPurposesConsent());
             vendorConsent = BitSetIntIterable.newBuilder(tcString.getVendorConsent());
-            tcfPolicyVersion = tcString.getTcfPolicyVersion();
-            isServiceSpecific = tcString.isServiceSpecific();
-            useNonStandardStacks = tcString.getUseNonStandardStacks();
-            specialFeatureOptIns = BitSetIntIterable.newBuilder(tcString.getSpecialFeatureOptIns());
-            purposesLITransparency = BitSetIntIterable.newBuilder(tcString.getPurposesLITransparency());
-            purposeOneTreatment = tcString.getPurposeOneTreatment();
-            publisherCC = tcString.getPublisherCC();
-            vendorLegitimateInterest = BitSetIntIterable.newBuilder(tcString.getVendorLegitimateInterest());
-            disclosedVendors = BitSetIntIterable.newBuilder(tcString.getDisclosedVendors());
-            allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
+
+            if (version != 1) {
+                tcfPolicyVersion = tcString.getTcfPolicyVersion();
+                isServiceSpecific = tcString.isServiceSpecific();
+                useNonStandardStacks = tcString.getUseNonStandardStacks();
+                specialFeatureOptIns = BitSetIntIterable.newBuilder(tcString.getSpecialFeatureOptIns());
+                purposesLITransparency = BitSetIntIterable.newBuilder(tcString.getPurposesLITransparency());
+                purposeOneTreatment = tcString.getPurposeOneTreatment();
+                publisherCC = tcString.getPublisherCC();
+                vendorLegitimateInterest = BitSetIntIterable.newBuilder(tcString.getVendorLegitimateInterest());
+                disclosedVendors = BitSetIntIterable.newBuilder(tcString.getDisclosedVendors());
+                allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
+            }
         }
 
         public Builder version(int version) throws IllegalArgumentException {
