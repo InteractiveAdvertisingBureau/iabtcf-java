@@ -17,12 +17,12 @@ The official iabtcf java library is distributed through maven central. Please [s
 
 #### Decoding
 
-The latest version of the library support decoding both [v1](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-) and [v2](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#tc-string-format) strings using the same interface. Decoding requires the iabtcf-decoder module dependency,
+The latest version of the library support decoding both [v1](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md#vendor-consent-string-format-) and [v2](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20Consent%20string%20and%20vendor%20list%20formats%20v2.md#tc-string-format) strings using the same interface. Decoding requires the iabtcf-decoder module dependency:
 
 ```
 <dependency>
   <groupId>com.iabtcf</groupId>
-  <artifactId>iabtcf-encoder</artifactId>
+  <artifactId>iabtcf-decoder</artifactId>
   <version>VERSION</version>
 </dependency>
 ```
