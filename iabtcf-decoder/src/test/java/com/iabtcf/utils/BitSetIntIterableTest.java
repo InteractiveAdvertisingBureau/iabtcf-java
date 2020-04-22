@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -184,6 +185,19 @@ public class BitSetIntIterableTest {
     @Test
     public void testOf() {
         BitSetIntIterable e = BitSetIntIterable.from(1, 2, 3);
+        assertStreamEquals(new TreeSet<>(Arrays.asList(1, 2, 3)).stream(), e.toStream());
+    }
+
+    @Test
+    public void testOfCollection() {
+        //given
+        final Set<Integer> input = new HashSet<>();
+        input.add(1);
+        input.add(2);
+        input.add(3);
+        //when
+        BitSetIntIterable e = BitSetIntIterable.from(input);
+        //then
         assertStreamEquals(new TreeSet<>(Arrays.asList(1, 2, 3)).stream(), e.toStream());
     }
 
