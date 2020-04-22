@@ -21,6 +21,7 @@ package com.iabtcf.utils;
  */
 
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
 /**
@@ -53,6 +54,12 @@ public class BitSetIntIterable extends IntIterable {
         for (int i = 0; i < values.length; i++) {
             bs.set(values[i]);
         }
+        return new BitSetIntIterable(bs);
+    }
+
+    public static BitSetIntIterable from(final Collection<Integer> values) {
+        BitSet bs = new BitSet();
+        values.forEach(bs::set);
         return new BitSetIntIterable(bs);
     }
 
