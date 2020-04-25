@@ -49,7 +49,7 @@ given field is only decoded during respective TCString#get function application.
 subset of fields need to be accessed since less work is done. To enable lazy decoding a user should invoke,
 
 ```
-TCString tcString = TCString.decode(str, DecoderOptions.LAZY);
+TCString tcString = TCString.decode(str, DecoderOption.LAZY);
 ```
 
 It's important to be aware that since the `str` is not evaluated at the time TCString#decode is
