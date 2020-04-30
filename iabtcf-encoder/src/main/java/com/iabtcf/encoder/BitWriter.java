@@ -252,6 +252,6 @@ class BitWriter {
      * Returns a base64 url encoded representation of the bit array.
      */
     public String toBase64() {
-        return Base64.getUrlEncoder().encodeToString(this.toByteArray());
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(this.toByteArray());
     }
 }
