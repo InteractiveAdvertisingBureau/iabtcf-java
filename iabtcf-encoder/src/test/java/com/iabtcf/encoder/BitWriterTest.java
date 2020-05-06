@@ -29,7 +29,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.util.Base64;
 
 import org.junit.Test;
 
@@ -282,10 +281,9 @@ public class BitWriterTest {
         bw.write(false);
         bw.write(BitSetIntIterable.from(1, 25, 30), 32);
 
-        byte[] rv = bw.toByteArray();
-        String str = Base64.getUrlEncoder().encodeToString(rv);
+        String str = bw.toBase64();
 
-        assertEquals("BOOzQoAOOzQoAAPAFSENCW-AIBACBAAABCA=", str);
+        assertEquals("BOOzQoAOOzQoAAPAFSENCW-AIBACBAAABCA", str);
     }
 
     @Test
@@ -332,8 +330,7 @@ public class BitWriterTest {
         bw.write(0, 12);
         bw.write(false);
 
-        byte[] rv = bw.toByteArray();
-        String str = Base64.getUrlEncoder().encodeToString(rv);
+        String str = bw.toBase64();
 
         assertEquals("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA", str);
 
@@ -379,7 +376,7 @@ public class BitWriterTest {
         bw1.write(bw3);
 
         // verify
-        String str = Base64.getUrlEncoder().encodeToString(bw1.toByteArray());
+        String str = bw1.toBase64();
         tcModel = TCString.decode(str, DecoderOption.LAZY);
 
         assertEquals(2, tcModel.getVersion());
