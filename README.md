@@ -161,7 +161,7 @@ import com.iabtcf.extras.gvl.Gvl;
 
 String gvlContent = "...";
 Loader loader = new Loader();
-Gvl gvl = loader.loadGlobalVendorList(gvlContent); 
+Gvl gvl = loader.globalVendorList(gvlContent); 
 ```
 
 Example of parsing the CMP List,
@@ -172,7 +172,7 @@ import com.iabtcf.extras.cmp.CmpList;
 
 String cmpListContent = "...";
 Loader loader = new Loader();
-CmpList cmpList = loader.loadCmpList(cmpListContent); 
+CmpList cmpList = loader.cmpList(cmpListContent); 
 ```
 
 ### About the Transparency & Consent Framework <a name="aboutTCframework"></a>
