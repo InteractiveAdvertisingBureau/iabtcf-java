@@ -147,7 +147,7 @@ public interface TCString {
      * Default consent for VendorIds not covered by a RangeEntry. VendorIds covered by a RangeEntry
      * have a consent value the opposite of DefaultConsent.
      *
-     * This field in not used by Transparency and Consent String v2.0 specifications and always
+     * This field is not used by Transparency and Consent String v2.0 specifications and always
      * returns false.
      *
      * @since 1.0
