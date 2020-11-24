@@ -67,6 +67,7 @@ import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
+import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.SegmentType;
 
 public interface TCStringEncoder {
@@ -379,6 +380,7 @@ public interface TCStringEncoder {
             useNonStandardStacks = prototype.useNonStandardStacks;
             specialFeatureOptIns = prototype.specialFeatureOptIns;
             purposesLITransparency = prototype.purposesLITransparency;
+            publisherRestrictions.addAll(prototype.publisherRestrictions);
             purposeOneTreatment = prototype.purposeOneTreatment;
             publisherCC = prototype.publisherCC;
             vendorLegitimateInterest = prototype.vendorLegitimateInterest;
@@ -407,6 +409,13 @@ public interface TCStringEncoder {
                 purposeOneTreatment = tcString.getPurposeOneTreatment();
                 publisherCC = tcString.getPublisherCC();
                 vendorLegitimateInterest = BitSetIntIterable.newBuilder(tcString.getVendorLegitimateInterest());
+                for (PublisherRestriction pr : tcString.getPublisherRestrictions()) {
+                    PublisherRestrictionEntry pre = PublisherRestrictionEntry.newBuilder()
+                                                                            .purposeId(pr.getPurposeId())
+                                                                            .restrictionType(pr.getRestrictionType())
+                                                                            .addVendor(pr.getVendorIds()).build();
+                    publisherRestrictions.add(pre);
+                }
                 disclosedVendors = BitSetIntIterable.newBuilder(tcString.getDisclosedVendors());
                 allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
             }

@@ -425,4 +425,13 @@ public class TCStringV2EncoderTest {
             .addAllowedVendors(400);
         assertNotEquals(tcStr, b.toTCString());
     }
+
+    @Test
+    public void testEncodingUsingTcfStringWithPublisherRestrictions() {
+        String tcStr =
+            "CO9ZBNoO9ZBNoAOACAENAnCsAP_AAH_AACiQFvNR6RBUJWjjMCAZg7BAAQQLIBADAAwAhAQIAAAAQIAEoBgGKEEQnBUgAAAACAAgAAYAAAAkFCAAAQAAAAAAgQIMQECICwBAAJAAgEEQQwAQAARMAgFSEQAAREwAEC0CARAAqAJAhCAAEgRAgAIAEAAgAgAAIQAgAAAAAAAACUAQBFCAAAAgAAAAAAAAQAAEAAAAAAAAAAAAAAAAAAIAEAAAABoAAAAAAQCAAAQAIAAACAAAIAAAAAAIAYaAQACoAJkAVQBWAFIANIAcQCbAE7CIBAAKgAmQBVAFYAUgArgBxAJsATsKgDAAqACYAI4AUgA4gE2A";
+        TCString tcString = TCString.decode(tcStr);
+        TCStringEncoder.Builder tcStringEncoder = TCStringEncoder.newBuilder(tcString);
+        assertEquals(tcStr, tcStringEncoder.encode());
+    }
 }
