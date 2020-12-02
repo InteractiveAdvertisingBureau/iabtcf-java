@@ -23,6 +23,7 @@ package com.iabtcf.v2;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.IntIterable;
 import com.iabtcf.utils.IntIterator;
 
@@ -32,7 +33,7 @@ public class PublisherRestriction {
     private final RestrictionType restrictionType;
     private final IntIterable vendorIds;
 
-    public PublisherRestriction(
+    private PublisherRestriction(
             int purposeId, RestrictionType restrictionType, IntIterable vendorIds) {
         Objects.requireNonNull(vendorIds);
         Objects.requireNonNull(restrictionType);
@@ -87,5 +88,87 @@ public class PublisherRestriction {
     @Override
     public int hashCode() {
         return Objects.hash(purposeId, restrictionType, vendorIds);
+    }
+
+    public static class Builder {
+        private int purposeId;
+        private RestrictionType restrictionType;
+        private final BitSetIntIterable.Builder vendorIds = BitSetIntIterable.newBuilder();
+
+        public Builder() {
+        }
+
+        public Builder(PublisherRestriction prototype) {
+            purposeId = prototype.purposeId;
+            restrictionType = prototype.restrictionType;
+            vendorIds.add(prototype.vendorIds);
+        }
+
+        public Builder(Builder prototype) {
+            purposeId = prototype.purposeId;
+            restrictionType = prototype.restrictionType;
+            vendorIds.add(prototype.vendorIds);
+        }
+
+        public Builder purposeId(int purposeId) {
+            this.purposeId = purposeId;
+            return this;
+        }
+
+        public Builder restrictionType(RestrictionType restrictionType) {
+            this.restrictionType = restrictionType;
+            return this;
+        }
+
+        public Builder addVendor(int vendorId) {
+            if (vendorId < 1) {
+                throw new IllegalArgumentException("vendor id must be > 0: " + vendorId);
+            }
+
+            vendorIds.add(vendorId);
+            return this;
+        }
+
+        public Builder addVendor(int... vendorIds) {
+            for (int i = 0; i < vendorIds.length; i++) {
+                addVendor(vendorIds[i]);
+            }
+            return this;
+        }
+
+        public Builder addVendor(IntIterable vendorIds) {
+            for (IntIterator ii = vendorIds.intIterator(); ii.hasNext();) {
+                addVendor(ii.nextInt());
+            }
+            return this;
+        }
+
+        public Builder clearVendors() {
+            vendorIds.clear();
+            return this;
+        }
+
+        public PublisherRestriction build() {
+            if (purposeId <= 0) {
+                throw new IllegalArgumentException("purposeId must be positive: " + purposeId);
+            }
+            
+            return new PublisherRestriction(purposeId,
+                                            restrictionType,
+                                            vendorIds.build());
+        }
+
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static Builder newBuilder(PublisherRestriction prototype) {
+        return new Builder(prototype);
+    }
+
+    public static Builder newBuilder(Builder prototype) {
+        return new Builder(prototype);
     }
 }
