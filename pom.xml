@@ -19,8 +19,8 @@
 
     <developers>
         <developer>
-            <name>Sam Tingleff</name>
-            <email>sam@iabtechlab.com</email>
+            <name>Mayank Mishra</name>
+            <email>mayank@iabtechlab.com</email>
             <organization>IAB Tech Lab</organization>
             <organizationUrl>https://www.iabtechlab.com</organizationUrl>
         </developer>
@@ -29,18 +29,19 @@
     <scm>
         <connection>scm:git:git@github.com:InteractiveAdvertisingBureau/iabtcf-java.git</connection>
         <developerConnection>scm:git:git@github.com:InteractiveAdvertisingBureau/iabtcf-java.git</developerConnection>
+        <!--  developerConnection>scm:git:ssh://github.com:InteractiveAdvertisingBureau/iabtcf-java.git</developerConnection -->
         <url>https://github.com/InteractiveAdvertisingBureau/iabtcf-java</url>
-      <tag>HEAD</tag>
+      <tag>iabtcf-core-2.0.8</tag>
   </scm>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
+            <id>ossrh</id>
             <name>Sonatype Nexus Snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>sonatype-nexus-staging</id>
+            <id>ossrh</id>
             <name>Nexus Release Repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
@@ -104,10 +105,23 @@
             <id>release</id>
             <build>
                 <plugins>
+                	<plugin>
+      					<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.7</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+				    </plugin>
+				    <!--
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
+                    -->
                 </plugins>
             </build>
         </profile>
@@ -174,7 +188,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>2.2.1</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -189,7 +203,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>2.9.1</version>
                     <executions>
                         <execution>
                             <id>attach-javadoc</id>
@@ -223,6 +237,8 @@
                     <configuration>
                         <goals>deploy</goals>
                         <autoversionsubmodules>true</autoversionsubmodules>
+                        <useReleaseProfile>false</useReleaseProfile>
+    					<releaseProfiles>release</releaseProfiles>
                     </configuration>
                 </plugin>
 
@@ -285,4 +301,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
 </project>
