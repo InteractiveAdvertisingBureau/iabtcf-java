@@ -23,13 +23,13 @@ package com.iabtcf.extras.jackson.gvl;
 import java.time.Instant;
 import java.util.Arrays;
 
-import com.iabtcf.extras.jackson.TestUtil;
-import com.iabtcf.extras.jackson.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.iabtcf.extras.gvl.Vendor;
+import com.iabtcf.extras.jackson.Loader;
+import com.iabtcf.extras.jackson.TestUtil;
 
 public class VendorTest {
 
@@ -112,6 +112,6 @@ public class VendorTest {
 
     @Test
     public void testIsDeleted() {
-        Assert.assertFalse(vendorEight.isDeleted());
+        Assert.assertTrue(vendorEight.isDeleted());
     }
 }

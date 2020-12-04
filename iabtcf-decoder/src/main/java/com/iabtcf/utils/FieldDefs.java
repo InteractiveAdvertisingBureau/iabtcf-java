@@ -155,8 +155,8 @@ public enum FieldDefs {
 
     private OffsetSupplier offset;
     private LengthSupplier length;
-    private boolean isDynamic = false;
-    private boolean isDynamicInit = false;
+    private volatile boolean isDynamic = false;
+    private volatile boolean isDynamicInit = false;
 
     FieldDefs(int length, FieldDefs field) {
         assert field != this;
@@ -194,7 +194,6 @@ public enum FieldDefs {
             isDynamic = offset.isDynamic() || length.isDynamic();
             isDynamicInit = true;
         }
-
         return isDynamic;
     }
 
@@ -230,38 +229,42 @@ public enum FieldDefs {
 
     /**
      * The offset of the nth field depends on the length and offset of the nth-1 field. This class
-     * is used to cache static fields to avoid querying parent fields.
+     * is used to cache offset + length of static fields to avoid querying parent fields.
      *
      * Both the value and it's dynamic state are cached.
+     *
+     * Dynamic fields are not cached at the enum level and are instead resolved through the BitReader.
      */
     private static abstract class MemoizingFunction
             implements LengthSupplier, OffsetSupplier, Function<BitReader, Integer> {
-        private boolean dynamicInitialized = false;
-        private boolean isDynamic = false;
-        private Integer value;
+        private volatile boolean dynamicInitialized = false;
+        private volatile boolean isDynamic = false;
+        private volatile Integer value;
 
         public abstract Integer doCompute(BitReader t);
 
+        /**
+         * implementation must be thread-safe
+         */
         @Override
         public abstract boolean isDynamic();
 
         @Override
         public Integer apply(BitReader t) {
-            if (value == null || isDynamicPvt()) {
+            if (isDynamicPvt()) {
+                return doCompute(t);
+            } else if (value == null) {
                 value = doCompute(t);
-
-                return value;
-            } else {
-                return value;
             }
+
+            return value;
         }
 
         private boolean isDynamicPvt() {
             if (!dynamicInitialized) {
-                dynamicInitialized = true;
                 isDynamic = isDynamic();
+                dynamicInitialized = true;
             }
-
             return isDynamic;
         }
     }
