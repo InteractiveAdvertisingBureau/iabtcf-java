@@ -5,6 +5,7 @@ import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -175,18 +176,18 @@ public class TCStringV2EncoderTest {
         TCString decoded = TCString.decode(b.encode());
         assertEquals(0, decoded.getPublisherRestrictions().size());
 
-        PublisherRestrictionEntry.Builder pre = PublisherRestrictionEntry.newBuilder()
+        PublisherRestriction.Builder pre = PublisherRestriction.newBuilder()
             .purposeId(3)
             .restrictionType(RestrictionType.NOT_ALLOWED)
             .addVendor(3)
             .addVendor(7);
 
-        b.addPublisherRestrictionEntry(pre.build());
+        b.addPublisherRestriction(pre.build());
 
         pre.purposeId(1)
             .clearVendors()
             .addVendor(3);
-        b.addPublisherRestrictionEntry(pre.build());
+        b.addPublisherRestriction(pre.build());
 
         decoded = TCString.decode(b.encode());
         List<PublisherRestriction> pubRest = decoded.getPublisherRestrictions();
@@ -208,33 +209,33 @@ public class TCStringV2EncoderTest {
         TCString decoded = TCString.decode(b.encode());
         assertEquals(0, decoded.getPublisherRestrictions().size());
 
-        PublisherRestrictionEntry.Builder pre = PublisherRestrictionEntry.newBuilder()
+        PublisherRestriction.Builder pre = PublisherRestriction.newBuilder()
             .purposeId(3)
             .restrictionType(RestrictionType.NOT_ALLOWED)
             .addVendor(3, 7)
             .addVendor(BitSetIntIterable.from(1, 10));
 
-        b.addPublisherRestrictionEntry(pre.build());
-        b.clearPublisherRestrictionEntry();
-        b.addPublisherRestrictionEntry(pre.build());
+        b.addPublisherRestriction(pre.build());
+        b.clearPublisherRestriction();
+        b.addPublisherRestriction(pre.build());
 
-        PublisherRestrictionEntry.Builder pre1 = PublisherRestrictionEntry.newBuilder(pre)
+        PublisherRestriction.Builder pre1 = PublisherRestriction.newBuilder(pre)
             .purposeId(4)
             .restrictionType(RestrictionType.NOT_ALLOWED)
             .addVendor(BitSetIntIterable.from(1, 2));
 
-        b.addPublisherRestrictionEntry(pre1.build());
+        b.addPublisherRestriction(pre1.build());
 
-        PublisherRestrictionEntry.Builder pre2 = PublisherRestrictionEntry.newBuilder(pre.build())
+        PublisherRestriction.Builder pre2 = PublisherRestriction.newBuilder(pre.build())
             .purposeId(5)
             .restrictionType(RestrictionType.NOT_ALLOWED)
             .addVendor(BitSetIntIterable.from(1, 2));
 
-        b.addPublisherRestrictionEntry(pre2.build(), pre2.build());
-        List<PublisherRestrictionEntry> l = new ArrayList<>();
+        b.addPublisherRestriction(pre2.build(), pre2.build());
+        List<PublisherRestriction> l = new ArrayList<>();
         l.add(pre2.build());
         l.add(pre2.build());
-        b.addPublisherRestrictionEntry(l);
+        b.addPublisherRestriction(l);
 
         decoded = TCString.decode(b.encode());
         List<PublisherRestriction> pubRest = decoded.getPublisherRestrictions();
@@ -424,5 +425,38 @@ public class TCStringV2EncoderTest {
         b.addAllowedVendors(BitSetIntIterable.from(tcStr.getAllowedVendors()))
             .addAllowedVendors(400);
         assertNotEquals(tcStr, b.toTCString());
+    }
+
+    @Test
+    public void testEncodingUsingTcfStringWithPublisherRestrictions() {
+        String tcStr =
+            "CO9ZBNoO9ZBNoAOACAENAnCsAP_AAH_AACiQFvNR6RBUJWjjMCAZg7BAAQQLIBADAAwAhAQIAAAAQIAEoBgGKEEQnBUgAAAACAAgAAYAAAAkFCAAAQAAAAAAgQIMQECICwBAAJAAgEEQQwAQAARMAgFSEQAAREwAEC0CARAAqAJAhCAAEgRAgAIAEAAgAgAAIQAgAAAAAAAACUAQBFCAAAAgAAAAAAAAQAAEAAAAAAAAAAAAAAAAAAIAEAAAABoAAAAAAQCAAAQAIAAACAAAIAAAAAAIAYaAQACoAJkAVQBWAFIANIAcQCbAE7CIBAAKgAmQBVAFYAUgArgBxAJsATsKgDAAqACYAI4AUgA4gE2A";
+        TCString tcString = TCString.decode(tcStr);
+        assertNotNull(tcString.getPublisherRestrictions());
+        assertEquals(3, tcString.getPublisherRestrictions().size());
+
+        TCStringEncoder.Builder tcStringEncoder = TCStringEncoder.newBuilder(tcString);
+        String tcStrWithPublisherRestrictions = tcStringEncoder.encode();
+
+        assertNotNull(TCString.decode(tcStrWithPublisherRestrictions).getPublisherRestrictions());
+        assertEquals(3, TCString.decode(tcStrWithPublisherRestrictions).getPublisherRestrictions().size());
+
+        assertEquals(tcStr, tcStrWithPublisherRestrictions);
+    }
+
+    @Test
+    public void testEncodingUsingBuilderWithPublisherRestrictions() {
+        PublisherRestriction pubRestriction =
+            PublisherRestriction.newBuilder()
+                .purposeId(1)
+                .restrictionType(RestrictionType.NOT_ALLOWED)
+                .addVendor(1).build();
+
+        TCStringEncoder.Builder builderWithPubRestr = encoderBuilder.addPublisherRestriction(pubRestriction);
+
+        String tcStrWithPublisherRestrictions = builderWithPubRestr.encode();
+
+        assertNotNull(TCString.decode(tcStrWithPublisherRestrictions).getPublisherRestrictions());
+        assertEquals(3, TCString.decode(tcStrWithPublisherRestrictions).getPublisherRestrictions().size());
     }
 }

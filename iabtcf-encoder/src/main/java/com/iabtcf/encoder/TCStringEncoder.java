@@ -67,6 +67,7 @@ import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.FieldDefs;
 import com.iabtcf.utils.IntIterable;
+import com.iabtcf.v2.PublisherRestriction;
 import com.iabtcf.v2.SegmentType;
 
 public interface TCStringEncoder {
@@ -172,7 +173,7 @@ public interface TCStringEncoder {
         private final IntIterable customPurposesConsent;
         private final IntIterable customPurposesLITransparency;
         private final IntIterable pubPurposesLITransparency;
-        private final List<PublisherRestrictionEntry> publisherRestrictions;
+        private final List<PublisherRestriction> publisherRestrictions;
 
         /**
          * @throws IllegalArgumentException if the version is invalid
@@ -285,14 +286,15 @@ public interface TCStringEncoder {
 
             bitWriter.write(publisherRestrictions.size(), FieldDefs.CORE_NUM_PUB_RESTRICTION);
 
-            for (PublisherRestrictionEntry pre : publisherRestrictions) {
-                bitWriter.write(pre.getPurposeId(), FieldDefs.PURPOSE_ID);
+            for (PublisherRestriction pre : publisherRestrictions) {
+                int purposeId = Bounds.checkBounds(pre.getPurposeId(), FieldDefs.PURPOSE_ID);
+                bitWriter.write(purposeId, FieldDefs.PURPOSE_ID);
                 bitWriter.write(pre.getRestrictionType().ordinal(), FieldDefs.RESTRICTION_TYPE);
                 VendorFieldEncoder v = new VendorFieldEncoder()
                     .emitRangeEncoding(true)
                     .emitMaxVendorId(false)
                     .emitIsRangeEncoding(false)
-                    .add(pre.getVendors());
+                    .add(pre.getVendorIds());
                 bitWriter.write(v.build());
             }
 
@@ -358,7 +360,7 @@ public interface TCStringEncoder {
         private BitSetIntIterable.Builder customPurposesLITransparency = BitSetIntIterable.newBuilder();
         private BitSetIntIterable.Builder pubPurposesLITransparency = BitSetIntIterable.newBuilder();
         private boolean defaultConsent = false;
-        private final List<PublisherRestrictionEntry> publisherRestrictions = new ArrayList<>();
+        private List<PublisherRestriction> publisherRestrictions = new ArrayList<>();
 
         private Builder() {
         }
@@ -379,6 +381,7 @@ public interface TCStringEncoder {
             useNonStandardStacks = prototype.useNonStandardStacks;
             specialFeatureOptIns = prototype.specialFeatureOptIns;
             purposesLITransparency = prototype.purposesLITransparency;
+            publisherRestrictions = prototype.publisherRestrictions;
             purposeOneTreatment = prototype.purposeOneTreatment;
             publisherCC = prototype.publisherCC;
             vendorLegitimateInterest = prototype.vendorLegitimateInterest;
@@ -407,6 +410,7 @@ public interface TCStringEncoder {
                 purposeOneTreatment = tcString.getPurposeOneTreatment();
                 publisherCC = tcString.getPublisherCC();
                 vendorLegitimateInterest = BitSetIntIterable.newBuilder(tcString.getVendorLegitimateInterest());
+                publisherRestrictions = tcString.getPublisherRestrictions();
                 disclosedVendors = BitSetIntIterable.newBuilder(tcString.getDisclosedVendors());
                 allowedVendors = BitSetIntIterable.newBuilder(tcString.getAllowedVendors());
             }
@@ -643,24 +647,24 @@ public interface TCStringEncoder {
         }
 
 
-        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry entry) {
-            publisherRestrictions.add(entry);
+        public Builder addPublisherRestriction(PublisherRestriction publisherRestriction) {
+            publisherRestrictions.add(publisherRestriction);
             return this;
         }
 
-        public Builder addPublisherRestrictionEntry(PublisherRestrictionEntry... entries) {
-            for (int i = 0; i < entries.length; i++) {
-                addPublisherRestrictionEntry(entries[i]);
+        public Builder addPublisherRestriction(PublisherRestriction... publisherRestrictions) {
+            for (int i = 0; i < publisherRestrictions.length; i++) {
+                addPublisherRestriction(publisherRestrictions[i]);
             }
             return this;
         }
 
-        public Builder addPublisherRestrictionEntry(Collection<PublisherRestrictionEntry> entries) {
-            publisherRestrictions.addAll(entries);
+        public Builder addPublisherRestriction(Collection<PublisherRestriction> publisherRestrictions) {
+            this.publisherRestrictions.addAll(publisherRestrictions);
             return this;
         }
 
-        public Builder clearPublisherRestrictionEntry() {
+        public Builder clearPublisherRestriction() {
             publisherRestrictions.clear();
             return this;
         }

@@ -164,14 +164,18 @@ public class TCStringV2Test {
         TCString tcModel = parse(base64FromBitString(bitString));
 
         List<PublisherRestriction> actual = tcModel.getPublisherRestrictions();
+        PublisherRestriction publisherRestriction =
+            PublisherRestriction.newBuilder()
+                .purposeId(1)
+                .restrictionType(RestrictionType.REQUIRE_CONSENT)
+                .build();
         List<PublisherRestriction> expected =
                 Arrays.asList(
-                        new PublisherRestriction(1, RestrictionType.REQUIRE_CONSENT, BitSetIntIterable.EMPTY),
-                        new PublisherRestriction(2, RestrictionType.NOT_ALLOWED, BitSetIntIterable.EMPTY),
-                        new PublisherRestriction(
-                                3,
-                                RestrictionType.REQUIRE_LEGITIMATE_INTEREST,
-                                BitSetIntIterable.EMPTY));
+                        publisherRestriction,
+                        PublisherRestriction.newBuilder(publisherRestriction).purposeId(2)
+                            .restrictionType(RestrictionType.NOT_ALLOWED).build(),
+                        PublisherRestriction.newBuilder(publisherRestriction).purposeId(3)
+                            .restrictionType(RestrictionType.REQUIRE_LEGITIMATE_INTEREST).build());
 
         assertEquals(expected, actual);
 

@@ -25,12 +25,13 @@ import java.util.List;
 import com.iabtcf.encoder.exceptions.ValueOverflowException;
 import com.iabtcf.utils.BitSetIntIterable;
 import com.iabtcf.utils.FieldDefs;
+import com.iabtcf.v2.PublisherRestriction;
 
 class Bounds {
     /**
      * Verifies that number of entries are within bounds.
      */
-    public static List<PublisherRestrictionEntry> checkBounds(List<PublisherRestrictionEntry> value) {
+    public static List<PublisherRestriction> checkBounds(List<PublisherRestriction> value) {
         checkBounds(value.size(), (1L << FieldDefs.CORE_NUM_PUB_RESTRICTION.getLength()) - 1,
                 FieldDefs.CORE_NUM_PUB_RESTRICTION);
 

@@ -231,7 +231,10 @@ class TCStringV2 implements TCString {
             BitSet bs = new BitSet();
             currentPointer = vendorIdsFromRange(bbv, bs, currentPointer, Optional.empty());
             PublisherRestriction publisherRestriction =
-                    new PublisherRestriction(purposeId, restrictionType, BitSetIntIterable.from(bs));
+                PublisherRestriction.newBuilder()
+                    .purposeId(purposeId)
+                    .restrictionType(restrictionType)
+                    .addVendor(BitSetIntIterable.from(bs)).build();
             publisherRestrictions.add(publisherRestriction);
         }
         return currentPointer;
