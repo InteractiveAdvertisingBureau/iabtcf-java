@@ -1,5 +1,7 @@
 package com.iabtcf.test.utils;
 
+import java.util.Arrays;
+
 /*-
  * #%L
  * IAB TCF Core Library
@@ -21,7 +23,6 @@ package com.iabtcf.test.utils;
  */
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -31,7 +32,7 @@ import com.iabtcf.utils.IntIterable;
 
 public class IntIterableMatcher extends BaseMatcher<IntIterable> {
 
-    private final Matcher<Set<Integer>> baseM;
+    private final Matcher<Iterable<? extends Integer>> baseM;
 
     public static IntIterableMatcher matchInts(Set<Integer> values) {
         return new IntIterableMatcher(values);
@@ -42,16 +43,11 @@ public class IntIterableMatcher extends BaseMatcher<IntIterable> {
     }
 
     private IntIterableMatcher(Set<Integer> values) {
-        baseM = org.hamcrest.core.Is.is(org.hamcrest.core.IsEqual.equalTo(values));
+        baseM = org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder(values.toArray(new Integer[] {}));
     }
 
     private IntIterableMatcher(int... values) {
-        Set<Integer> asSet = new TreeSet<>();
-        for (int i : values) {
-            asSet.add(i);
-        }
-
-        baseM = org.hamcrest.core.Is.is(org.hamcrest.core.IsEqual.equalTo(asSet));
+        baseM = org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder(Arrays.stream(values).boxed().toArray(Integer[]::new));
     }
 
     @Override

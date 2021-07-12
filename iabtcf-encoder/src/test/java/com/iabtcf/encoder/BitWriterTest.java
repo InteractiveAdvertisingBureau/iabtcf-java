@@ -186,6 +186,49 @@ public class BitWriterTest {
     }
 
     @Test
+    public void testWrite64Twice() {
+        BitWriter bv = new BitWriter();
+        bv.write(0xCCCCCCCCCCCCCCCCL, Long.SIZE);
+        bv.write(0xEEEEEEEEEEEEEEEEL, Long.SIZE);
+
+        BitReader bbv = new BitReader(bv.toByteArray());
+
+        long value = readBits64(bbv, 0);
+        assertEquals(0xCCCCCCCCCCCCCCCCL, value);
+
+        value = readBits64(bbv, 64);
+        assertEquals(0xEEEEEEEEEEEEEEEEL, value);
+    }
+
+    @Test
+    public void testWrite64Twice_1() {
+        BitWriter bv = new BitWriter();
+        for(int i = 0; i < 64; i += 4) {
+            bv.write(0xC, 4);
+        }
+        for(int i = 0; i < 64; i += 4) {
+            bv.write(0xE, 4);
+        }
+
+        BitReader bbv = new BitReader(bv.toByteArray());
+        long value = readBits64(bbv, 0);
+
+        assertEquals(0xCCCCCCCCCCCCCCCCL, value);
+
+        value = readBits64(bbv, 64);
+        assertEquals(0xEEEEEEEEEEEEEEEEL, value);
+    }
+
+    private long readBits64(BitReader bbv, int offset) {
+        long value = 0L;
+        value |= (long) bbv.readBits16(0 + offset) << 48L;
+        value |= (long) bbv.readBits16(16 + offset) << 32L;
+        value |= (long) bbv.readBits16(32 + offset) << 16L;
+        value |= bbv.readBits16(48 + offset);
+        return value;
+    }
+
+    @Test
     public void testWriteSingleByte() {
         BitWriter bitWriter = new BitWriter();
         bitWriter.write(1, 6);

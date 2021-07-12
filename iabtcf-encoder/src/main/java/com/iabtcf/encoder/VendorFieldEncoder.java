@@ -218,7 +218,7 @@ class VendorFieldEncoder {
             for (int i = 0; i < bits.length - 1; i++) {
                 bv.write(Long.reverse(bits[i]), Long.SIZE);
             }
-            bv.write(Long.reverse(bits[bits.length - 1]) >> (Long.SIZE - rem), rem);
+            bv.write(Long.reverse(bits[bits.length - 1]) >>> (Long.SIZE - rem), rem);
             bv.enforcePrecision(maxVendorId - vendors.length());
         }
 

@@ -115,8 +115,8 @@ class BitWriter {
     }
 
     /**
-     * Writes 'length' number of bits whose set bits are indicated by the position of the ints in
-     * 'of'. The least significant bit starts at 1.
+     * Writes 'length' number of bits whose set bits are indicated by the position of the ints in 'of'.
+     * The least significant bit starts at 1.
      *
      * @throws IndexOutOfBoundsException if 'of' contains an invalid index, <= 0 or length is < 0
      */
@@ -174,6 +174,10 @@ class BitWriter {
      * Writes up to 'length' number of bits from 'data'.
      */
     public void write(long data, int length) {
+        if (length == 0) {
+            return;
+        }
+
         if (length < 0 || length > Long.SIZE) {
             throw new IllegalArgumentException("length is invalid: " + length);
         }
@@ -182,12 +186,12 @@ class BitWriter {
         bitsRemaining -= length;
         precision -= length;
 
-        if (bitsRemaining >= 0) {
+        if (bitsRemaining > 0) {
             pending |= data << bitsRemaining;
         } else {
-            buffer.add(pending |= data >>> -bitsRemaining);
+            buffer.add(pending | (data >>> -bitsRemaining));
             bitsRemaining += Long.SIZE;
-            pending = data << bitsRemaining;
+            pending = bitsRemaining == Long.SIZE ? 0L : (data << bitsRemaining);
         }
     }
 
@@ -216,7 +220,7 @@ class BitWriter {
     public byte[] toByteArray() {
         enforcePrecision();
 
-        int bytesToWrite = (Long.SIZE + (Byte.SIZE - 1) - bitsRemaining) >> 3;
+        int bytesToWrite = (Long.SIZE + (Byte.SIZE - 1) - bitsRemaining) >>> 3;
 
         ByteBuffer bb = ByteBuffer.allocate(buffer.size() * (Long.SIZE / Byte.SIZE) + bytesToWrite);
 
@@ -225,7 +229,7 @@ class BitWriter {
         }
 
         for (int i = 0; i < bytesToWrite; i++) {
-            bb.put((byte) (pending >> (Long.SIZE - Byte.SIZE - i * Byte.SIZE)));
+            bb.put((byte) (pending >>> (Long.SIZE - Byte.SIZE - i * Byte.SIZE)));
         }
 
         return bb.array();
@@ -240,7 +244,7 @@ class BitWriter {
             write(0L, Long.SIZE);
         }
 
-        write(0L, p % 64);
+        write(0L, p % Long.SIZE);
     }
 
     private void enforcePrecision() {
