@@ -116,7 +116,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public boolean readBits1(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
 
         ensureReadable(startByte, 1);
@@ -166,7 +166,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public byte readBits6(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
@@ -186,7 +186,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     private byte readByteBits(int offset, int nbits) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
@@ -212,7 +212,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public int readBits12(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
@@ -240,7 +240,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public int readBits16(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
@@ -268,7 +268,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public int readBits24(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
 
@@ -298,7 +298,7 @@ public class BitReader {
      * @throws ByteParseException
      */
     public long readBits36(int offset) {
-        int startByte = offset >> 3;
+        int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos; // # bits to read
 

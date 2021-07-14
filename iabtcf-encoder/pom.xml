@@ -87,6 +87,11 @@
             <artifactId>junit</artifactId>
         </dependency>
 
+	<dependency>
+	  <groupId>org.hamcrest</groupId>
+	  <artifactId>hamcrest-library</artifactId>
+	</dependency>
+
         <dependency>
             <groupId>com.iabtcf</groupId>
             <artifactId>iabtcf-decoder</artifactId>
