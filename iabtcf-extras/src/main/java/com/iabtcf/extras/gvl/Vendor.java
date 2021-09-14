@@ -117,4 +117,45 @@ public interface Vendor {
      * @return true, if the vendor is deleted
      */
     boolean isDeleted();
+
+    /**
+     * The number of seconds representing the longest potential duration for cookie storage on a device.
+     * If a Vendor uses multiple cookies with differing durations, cookieMaxAgeSeconds represents the cookie with
+     * the longest duration. Note: cookies are the only method of storage or device access that permit a predictable
+     * duration to be set.
+     * This is required only if usesCookies is set to true, else optional
+     * @return The number, in seconds, of the longest potential duration for storage on a device, as set when using
+     * the cookie method of storage. A negative number or a 0 indicate session storage similar to the Set-Cookie spec.
+     * A "-100" value no longer indicates no cookie usage.
+     * Note: this only includes what is declared when the storage is set and does not consider duration extensions
+     * should storage be refreshed
+     */
+    Optional<Integer> getCookieMaxAgeSeconds();
+
+    /**
+     * This boolean field indicates whether the vendor uses cookie storage (session or otherwise).
+     * @return True indicates cookie storage is used
+     */
+    boolean getUsesCookies();
+
+    /**
+     * This true or false field indicates whether any cookies in scope for cookieMaxAgeSeconds are refreshed after
+     * being initially set.
+     * @return True indicates the vendor refreshes this cookie
+     */
+    boolean getHasCookieRefresh();
+
+    /**
+     * This boolean field indicates whether the vendor uses other, non-cookie methods of storage or accessing
+     * information already stored on a user’s device. Examples of non-cookie storage and access may be localStorage,
+     * indexDB, mobile ad IDs, etc.
+     * @return True indicates non-cookie access is used
+     */
+    boolean getUsesNonCookieAccess();
+
+    /**
+     * Link to a recommended, vendor-hosted, secure URL for disclosing additional storage information
+     * @return Location of vendor-hosted deviceStorage.json file
+     */
+    Optional<String> getDeviceStorageDisclosureUrl();
 }

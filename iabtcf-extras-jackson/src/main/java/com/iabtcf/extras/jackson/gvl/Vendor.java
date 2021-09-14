@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.iabtcf.extras.gvl.Overflow;
 
 public class Vendor implements com.iabtcf.extras.gvl.Vendor {
@@ -39,6 +40,11 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
     private String policyUrl;
     private Instant deletedDate;
     private com.iabtcf.extras.gvl.Overflow overflow;
+    private Integer cookieMaxAgeSeconds;
+    private boolean usesCookies;
+    private boolean cookieRefresh;
+    private boolean usesNonCookieAccess;
+    private String deviceStorageDisclosureUrl;
 
     /**
      * A vendor id: a numeric ID which is incrementally assigned and never re-used – deleted Vendors
@@ -168,5 +174,59 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
         return Optional.ofNullable(this.deletedDate)
             .map(deletedDate -> !deletedDate.isAfter(Instant.now()))
             .orElse(false);
+    }
+
+    /**
+     * The number of seconds representing the longest potential duration for cookie storage on a device.
+     *
+     * @return The number, in seconds, of the longest potential duration for storage on a device, as set when using the
+     * cookie method of storage.
+     */
+    @Override
+    public Optional<Integer> getCookieMaxAgeSeconds() {
+        return Optional.ofNullable(cookieMaxAgeSeconds);
+    }
+
+    /**
+     * This boolean field indicates whether the vendor uses cookie storage (session or otherwise).
+     *
+     * @return True indicates cookie storage is used
+     */
+    @Override
+    public boolean getUsesCookies() {
+        return usesCookies;
+    }
+
+    /**
+     * This boolean field indicates whether any cookies in scope for cookieMaxAgeSeconds are refreshed after being
+     * initially set.
+     *
+     * @return True indicates the vendor refreshes this cookie
+     */
+    @Override
+    public boolean getHasCookieRefresh() {
+        return cookieRefresh;
+    }
+
+    /**
+     * This true or false field indicates whether the vendor uses other, non-cookie methods of storage or accessing
+     * information already stored on a user’s device. Examples of non-cookie storage and access may be localStorage,
+     * indexDB, mobile ad IDs, etc.
+     *
+     * @return True indicates non-cookie access is used
+     */
+    @Override
+    public boolean getUsesNonCookieAccess() {
+        return usesNonCookieAccess;
+    }
+
+    /**
+     * Link to a recommended, vendor-hosted, secure URL for disclosing additional storage information
+     *
+     * @return Location of vendor-hosted deviceStorage.json file
+     */
+    @Override
+    public Optional<String> getDeviceStorageDisclosureUrl() {
+        return Optional.ofNullable(deviceStorageDisclosureUrl);
     }
 }
