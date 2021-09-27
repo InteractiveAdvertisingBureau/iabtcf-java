@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.iabtcf.extras.gvl.Gvl;
 import com.iabtcf.extras.gvl.Vendor;
 import com.iabtcf.extras.jackson.Loader;
 import com.iabtcf.extras.jackson.TestUtil;
@@ -34,12 +35,15 @@ import com.iabtcf.extras.jackson.TestUtil;
 public class VendorTest {
 
     private static Vendor vendorEight;
+    private static Vendor vendorTwo;
     private static final int VENDOR_ID_SELECTED_FOR_TEST = 8;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         Loader loader = new Loader();
-        vendorEight = loader.globalVendorList(TestUtil.getGlobalVendorList()).getVendor(VENDOR_ID_SELECTED_FOR_TEST);
+        Gvl gvl = loader.globalVendorList(TestUtil.getGlobalVendorList());
+        vendorEight = gvl.getVendor(VENDOR_ID_SELECTED_FOR_TEST);
+        vendorTwo = gvl.getVendor(2);
     }
 
     @Test
@@ -113,5 +117,45 @@ public class VendorTest {
     @Test
     public void testIsDeleted() {
         Assert.assertTrue(vendorEight.isDeleted());
+    }
+
+    @Test
+    public void testCookieMaxAgeSeconds() {
+        int expectedCookieMaxAgeSeconds = 2678400;
+        Assert.assertTrue(vendorEight.getCookieMaxAgeSeconds().isPresent());
+        Assert.assertEquals(expectedCookieMaxAgeSeconds, vendorEight.getCookieMaxAgeSeconds().get().intValue());
+    }
+
+    @Test
+    public void testUsesCookies() {
+        Assert.assertTrue(vendorEight.getUsesCookies());
+    }
+
+    @Test
+    public void testCookieRefresh() {
+        Assert.assertFalse(vendorEight.getHasCookieRefresh());
+    }
+
+    @Test
+    public void testUsesNonCookieAccess() {
+        Assert.assertTrue(vendorEight.getUsesNonCookieAccess());
+    }
+
+    @Test
+    public void testNullDeviceStorageDisclosureUrl() {
+        Assert.assertFalse(vendorEight.getDeviceStorageDisclosureUrl().isPresent());
+    }
+
+    @Test
+    public void testNullCookieMaxAgeSeconds() {
+        Assert.assertFalse(vendorTwo.getUsesCookies());
+        Assert.assertFalse(vendorTwo.getCookieMaxAgeSeconds().isPresent());
+    }
+
+    @Test
+    public void testDeviceStorageDisclosureUrl() {
+        String expectedDeviceStorageDisclosureUrl = "https://privacy.blismedia.com/.well-known/deviceStorage.json";
+        Assert.assertTrue(vendorTwo.getDeviceStorageDisclosureUrl().isPresent());
+        Assert.assertEquals(expectedDeviceStorageDisclosureUrl, vendorTwo.getDeviceStorageDisclosureUrl().get());
     }
 }

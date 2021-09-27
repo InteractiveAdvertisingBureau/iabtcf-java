@@ -7,3 +7,7 @@ target
 .classpath
 .project
 .settings
+iabtcf-decoder/iabtcf-decoder.iml
+iabtcf-encoder/iabtcf-encoder.iml
+iabtcf-extras/iabtcf-extras.iml
+iabtcf-extras-jackson/iabtcf-extras-jackson.iml

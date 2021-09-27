@@ -573,6 +573,7 @@
         2,
         3,
         4,
+        4,
         7,
         8,
         10
@@ -587,7 +588,11 @@
         2
       ],
       "policyUrl": "https://pubnative.net/privacy-notice/",
-      "deletedDate": "2019-02-28T00:00:00Z"
+      "deletedDate": "2019-02-28T00:00:00Z",
+      "cookieMaxAgeSeconds": null,
+      "usesCookies": false,
+      "cookieRefresh": false,
+      "usesNonCookieAccess": false
     },
     "8": {
       "id": 8,
@@ -620,7 +625,11 @@
       "deletedDate": "2020-06-28T00:00:00Z",
       "overflow": {
         "httpGetLimit": 32
-      }
+      },
+      "cookieMaxAgeSeconds": 2678400,
+      "usesCookies": true,
+      "cookieRefresh": false,
+      "usesNonCookieAccess": true
     },
     "2": {
       "id": 2,
@@ -644,7 +653,12 @@
         2
       ],
       "specialFeatures": [ ],
-      "policyUrl": "http://www.captify.co.uk/privacy-policy/"
+      "policyUrl": "http://www.captify.co.uk/privacy-policy/",
+      "cookieMaxAgeSeconds": null,
+      "usesCookies": false,
+      "cookieRefresh": true,
+      "usesNonCookieAccess": true,
+      "deviceStorageDisclosureUrl": "https://privacy.blismedia.com/.well-known/deviceStorage.json"
     }
   }
 }
