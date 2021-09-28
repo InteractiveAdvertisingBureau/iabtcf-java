@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.iabtcf.extras.gvl.Overflow;
 
 public class Vendor implements com.iabtcf.extras.gvl.Vendor {
