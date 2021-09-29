@@ -47,6 +47,7 @@
     </distributionManagement>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.version>3.1.1</checkstyle.version>
         <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -79,7 +80,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.5</version>
+                        <version>0.8.7</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -119,7 +120,7 @@
 	    <plugin>
 	        <groupId>de.qaware.maven</groupId>
 	        <artifactId>go-offline-maven-plugin</artifactId>
-	        <version>1.2.5</version>
+	        <version>1.2.8</version>
 	        <configuration>
 	            <downloadSources>false</downloadSources>
 	            <downloadJavadoc>false</downloadJavadoc>
@@ -164,10 +165,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
+                        <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
 
@@ -189,7 +191,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
                             <id>attach-javadoc</id>
@@ -219,7 +221,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.0.0-M4</version>
                     <configuration>
                         <goals>deploy</goals>
                         <autoversionsubmodules>true</autoversionsubmodules>
