@@ -130,7 +130,7 @@ public interface Vendor {
      * Note: this only includes what is declared when the storage is set and does not consider duration extensions
      * should storage be refreshed
      */
-    Optional<Integer> getCookieMaxAgeSeconds();
+    Optional<Long> getCookieMaxAgeSeconds();
 
     /**
      * This boolean field indicates whether the vendor uses cookie storage (session or otherwise).

@@ -626,7 +626,7 @@
       "overflow": {
         "httpGetLimit": 32
       },
-      "cookieMaxAgeSeconds": 2678400,
+      "cookieMaxAgeSeconds": 31557600000,
       "usesCookies": true,
       "cookieRefresh": false,
       "usesNonCookieAccess": true

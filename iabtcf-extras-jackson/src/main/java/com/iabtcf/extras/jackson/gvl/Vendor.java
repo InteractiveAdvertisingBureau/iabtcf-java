@@ -39,7 +39,7 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
     private String policyUrl;
     private Instant deletedDate;
     private com.iabtcf.extras.gvl.Overflow overflow;
-    private Integer cookieMaxAgeSeconds;
+    private Long cookieMaxAgeSeconds;
     private boolean usesCookies;
     private boolean cookieRefresh;
     private boolean usesNonCookieAccess;
@@ -182,7 +182,7 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
      * cookie method of storage.
      */
     @Override
-    public Optional<Integer> getCookieMaxAgeSeconds() {
+    public Optional<Long> getCookieMaxAgeSeconds() {
         return Optional.ofNullable(cookieMaxAgeSeconds);
     }
 
