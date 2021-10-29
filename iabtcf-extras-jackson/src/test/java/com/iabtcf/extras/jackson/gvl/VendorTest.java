@@ -121,9 +121,9 @@ public class VendorTest {
 
     @Test
     public void testCookieMaxAgeSeconds() {
-        int expectedCookieMaxAgeSeconds = 2678400;
+        long expectedCookieMaxAgeSeconds = 31557600000L;
         Assert.assertTrue(vendorEight.getCookieMaxAgeSeconds().isPresent());
-        Assert.assertEquals(expectedCookieMaxAgeSeconds, vendorEight.getCookieMaxAgeSeconds().get().intValue());
+        Assert.assertEquals(expectedCookieMaxAgeSeconds, vendorEight.getCookieMaxAgeSeconds().get().longValue());
     }
 
     @Test
