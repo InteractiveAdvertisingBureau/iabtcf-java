@@ -35,5 +35,4 @@ public class TestUtils {
         long precisionToRemove = deciseconds % DAY_AS_DECISECONDS;
         return Instant.ofEpochMilli((deciseconds - precisionToRemove) * 100);
     }
-
 }
