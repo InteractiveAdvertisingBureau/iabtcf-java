@@ -39,7 +39,7 @@ import com.iabtcf.utils.IntIterator;
  */
 class BitWriter {
     private static final long[] LONG_MASKS = new long[Long.SIZE + 1];
-    private static final long DAY_IN_DECISECONDS = 864000;   // 24 * 60 * 60 * 10
+    private static final long DAY_AS_DECISECONDS = 864_000; // 24 * 60 * 60 * 10
 
     static {
         for (int i = 0; i < Long.SIZE; i++) {
@@ -119,9 +119,9 @@ class BitWriter {
      * Writes an iabtcf encoded instant value, with Days precision only.
      */
     public void writeDays(Instant i, FieldDefs field) {
-        long timeInDeciseconds = i.toEpochMilli() / 100;
-        long precisionToDrop = timeInDeciseconds % DAY_IN_DECISECONDS;
-        write(timeInDeciseconds - precisionToDrop, field);
+        long timeAsDeciseconds = i.toEpochMilli() / 100;
+        long precisionToDrop = timeAsDeciseconds % DAY_AS_DECISECONDS;
+        write(timeAsDeciseconds - precisionToDrop, field);
     }
 
     /**

@@ -336,7 +336,7 @@ public class BitWriterTest {
         BitWriter bw = new BitWriter();
         bw.write(2, 6);
         bw.write(Instant.parse("2020-01-26T17:01:00Z").toEpochMilli() / 100, 36);
-        bw.write(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
+        bw.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_CREATED);
         bw.write(675, FieldDefs.CORE_CMP_ID);
         bw.write(2, FieldDefs.CORE_CMP_VERSION);
         bw.write(1, FieldDefs.CORE_CONSENT_SCREEN);
@@ -377,12 +377,12 @@ public class BitWriterTest {
 
         String str = bw.toBase64();
 
-        assertEquals("COtybn4PA_zT4KjACBENAPCIAEBAAECAAIAAAAAAAAAA", str);
+        assertEquals("COtybn4PA9dwAKjACBENAPCIAEBAAECAAIAAAAAAAAAA", str);
 
         TCString tcModel = TCString.decode(str);
         assertEquals(2, tcModel.getVersion());
         assertEquals(Instant.parse("2020-01-26T17:01:00Z"), tcModel.getCreated());
-        assertEquals(Instant.parse("2021-02-02T17:01:00Z"), tcModel.getLastUpdated());
+        assertEquals(Instant.parse("2021-02-02T00:00:00Z"), tcModel.getLastUpdated());
         assertEquals(675, tcModel.getCmpId());
         assertEquals(2, tcModel.getCmpVersion());
         assertEquals(1, tcModel.getConsentScreen());
@@ -403,24 +403,24 @@ public class BitWriterTest {
      */
     @Test
     public void testWriteDateDaysIgnoresBelowDayLevel() {
-        BitWriter bw1 = new BitWriter();
-        bw1.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
+        BitWriter bwCompleteDate = new BitWriter();
+        bwCompleteDate.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
 
-        BitWriter bw2 = new BitWriter();
-        bw2.writeDays(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
+        BitWriter bwWithOnlyDays = new BitWriter();
+        bwWithOnlyDays.writeDays(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
 
-        assertEquals(bw1.toBase64(), bw2.toBase64());
+        assertEquals(bwCompleteDate.toBase64(), bwWithOnlyDays.toBase64());
     }
 
     @Test
     public void testWriteDateDays() {
-        BitWriter bwComplete = new BitWriter();
-        bwComplete.write(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
+        BitWriter bwCompleteDate = new BitWriter();
+        bwCompleteDate.write(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
 
         BitWriter bwDays = new BitWriter();
         bwDays.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
 
-        assertEquals(bwComplete.toBase64(), bwDays.toBase64());
+        assertEquals(bwCompleteDate.toBase64(), bwDays.toBase64());
     }
 
     @Test
@@ -438,7 +438,6 @@ public class BitWriterTest {
         // Day is different than UTC time
         asiaCalendar.set(Calendar.DAY_OF_MONTH, 3);
         asiaCalendar.set(Calendar.HOUR_OF_DAY, 1);
-
 
         BitWriter bwAsia = new BitWriter();
         bwAsia.writeDays(asiaCalendar.toInstant(), FieldDefs.CORE_LAST_UPDATED);
