@@ -28,4 +28,10 @@ public class TestUtils {
        return Instant.ofEpochMilli((instant.toEpochMilli() / 100) * 100);
     }
 
+    public static Instant toDeciDays(Instant instant) {
+        long deciseconds = instant.toEpochMilli() / 100;
+        long precisionToRemove = deciseconds % (24 * 60 * 60 * 10);
+        return Instant.ofEpochMilli((deciseconds - precisionToRemove) * 100);
+    }
+
 }

@@ -29,6 +29,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -394,6 +396,62 @@ public class BitWriterTest {
         assertThat(tcModel.getPurposesLITransparency(), matchInts(2, 9));
         assertTrue(tcModel.getPurposeOneTreatment());
         assertEquals("AA", tcModel.getPublisherCC());
+    }
+
+    /**
+     * Check that hour, minutes, seconds and milliseconds are ignored when encoding a date days.
+     */
+    @Test
+    public void testWriteDateDaysIgnoresBelowDayLevel() {
+        BitWriter bw1 = new BitWriter();
+        bw1.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
+
+        BitWriter bw2 = new BitWriter();
+        bw2.writeDays(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
+
+        assertEquals(bw1.toBase64(), bw2.toBase64());
+    }
+
+    @Test
+    public void testWriteDateDays() {
+        BitWriter bwComplete = new BitWriter();
+        bwComplete.write(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
+
+        BitWriter bwDays = new BitWriter();
+        bwDays.writeDays(Instant.parse("2021-02-02T17:01:00Z"), FieldDefs.CORE_LAST_UPDATED);
+
+        assertEquals(bwComplete.toBase64(), bwDays.toBase64());
+    }
+
+    @Test
+    public void testWriteDateDaysTimeZone() {
+        Calendar gmtCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        gmtCalendar.set(Calendar.YEAR, 2021);
+        gmtCalendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+        gmtCalendar.set(Calendar.DAY_OF_MONTH, 2);
+        gmtCalendar.set(Calendar.HOUR_OF_DAY, 20);
+
+        // GMT + 5:30
+        Calendar asiaCalendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Calcutta"));
+        asiaCalendar.set(Calendar.YEAR, 2021);
+        asiaCalendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+        // Day is different than UTC time
+        asiaCalendar.set(Calendar.DAY_OF_MONTH, 3);
+        asiaCalendar.set(Calendar.HOUR_OF_DAY, 1);
+
+
+        BitWriter bwAsia = new BitWriter();
+        bwAsia.writeDays(asiaCalendar.toInstant(), FieldDefs.CORE_LAST_UPDATED);
+
+        BitWriter bwGmt = new BitWriter();
+        bwGmt.writeDays(gmtCalendar.toInstant(), FieldDefs.CORE_LAST_UPDATED);
+
+        assertEquals(bwGmt.toBase64(), bwAsia.toBase64());
+
+        BitWriter bwDays = new BitWriter();
+        bwDays.write(Instant.parse("2021-02-02T00:00:00Z"), FieldDefs.CORE_LAST_UPDATED);
+
+        assertEquals(bwGmt.toBase64(), bwDays.toBase64());
     }
 
     @Test
