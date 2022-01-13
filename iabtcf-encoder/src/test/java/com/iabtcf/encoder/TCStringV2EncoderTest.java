@@ -1,6 +1,5 @@
 package com.iabtcf.encoder;
 
-import static com.iabtcf.encoder.utils.TestUtils.toDeci;
 import static com.iabtcf.encoder.utils.TestUtils.toDeciDays;
 import static com.iabtcf.test.utils.IntIterableMatcher.matchInts;
 import static org.junit.Assert.assertEquals;
@@ -46,7 +45,7 @@ import com.iabtcf.v2.RestrictionType;
 public class TCStringV2EncoderTest {
 
     private final Instant created = Instant.now();
-    private final Instant updated = created.plus(1, ChronoUnit.DAYS);
+    private final Instant updated = created.plus(1, ChronoUnit.HOURS);
     private TCStringEncoder.Builder encoderBuilder;
 
     @Before
