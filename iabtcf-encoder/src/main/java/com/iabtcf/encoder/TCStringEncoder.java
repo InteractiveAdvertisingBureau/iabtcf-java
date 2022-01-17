@@ -417,11 +417,18 @@ public interface TCStringEncoder {
             return this;
         }
 
+        /**
+         * In V2, the encoded value will be rounded to the day.
+         * It should also be the same value than {@link #lastUpdated}.
+         */
         public Builder created(Instant created) {
             this.created = created;
             return this;
         }
 
+        /**
+         * In V2, the encoded value will be rounded to the day.
+         */
         public Builder lastUpdated(Instant updated) {
             this.updated = updated;
             return this;
