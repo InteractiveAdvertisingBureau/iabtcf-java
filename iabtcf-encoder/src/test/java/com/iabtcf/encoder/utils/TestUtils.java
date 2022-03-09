@@ -24,15 +24,8 @@ import java.time.Instant;
 
 public class TestUtils {
 
-    private static final long DAY_AS_DECISECONDS = 24 * 60 * 60 * 10;
-
     public static Instant toDeci(Instant instant) {
        return Instant.ofEpochMilli((instant.toEpochMilli() / 100) * 100);
     }
 
-    public static Instant toDeciDays(Instant instant) {
-        long deciseconds = instant.toEpochMilli() / 100;
-        long precisionToRemove = deciseconds % DAY_AS_DECISECONDS;
-        return Instant.ofEpochMilli((deciseconds - precisionToRemove) * 100);
-    }
 }
