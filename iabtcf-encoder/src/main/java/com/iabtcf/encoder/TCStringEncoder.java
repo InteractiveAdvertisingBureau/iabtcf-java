@@ -55,6 +55,7 @@ import static com.iabtcf.utils.FieldDefs.V1_VERSION;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -185,8 +186,10 @@ public interface TCStringEncoder {
             }
 
             version = checkBounds(builder.version, FieldDefs.CORE_CMP_VERSION);
-            created = Objects.requireNonNull(builder.created);
-            updated = Objects.requireNonNull(builder.updated);
+            /* We are using the value of updated field in the builder to populate the created in order to keep the
+               values of created and update same as per the new TCF specifications */
+            created = Objects.requireNonNull(builder.updated.truncatedTo(ChronoUnit.DAYS));
+            updated = Objects.requireNonNull(builder.updated.truncatedTo(ChronoUnit.DAYS));
             cmpId = checkBounds(builder.cmpId, FieldDefs.CORE_CMP_ID);
             cmpVersion = checkBounds(builder.cmpVersion, FieldDefs.CORE_CMP_VERSION);
             consentScreen = checkBounds(builder.consentScreen, FieldDefs.CORE_CONSENT_SCREEN);
@@ -334,7 +337,7 @@ public interface TCStringEncoder {
 
     public static class Builder implements TCStringEncoder {
         private int version = 0;
-        private Instant created = Instant.now(Clock.systemUTC());
+        private Instant created = Instant.now(Clock.systemUTC()).truncatedTo(ChronoUnit.DAYS);
         private Instant updated = created;
         private int cmpId = 0;
         private int cmpVersion = 0;
@@ -417,11 +420,18 @@ public interface TCStringEncoder {
             return this;
         }
 
+        /**
+         * In V2, the encoded value will be rounded to the day.
+         * It should also be the same value than {@link #lastUpdated}.
+         */
         public Builder created(Instant created) {
             this.created = created;
             return this;
         }
 
+        /**
+         * In V2, the encoded value will be rounded to the day.
+         */
         public Builder lastUpdated(Instant updated) {
             this.updated = updated;
             return this;
