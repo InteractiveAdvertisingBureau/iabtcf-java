@@ -147,16 +147,17 @@ class TCStringV2 implements TCString {
      * @throws InvalidRangeFieldException
      */
     static BitSetIntIterable fillVendors(BitReader bbv, FieldDefs maxVendor, FieldDefs vendorField) {
-        BitSet bs = new BitSet();
 
-        int maxV = bbv.readBits16(maxVendor);
-        boolean isRangeEncoding = bbv.readBits1(maxVendor.getEnd(bbv));
+        final BitSet bs = new BitSet();
+        final int maxV = bbv.readBits16(maxVendor);
+        final boolean isRangeEncoding = bbv.readBits1(maxVendor.getEnd(bbv));
+        final int vendorFieldOffset = vendorField.getOffset(bbv);
 
         if (isRangeEncoding) {
             vendorIdsFromRange(bbv, bs, vendorField, Optional.of(maxVendor));
         } else {
             for (int i = 0; i < maxV; i++) {
-                boolean hasVendorConsent = bbv.readBits1(vendorField.getOffset(bbv) + i);
+                boolean hasVendorConsent = bbv.readBits1(vendorFieldOffset + i);
                 if (hasVendorConsent) {
                     bs.set(i + 1);
                 }
@@ -172,17 +173,19 @@ class TCStringV2 implements TCString {
      */
     static int vendorIdsFromRange(BitReader bbv, BitSet bs, int numberOfVendorEntriesOffset,
             Optional<FieldDefs> maxVendor) {
-        int numberOfVendorEntries = bbv.readBits12(numberOfVendorEntriesOffset);
+
+        final int numberOfVendorEntries = bbv.readBits12(numberOfVendorEntriesOffset);
+        final int maxV = maxVendor.map(maxVF -> bbv.readBits16(maxVF)).orElse(Integer.MAX_VALUE);
+        final int startOrOnlyVendorIdFieldLength = FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
         int offset = numberOfVendorEntriesOffset + FieldDefs.NUM_ENTRIES.getLength(bbv);
-        int maxV = maxVendor.map(maxVF -> bbv.readBits16(maxVF)).orElse(Integer.MAX_VALUE);
 
         for (int j = 0; j < numberOfVendorEntries; j++) {
             boolean isRangeEntry = bbv.readBits1(offset++);
             int startOrOnlyVendorId = bbv.readBits16(offset);
-            offset += FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
+            offset += startOrOnlyVendorIdFieldLength;
             if (isRangeEntry) {
                 int endVendorId = bbv.readBits16(offset);
-                offset += FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
+                offset += startOrOnlyVendorIdFieldLength;
 
                 if (startOrOnlyVendorId > endVendorId) {
                     throw new InvalidRangeFieldException(String.format(
@@ -217,12 +220,13 @@ class TCStringV2 implements TCString {
     private int fillPublisherRestrictions(
             List<PublisherRestriction> publisherRestrictions, int currentPointer, BitReader bitVector) {
 
-        int numberOfPublisherRestrictions = bitVector.readBits12(currentPointer);
+        final int numberOfPublisherRestrictions = bitVector.readBits12(currentPointer);
+        final int purposeIdFieldLength = FieldDefs.PURPOSE_ID.getLength(bitVector);
         currentPointer += FieldDefs.NUM_ENTRIES.getLength(bitVector);
 
         for (int i = 0; i < numberOfPublisherRestrictions; i++) {
             int purposeId = bitVector.readBits6(currentPointer);
-            currentPointer += FieldDefs.PURPOSE_ID.getLength(bitVector);
+            currentPointer += purposeIdFieldLength;
 
             int restrictionTypeId = bitVector.readBits2(currentPointer);
             currentPointer += 2;
