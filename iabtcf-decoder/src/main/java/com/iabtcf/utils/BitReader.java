@@ -400,18 +400,12 @@ public class BitReader {
             if (remaining >= 64) {
                 fillBitSetWithContent(bs, readBits64(readIndex), 64, writeIndex);
                 i += 64;
-            } else if (remaining >= 36) {
-                fillBitSetWithContent(bs, readBits36(readIndex), 36, writeIndex);
-                i += 36;
-            } else if (remaining >= 24) {
-                fillBitSetWithContent(bs, readBits24(readIndex), 24, writeIndex);
-                i += 24;
+            } else if (remaining >= 32) {
+                fillBitSetWithContent(bs, readBits32(readIndex), 32, writeIndex);
+                i += 32;
             } else if (remaining >= 16) {
                 fillBitSetWithContent(bs, readBits16(readIndex), 16, writeIndex);
                 i += 16;
-            } else if (remaining >= 12) {
-                fillBitSetWithContent(bs, readBits12(readIndex), 12, writeIndex);
-                i += 12;
             } else if (remaining >= 8) {
                 fillBitSetWithContent(bs, readByteBits(readIndex, 8), 8, writeIndex);
                 i += 8;
