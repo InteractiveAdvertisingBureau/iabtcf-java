@@ -293,6 +293,30 @@ public class BitReader {
     /**
      * @throws ByteParseException
      */
+    public int readBits32(int offset) {
+        int startByte = offset >>> 3;
+        int bitPos = offset % 8;
+        int n = 8 - bitPos;
+
+        if (n < 8) {
+            ensureReadable(startByte, 5);
+            return ((unsafeReadLsb(buffer[startByte], bitPos, n) & 0xFF) << 24)
+                    | (buffer[startByte + 1] & 0xFF) << (16 + bitPos)
+                    | (buffer[startByte + 2] & 0xFF) << (8 + bitPos)
+                    | (buffer[startByte + 3] & 0xFF) << bitPos
+                    | (unsafeReadMsb(buffer[startByte + 4], 0, bitPos) & 0xFF);
+        } else {
+            ensureReadable(startByte, 4);
+            return (buffer[startByte] & 0xFF) << 24
+                    | (buffer[startByte + 1] & 0xFF) << 16
+                    | (buffer[startByte + 2] & 0xFF) << 8
+                    | (buffer[startByte + 3] & 0xFF);
+        }
+    }
+
+    /**
+     * @throws ByteParseException
+     */
     public long readBits36(FieldDefs field) {
         assert field.getLength(this) == 36;
         return readBits36(field.getOffset(this));

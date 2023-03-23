@@ -315,6 +315,61 @@ public class BitReaderTest {
     }
 
     @Test
+    public void testReadBits32_0() {
+        BitReader bv = new BitReader(new byte[] {
+                0b00000001, 0b00000001, 0b00000001, 0b00000001,
+        });
+        assertEquals(0x1010101, bv.readBits32(0));
+    }
+
+    @Test
+    public void testReadBits32_1() {
+        BitReader bv = new BitReader(new byte[] {(byte) 0x00,
+                (byte) 0b10000000, (byte) 0b10000000, (byte) 0b10000000, (byte) 0b10000000,
+        });
+        assertEquals(0x1010101, bv.readBits32(1));
+    }
+
+    @Test
+    public void testReadBits32_2() {
+        byte[] g = new byte[] {(byte) 0x00,
+                (byte) 0b10000000, (byte) 0b10000000, (byte) 0b10000000, (byte) 0b10000000,
+        };
+        BitReader bv = new BitReader(g);
+        assertEquals(0x1010101, bv.readBits32(1));
+
+        shift(g);
+
+        bv = new BitReader(g);
+        assertEquals(0x1010101, bv.readBits32(2));
+    }
+
+    @Test
+    public void testReadBits32N_Random() {
+        for (int i = 0; i < 1000; i++) {
+            checkTestReadBits32N_Random();
+        }
+    }
+
+    private void checkTestReadBits32N_Random() {
+        byte[] rb = new byte[5];
+        r.nextBytes(rb);
+
+        byte[] g = new byte[] {(byte) 0b0000001,
+                rb[0],  rb[1],  rb[2],  rb[3], rb[4],
+                (byte) 0x00, (byte) 0x00};
+
+        BitReader bv = new BitReader(g);
+        long expect = bv.readBits32(4);
+
+        for (int i = 1; i < 16; i++) {
+            shift(g);
+            bv = new BitReader(g);
+            assertEquals(String.format("%d", i), expect, bv.readBits32(4 + i));
+        }
+    }
+
+    @Test
     public void testReadBits64_0() {
         BitReader bv = new BitReader(new byte[] {
                 0b00000001, 0b00000001, 0b00000001, 0b00000001,
@@ -355,13 +410,11 @@ public class BitReaderTest {
     }
 
     private void checkTestReadBits64N_Random() {
-        byte[] rb = new byte[18];
+        byte[] rb = new byte[9];
         r.nextBytes(rb);
 
         byte[] g = new byte[] {(byte) 0b0000001,
-                rb[0],  rb[1],  rb[2],  rb[3],  rb[4],  rb[5],
-                rb[6],  rb[7],  rb[8],  rb[9],  rb[10], rb[11],
-                rb[12], rb[13], rb[14], rb[15], rb[16], rb[17],
+                rb[0],  rb[1],  rb[2],  rb[3],  rb[4],  rb[5], rb[6],  rb[7], rb[8],
                 (byte) 0x00, (byte) 0x00};
 
         BitReader bv = new BitReader(g);

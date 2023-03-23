@@ -148,20 +148,15 @@ class TCStringV2 implements TCString {
      */
     static BitSetIntIterable fillVendors(BitReader bbv, FieldDefs maxVendor, FieldDefs vendorField) {
 
-        final BitSet bs = new BitSet();
         final int maxV = bbv.readBits16(maxVendor);
         final boolean isRangeEncoding = bbv.readBits1(maxVendor.getEnd(bbv));
         final int vendorFieldOffset = vendorField.getOffset(bbv);
+        BitSet bs = new BitSet();
 
         if (isRangeEncoding) {
             vendorIdsFromRange(bbv, bs, vendorField, Optional.of(maxVendor));
         } else {
-            for (int i = 0; i < maxV; i++) {
-                boolean hasVendorConsent = bbv.readBits1(vendorFieldOffset + i);
-                if (hasVendorConsent) {
-                    bs.set(i + 1);
-                }
-            }
+            bs = bbv.readBitSet(vendorFieldOffset, maxV, 1);
         }
         return BitSetIntIterable.from(bs);
     }
@@ -176,21 +171,21 @@ class TCStringV2 implements TCString {
 
         final int numberOfVendorEntries = bbv.readBits12(numberOfVendorEntriesOffset);
         final int maxV = maxVendor.map(maxVF -> bbv.readBits16(maxVF)).orElse(Integer.MAX_VALUE);
-        final int startOrOnlyVendorIdFieldLength = FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
+        final int vendorIdFieldLength = FieldDefs.START_OR_ONLY_VENDOR_ID.getLength(bbv);
+        final int vendorIdMask = 0xFFFFFFFF >>> (32 - vendorIdFieldLength);
         int offset = numberOfVendorEntriesOffset + FieldDefs.NUM_ENTRIES.getLength(bbv);
 
         for (int j = 0; j < numberOfVendorEntries; j++) {
             boolean isRangeEntry = bbv.readBits1(offset++);
-            int startOrOnlyVendorId = bbv.readBits16(offset);
-            offset += startOrOnlyVendorIdFieldLength;
             if (isRangeEntry) {
-                int endVendorId = bbv.readBits16(offset);
-                offset += startOrOnlyVendorIdFieldLength;
+                final int content = bbv.readBits32(offset);
+                final int startVendorId = (content >>> vendorIdFieldLength) & vendorIdMask;
+                final int endVendorId = content & vendorIdMask;
+                offset += 2 * vendorIdFieldLength;
 
-                if (startOrOnlyVendorId > endVendorId) {
+                if (startVendorId > endVendorId) {
                     throw new InvalidRangeFieldException(String.format(
-                            "start vendor id (%d) is greater than endVendorId (%d)", startOrOnlyVendorId,
-                            endVendorId));
+                            "start vendor id (%d) is greater than endVendorId (%d)", startVendorId, endVendorId));
                 }
 
                 if (endVendorId > maxV) {
@@ -198,9 +193,11 @@ class TCStringV2 implements TCString {
                             String.format("end vendor id (%d) is greater than max (%d)", endVendorId, maxV));
                 }
 
-                bs.set(startOrOnlyVendorId, endVendorId + 1);
+                bs.set(startVendorId, endVendorId + 1);
             } else {
-                bs.set(startOrOnlyVendorId);
+                final int onlyVendorId = bbv.readBits16(offset);
+                offset += vendorIdFieldLength;
+                bs.set(onlyVendorId);
             }
         }
 
@@ -225,18 +222,17 @@ class TCStringV2 implements TCString {
         currentPointer += FieldDefs.NUM_ENTRIES.getLength(bitVector);
 
         for (int i = 0; i < numberOfPublisherRestrictions; i++) {
-            int purposeId = bitVector.readBits6(currentPointer);
-            currentPointer += purposeIdFieldLength;
+            final byte content = bitVector.readByteBits(currentPointer, 8);
+            final int purposeId = (content >>> 2) & (0xFF >>> (8 - purposeIdFieldLength));
+            final int restrictionTypeId = content & 0b11;
+            currentPointer += purposeIdFieldLength + 2;
 
-            int restrictionTypeId = bitVector.readBits2(currentPointer);
-            currentPointer += 2;
-            RestrictionType restrictionType = RestrictionType.from(restrictionTypeId);
-
-            BitSet bs = new BitSet();
+            final BitSet bs = new BitSet();
             currentPointer = vendorIdsFromRange(bbv, bs, currentPointer, Optional.empty());
-            PublisherRestriction publisherRestriction =
-                    new PublisherRestriction(purposeId, restrictionType, BitSetIntIterable.from(bs));
-            publisherRestrictions.add(publisherRestriction);
+            publisherRestrictions.add(
+                    new PublisherRestriction(
+                            purposeId, RestrictionType.from(restrictionTypeId),
+                            BitSetIntIterable.from(bs)));
         }
         return currentPointer;
     }
