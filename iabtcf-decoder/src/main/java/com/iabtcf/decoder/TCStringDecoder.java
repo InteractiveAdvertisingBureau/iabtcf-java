@@ -62,7 +62,7 @@ class TCStringDecoder {
             case 1:
                 return TCStringV1.fromBitVector(bitVector);
             case 2:
-                TCString tcString = null;
+                TCString tcString;
                 if (split.length > 1) {
                     BitReader[] remaining = new BitReader[split.length - 1];
                     for (int i = 1; i < split.length; i++) {
