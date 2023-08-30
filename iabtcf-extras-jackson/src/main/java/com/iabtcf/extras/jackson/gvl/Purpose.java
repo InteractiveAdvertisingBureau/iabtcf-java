@@ -20,6 +20,9 @@ package com.iabtcf.extras.jackson.gvl;
  * #L%
  */
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * A standard purpose
  */
@@ -29,6 +32,7 @@ public class Purpose implements com.iabtcf.extras.gvl.Purpose {
     private String name;
     private String description;
     private String descriptionLegal;
+    private List<String> illustrations;
     private boolean consentable = true;
     private boolean rightToObject = true;
 
@@ -64,12 +68,22 @@ public class Purpose implements com.iabtcf.extras.gvl.Purpose {
 
     /**
      * Legal description of the purpose
-     *
+     * @deprecated since 3.0
      * @return legal description string
      */
     @Override
-    public String getDescriptionLegal() {
-        return descriptionLegal;
+    public Optional<String> getDescriptionLegal() {
+        return Optional.ofNullable(descriptionLegal);
+    }
+
+    /**
+     * illustrations
+     * @since 3.0
+     * @return illustrations
+     */
+    @Override
+    public Optional<List<String>> getIllustrations() {
+        return Optional.ofNullable(illustrations);
     }
 
     /**

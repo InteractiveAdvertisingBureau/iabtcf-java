@@ -25,7 +25,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.iabtcf.extras.gvl.DataCategory;
 import com.iabtcf.extras.gvl.Purpose;
 import com.iabtcf.extras.gvl.SpecialFeature;
 import com.iabtcf.extras.gvl.SpecialPurpose;
@@ -40,11 +42,12 @@ public class Gvl implements com.iabtcf.extras.gvl.Gvl {
     private int tcfPolicyVersion;
     private Instant lastUpdated;
     private Map<Integer, Purpose> purposes;
-    private Map<Integer, com.iabtcf.extras.gvl.SpecialPurpose> specialPurposes;
+    private Map<Integer, SpecialPurpose> specialPurposes;
     private Map<Integer, Feature> features;
-    private Map<Integer, com.iabtcf.extras.gvl.SpecialFeature> specialFeatures;
+    private Map<Integer, SpecialFeature> specialFeatures;
     private Map<Integer, Stack> stacks;
-    private Map<Integer, com.iabtcf.extras.gvl.Vendor> vendors;
+    private Map<Integer, Vendor> vendors;
+    private Map<Integer, DataCategory> dataCategories;
 
     /**
      * A Global Vendor List Specification Version
@@ -161,5 +164,16 @@ public class Gvl implements com.iabtcf.extras.gvl.Gvl {
     @Override
     public Vendor getVendor(int vendorId) {
         return vendors.get(vendorId);
+    }
+
+    /**
+     * A list of data categories
+     * @since 3.0
+     *
+     * @return A {@link List} of {@link DataCategory} objects
+     */
+    @Override
+    public Optional<List<DataCategory>> getDataCategories() {
+        return Optional.ofNullable(new ArrayList<>(dataCategories.values()));
     }
 }

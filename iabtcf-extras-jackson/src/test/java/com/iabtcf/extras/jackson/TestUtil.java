@@ -36,4 +36,9 @@ public class TestUtil {
         ClassLoader loader = GvlTest.class.getClassLoader();
         return loader.getResourceAsStream("gvl.json");
     }
+
+    public static InputStream getGlobalVendorListV3() throws IOException {
+        ClassLoader loader = GvlTest.class.getClassLoader();
+        return loader.getResourceAsStream("gvlv3.json");
+    }
 }

@@ -22,6 +22,7 @@ package com.iabtcf.extras.jackson.gvl;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,6 +37,7 @@ public class VendorTest {
 
     private static Vendor vendorEight;
     private static Vendor vendorTwo;
+    private static Vendor vendorV3Two;
     private static final int VENDOR_ID_SELECTED_FOR_TEST = 8;
 
     @BeforeClass
@@ -44,6 +46,9 @@ public class VendorTest {
         Gvl gvl = loader.globalVendorList(TestUtil.getGlobalVendorList());
         vendorEight = gvl.getVendor(VENDOR_ID_SELECTED_FOR_TEST);
         vendorTwo = gvl.getVendor(2);
+
+        gvl = loader.globalVendorList(TestUtil.getGlobalVendorListV3());
+        vendorV3Two = gvl.getVendor(2);
     }
 
     @Test
@@ -101,7 +106,7 @@ public class VendorTest {
     @Test
     public void testGetPolicyUrl() {
         String expectedPolicyUrl = "https://www.emerse.com/privacy-policy/";
-        Assert.assertEquals(expectedPolicyUrl, vendorEight.getPolicyUrl());
+        Assert.assertEquals(expectedPolicyUrl, vendorEight.getPolicyUrl().get());
     }
 
     @Test
@@ -128,17 +133,17 @@ public class VendorTest {
 
     @Test
     public void testUsesCookies() {
-        Assert.assertTrue(vendorEight.getUsesCookies());
+        Assert.assertTrue(vendorEight.getUsesCookies().get());
     }
 
     @Test
     public void testCookieRefresh() {
-        Assert.assertFalse(vendorEight.getHasCookieRefresh());
+        Assert.assertFalse(vendorEight.getCookieRefresh().get());
     }
 
     @Test
     public void testUsesNonCookieAccess() {
-        Assert.assertTrue(vendorEight.getUsesNonCookieAccess());
+        Assert.assertTrue(vendorEight.getUsesNonCookieAccess().get());
     }
 
     @Test
@@ -148,7 +153,7 @@ public class VendorTest {
 
     @Test
     public void testNullCookieMaxAgeSeconds() {
-        Assert.assertFalse(vendorTwo.getUsesCookies());
+        Assert.assertFalse(vendorTwo.getUsesCookies().get());
         Assert.assertFalse(vendorTwo.getCookieMaxAgeSeconds().isPresent());
     }
 
@@ -157,5 +162,47 @@ public class VendorTest {
         String expectedDeviceStorageDisclosureUrl = "https://privacy.blismedia.com/.well-known/deviceStorage.json";
         Assert.assertTrue(vendorTwo.getDeviceStorageDisclosureUrl().isPresent());
         Assert.assertEquals(expectedDeviceStorageDisclosureUrl, vendorTwo.getDeviceStorageDisclosureUrl().get());
+    }
+
+    @Test
+    public void testVendorV3() {
+        Assert.assertEquals(2, vendorV3Two.getId());
+        Assert.assertEquals("Captify Technologies Limited", vendorV3Two.getName());
+        Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 7, 9, 10), vendorV3Two.getPurposes());
+        Assert.assertEquals(Collections.emptyList(), vendorV3Two.getLegIntPurposes());
+        Assert.assertEquals(Collections.emptyList(), vendorV3Two.getFlexiblePurposes());
+        Assert.assertEquals(Arrays.asList(1, 2), vendorV3Two.getSpecialPurposes());
+        Assert.assertEquals(Collections.singletonList(2), vendorV3Two.getFeatures());
+        Assert.assertEquals(Collections.singletonList(2), vendorV3Two.getSpecialFeatures());
+        Assert.assertEquals("https://static.cpx.to/gvl/deviceStorageDisclosure.json", vendorV3Two.getDeviceStorageDisclosureUrl().get());
+        Assert.assertFalse(vendorV3Two.getPolicyUrl().isPresent());
+        Assert.assertFalse(vendorV3Two.getDeletedDate().isPresent());
+        Assert.assertFalse(vendorV3Two.isDeleted());
+        Assert.assertTrue(vendorV3Two.getUsesCookies().isPresent());
+        Assert.assertTrue(vendorV3Two.getUsesCookies().get());
+        Assert.assertTrue(vendorV3Two.getCookieRefresh().isPresent());
+        Assert.assertTrue(vendorV3Two.getCookieRefresh().get());
+        Assert.assertTrue(vendorV3Two.getUsesNonCookieAccess().isPresent());
+        Assert.assertTrue(vendorV3Two.getUsesNonCookieAccess().get());
+        Assert.assertTrue(vendorV3Two.getCookieMaxAgeSeconds().isPresent());
+        Assert.assertEquals(31536000L, vendorV3Two.getCookieMaxAgeSeconds().get().longValue());
+        Assert.assertTrue(vendorV3Two.getDataRetention().isPresent());
+        Assert.assertTrue(vendorV3Two.getDataRetention().get().getStdRetention().isPresent());
+        Assert.assertEquals(365, vendorV3Two.getDataRetention().get().getStdRetention().get().intValue());
+        Assert.assertEquals(0, vendorV3Two.getDataRetention().get().getPurposes().size());
+        Assert.assertEquals(0, vendorV3Two.getDataRetention().get().getSpecialPurposes().size());
+        Assert.assertTrue(vendorV3Two.getUrls().isPresent());
+        Assert.assertEquals(1, vendorV3Two.getUrls().get().size());
+        Assert.assertEquals("en", vendorV3Two.getUrls().get().get(0).getLangId());
+        Assert.assertEquals("https://www.captifytechnologies.com/privacy-notice/",
+                            vendorV3Two.getUrls().get().get(0).getPrivacy());
+        Assert.assertTrue(vendorV3Two.getUrls().get().get(0).getLegIntClaim().isPresent());
+        Assert.assertEquals("https://www.captifytechnologies.com/privacy-notice/",
+                            vendorV3Two.getUrls().get().get(0).getLegIntClaim().get());
+        Assert.assertTrue(vendorV3Two.getDataDeclaration().isPresent());
+        Assert.assertEquals(5, vendorV3Two.getDataDeclaration().get().size());
+        Assert.assertEquals(Arrays.asList(1, 2, 4, 6, 11), vendorV3Two.getDataDeclaration().get());
+        Assert.assertEquals("https://static.cpx.to/gvl/deviceStorageDisclosure.json",
+                            vendorV3Two.getDeviceStorageDisclosureUrl().get());
     }
 }

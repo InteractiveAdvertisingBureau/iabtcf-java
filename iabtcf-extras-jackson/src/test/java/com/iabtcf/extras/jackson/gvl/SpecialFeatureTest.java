@@ -33,7 +33,8 @@ import com.iabtcf.extras.gvl.SpecialFeature;
 public class SpecialFeatureTest {
 
     private static SpecialFeature specialFeatureOne;
-    private final static int SPECIAL_FEAUTRE_ID_SELECTED_FOR_TEST = 1;
+    private static SpecialFeature specialFeatureV3One;
+    private final static int SPECIAL_FEATURE_ID_SELECTED_FOR_TEST = 1;
 
     @Before
     public void setUp() throws Exception {
@@ -41,9 +42,16 @@ public class SpecialFeatureTest {
         List<SpecialFeature> specialFeatures = loader.globalVendorList(TestUtil.getGlobalVendorList()).getSpecialFeatures();
         specialFeatureOne =
                 specialFeatures.stream()
-                    .filter(o -> o.getId() == SPECIAL_FEAUTRE_ID_SELECTED_FOR_TEST)
+                    .filter(o -> o.getId() == SPECIAL_FEATURE_ID_SELECTED_FOR_TEST)
                     .findFirst()
                     .orElse(null);
+
+        specialFeatures = loader.globalVendorList(TestUtil.getGlobalVendorListV3()).getSpecialFeatures();
+        specialFeatureV3One =
+            specialFeatures.stream()
+                .filter(o -> o.getId() == SPECIAL_FEATURE_ID_SELECTED_FOR_TEST)
+                .findFirst()
+                .orElse(null);
     }
 
     @Test
@@ -68,6 +76,14 @@ public class SpecialFeatureTest {
     public void testGetDescriptionLegal() {
         String expectedDescriptionLegal =
                 "Vendors can:\n* Collect and process precise geolocation data in support of one or more purposes.\nN.B. Precise geolocation means that there are no restrictions on the precision of a user’s location; this can be accurate to within several meters.";
-        Assert.assertEquals(expectedDescriptionLegal, specialFeatureOne.getDescriptionLegal());
+        Assert.assertEquals(expectedDescriptionLegal, specialFeatureOne.getDescriptionLegal().get());
+    }
+
+    @Test
+    public void testSpecialFeaturesV3() {
+        Assert.assertEquals(1, specialFeatureV3One.getId());
+        Assert.assertEquals("Use precise geolocation data", specialFeatureV3One.getName());
+        Assert.assertFalse(specialFeatureV3One.getDescriptionLegal().isPresent());
+        Assert.assertEquals(0, specialFeatureV3One.getIllustrations().get().size());
     }
 }

@@ -33,6 +33,7 @@ import java.util.List;
 public class FeatureTest {
 
     private static Feature featureTwo;
+    private static Feature featureTwoV3;
     private static final int FEATURE_ID_SELECTED_FOR_TEST = 2;
 
     @BeforeClass
@@ -40,6 +41,10 @@ public class FeatureTest {
         Loader loader = new Loader();
         List<Feature> features = loader.globalVendorList(TestUtil.getGlobalVendorList()).getFeatures();
         featureTwo = features.stream().filter(o -> o.getId() == FEATURE_ID_SELECTED_FOR_TEST).findFirst().orElse(null);
+
+        features = loader.globalVendorList(TestUtil.getGlobalVendorListV3()).getFeatures();
+        featureTwoV3 =
+            features.stream().filter(o -> o.getId() == FEATURE_ID_SELECTED_FOR_TEST).findFirst().orElse(null);
     }
 
     @Test
@@ -64,6 +69,17 @@ public class FeatureTest {
     public void testGetDescriptionLegal() {
         String expectedDescriptionLegal =
                 "Vendors can:\n* Deterministically determine that two or more devices belong to the same user or household\n* Probabilistically determine that two or more devices belong to the same user or household\n* Actively scan device characteristics for identification for probabilistic identification if users have allowed vendors to actively scan device characteristics for identification (Special Feature 2)";
-        Assert.assertEquals(expectedDescriptionLegal, featureTwo.getDescriptionLegal());
+        Assert.assertEquals(expectedDescriptionLegal, featureTwo.getDescriptionLegal().get());
+    }
+
+    @Test
+    public void testFeaturesV3() {
+        Assert.assertEquals(2, featureTwoV3.getId());
+        Assert.assertEquals("Link different devices", featureTwoV3.getName());
+        Assert.assertEquals("In support of the purposes explained in this notice, your device might be considered as likely linked to other devices that belong to you or your household (for instance because you are logged in to the same service on both your phone and your computer, or because you may use the same Internet connection on both devices).", featureTwoV3.getDescription());
+        Assert.assertFalse(featureTwoV3.getDescriptionLegal().isPresent());
+        Assert.assertEquals(2, featureTwoV3.getIllustrations().get().size());
+        Assert.assertEquals("Test Illustration 1", featureTwoV3.getIllustrations().get().get(0));
+        Assert.assertEquals("Test Illustration 2", featureTwoV3.getIllustrations().get().get(1));
     }
 }

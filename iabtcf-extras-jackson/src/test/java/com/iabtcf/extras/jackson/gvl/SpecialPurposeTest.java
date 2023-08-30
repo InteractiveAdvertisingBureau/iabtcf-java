@@ -33,6 +33,7 @@ import java.util.List;
 public class SpecialPurposeTest {
 
     private static SpecialPurpose specialPurposeOne;
+    private static SpecialPurpose specialPurposeV1One;
     private static final int SPECIAL_PURPOSE_SELECTED_FOR_TEST = 1;
 
     @BeforeClass
@@ -44,6 +45,13 @@ public class SpecialPurposeTest {
                     .filter(o -> o.getId() == SPECIAL_PURPOSE_SELECTED_FOR_TEST)
                     .findFirst()
                     .orElse(null);
+
+        specialPurposes = loader.globalVendorList(TestUtil.getGlobalVendorListV3()).getSpecialPurposes();
+        specialPurposeV1One =
+            specialPurposes.stream()
+                .filter(o -> o.getId() == SPECIAL_PURPOSE_SELECTED_FOR_TEST)
+                .findFirst()
+                .orElse(null);
     }
 
     @Test
@@ -68,7 +76,7 @@ public class SpecialPurposeTest {
     public void testGetDescriptionLegal() {
         String expectedDescriptionLegal =
                 "To ensure security, prevent fraud and debug vendors can:\n* Ensure data are securely transmitted\n* Detect and prevent malicious, fraudulent, invalid, or illegal activity.\n* Ensure correct and efficient operation of systems and processes, including to monitor and enhance the performance of systems and processes engaged in permitted purposes\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose.";
-        Assert.assertEquals(expectedDescriptionLegal, specialPurposeOne.getDescriptionLegal());
+        Assert.assertEquals(expectedDescriptionLegal, specialPurposeOne.getDescriptionLegal().get());
     }
 
     @Test
@@ -79,5 +87,16 @@ public class SpecialPurposeTest {
     @Test
     public void testGetRightToObject() {
         Assert.assertFalse(specialPurposeOne.getRightToObject());
+    }
+
+    @Test
+    public void testSpecialPurposeV3() {
+        Assert.assertEquals(1, specialPurposeV1One.getId());
+        Assert.assertEquals("Ensure security, prevent and detect fraud, and fix errors\n", specialPurposeV1One.getName());
+        Assert.assertEquals("Your data can be used to monitor for and prevent unusual and possibly fraudulent activity (for example, regarding advertising, ad clicks by bots), and ensure systems and processes work properly and securely. It can also be used to correct any problems you, the publisher or the advertiser may encounter in the delivery of content and ads and in your interaction with them.", specialPurposeV1One.getDescription());
+        Assert.assertFalse(specialPurposeV1One.getDescriptionLegal().isPresent());
+        Assert.assertEquals(1, specialPurposeV1One.getIllustrations().get().size());
+        Assert.assertEquals("An advertising intermediary delivers ads from various advertisers to its network of partnering websites. It notices a large increase in clicks on ads relating to one advertiser, and uses data regarding the source of the clicks to determine that 80% of the clicks come from bots rather than humans.",
+                            specialPurposeV1One.getIllustrations().get().get(0));
     }
 }
