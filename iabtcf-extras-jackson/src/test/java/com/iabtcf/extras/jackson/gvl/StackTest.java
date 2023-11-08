@@ -33,6 +33,7 @@ import java.util.List;
 public class StackTest {
 
     private static Stack stackTwenty;
+    private static Stack stackV3Twenty;
     private final static int STACK_ID_SELECTED_FOR_TEST = 20;
 
     @BeforeClass
@@ -40,6 +41,9 @@ public class StackTest {
         Loader loader = new Loader();
         List<Stack> stacks = loader.globalVendorList(TestUtil.getGlobalVendorList()).getStacks();
         stackTwenty = stacks.stream().filter(o -> o.getId() == STACK_ID_SELECTED_FOR_TEST).findFirst().orElse(null);
+
+        stacks = loader.globalVendorList(TestUtil.getGlobalVendorListV3()).getStacks();
+        stackV3Twenty = stacks.stream().filter(o -> o.getId() == STACK_ID_SELECTED_FOR_TEST).findFirst().orElse(null);
     }
 
     @Test
@@ -71,5 +75,18 @@ public class StackTest {
         String expectedDescription =
                 "Ad and content performance can be measured.  Insights about the audiences who saw the ads and content can be derived. Data can be used to build or improve user experience, systems, and software. Insights about the audiences who saw the ads and content can be derived.";
         Assert.assertEquals(expectedDescription, stackTwenty.getDescription());
+    }
+
+    @Test
+    public void testStacksV3() {
+        Assert.assertNotNull(stackV3Twenty);
+        Assert.assertEquals(20, stackV3Twenty.getId());
+        Assert.assertNotNull(stackV3Twenty.getSpecialFeatures());
+        Assert.assertEquals(0, stackV3Twenty.getSpecialFeatures().size());
+        Assert.assertNotNull(stackV3Twenty.getPurposes());
+        Assert.assertEquals(4, stackV3Twenty.getPurposes().size());
+        Assert.assertEquals(Arrays.asList(7, 8, 9, 10), stackV3Twenty.getPurposes());
+        String expectedName = "Advertising and content measurement, audience research, and services development";
+        Assert.assertEquals(expectedName, stackV3Twenty.getName());
     }
 }

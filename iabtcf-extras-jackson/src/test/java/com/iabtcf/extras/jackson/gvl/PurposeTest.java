@@ -34,13 +34,19 @@ import com.iabtcf.extras.gvl.Purpose;
 public class PurposeTest {
 
     private static Purpose purposeTen;
+    private static Purpose purposeElevenV3;
     private static final int PURPOSE_SELECTED_FOR_TEST = 10;
+    private static final int PURPOSE_SELECTED_FOR_V3_TEST = 11;
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
         Loader loader = new Loader();
         List<Purpose> purposes = loader.globalVendorList(TestUtil.getGlobalVendorList()).getPurposes();
         purposeTen = purposes.stream().filter(o -> o.getId() == PURPOSE_SELECTED_FOR_TEST).findFirst().orElse(null);
+
+        purposes = loader.globalVendorList(TestUtil.getGlobalVendorListV3()).getPurposes();
+        purposeElevenV3 =
+            purposes.stream().filter(o -> o.getId() == PURPOSE_SELECTED_FOR_V3_TEST).findFirst().orElse(null);
     }
 
     @Test
@@ -65,7 +71,7 @@ public class PurposeTest {
     public void testGetDescriptionLegal() {
         String expectedDescriptionLegal =
                 "To develop new products and improve products vendors can:\n* Use information to improve their existing products with new features and to develop new products\n* Create new models and algorithms through machine learning\nVendors cannot:\n* Conduct any other data processing operation allowed under a different purpose under this purpose";
-        Assert.assertEquals(expectedDescriptionLegal, purposeTen.getDescriptionLegal());
+        Assert.assertEquals(expectedDescriptionLegal, purposeTen.getDescriptionLegal().get());
     }
 
     @Test
@@ -76,5 +82,19 @@ public class PurposeTest {
     @Test
     public void testGetRightToObject() {
         Assert.assertFalse(purposeTen.getRightToObject());
+    }
+
+    @Test
+    public void testPurposeV3() {
+        Assert.assertEquals(11, purposeElevenV3.getId());
+        Assert.assertEquals("Use limited data to select content", purposeElevenV3.getName());
+        Assert.assertEquals("Content presented to you on this service can be based on limited data, such as the website or app you are using, your non-precise location, your device type, or which content you are (or have been) interacting with (for example, to limit the number of times a video or an article is presented to you).\n", purposeElevenV3.getDescription());
+        Assert.assertFalse(purposeElevenV3.getDescriptionLegal().isPresent());
+        Assert.assertEquals(2, purposeElevenV3.getIllustrations().get().size());
+        Assert.assertEquals("A sports news mobile app has started a new section of articles covering the most recent football games. Each article includes videos hosted by a separate streaming platform showcasing the highlights of each match. If you fast-forward a video, this information may be used to select a shorter video to play next.\n",
+                            purposeElevenV3.getIllustrations().get().get(1));
+        Assert.assertTrue(purposeElevenV3.getConsentable());
+        Assert.assertTrue(purposeElevenV3.getRightToObject());
+
     }
 }

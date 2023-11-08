@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.iabtcf.extras.jackson.cmp.Cmp;
 import com.iabtcf.extras.jackson.cmp.CmpList;
+import com.iabtcf.extras.jackson.gvl.DataCategory;
+import com.iabtcf.extras.jackson.gvl.DataRetention;
 import com.iabtcf.extras.jackson.gvl.Feature;
 import com.iabtcf.extras.jackson.gvl.Gvl;
 import com.iabtcf.extras.jackson.gvl.Overflow;
@@ -38,6 +40,7 @@ import com.iabtcf.extras.jackson.gvl.SpecialFeature;
 import com.iabtcf.extras.jackson.gvl.SpecialPurpose;
 import com.iabtcf.extras.jackson.gvl.Stack;
 import com.iabtcf.extras.jackson.gvl.Vendor;
+import com.iabtcf.extras.jackson.gvl.VendorUrl;
 
 public class Loader {
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -54,6 +57,9 @@ public class Loader {
         resolver.addMapping(com.iabtcf.extras.gvl.SpecialPurpose.class, SpecialPurpose.class);
         resolver.addMapping(com.iabtcf.extras.gvl.Stack.class, Stack.class);
         resolver.addMapping(com.iabtcf.extras.gvl.Vendor.class, Vendor.class);
+        resolver.addMapping(com.iabtcf.extras.gvl.DataCategory.class, DataCategory.class);
+        resolver.addMapping(com.iabtcf.extras.gvl.DataRetention.class, DataRetention.class);
+        resolver.addMapping(com.iabtcf.extras.gvl.VendorUrl.class, VendorUrl.class);
 
         resolver.addMapping(com.iabtcf.extras.cmp.Cmp.class, Cmp.class);
         resolver.addMapping(com.iabtcf.extras.cmp.CmpList.class, CmpList.class);

@@ -36,11 +36,13 @@ import com.iabtcf.extras.gvl.Gvl;
 
 public class GvlTest {
     private static Gvl gvl;
+    private static Gvl gvlV3;
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
         Loader loader = new Loader();
         gvl = loader.globalVendorList(TestUtil.getGlobalVendorList());
+        gvlV3 = loader.globalVendorList(TestUtil.getGlobalVendorListV3());
     }
 
     @Test
@@ -94,5 +96,18 @@ public class GvlTest {
     @Test
     public void testGetVendors() {
         Assert.assertEquals(3, gvl.getVendors().size());
+    }
+
+    @Test
+    public void testGvlV3() {
+        Assert.assertEquals(3, gvlV3.getGvlSpecificationVersion());
+        Assert.assertEquals(15, gvlV3.getVendorListVersion());
+        Assert.assertEquals(4, gvlV3.getTcfPolicyVersion());
+        Assert.assertEquals(11, gvlV3.getPurposes().size());
+        Assert.assertEquals(2, gvlV3.getSpecialPurposes().size());
+        Assert.assertEquals(3, gvlV3.getFeatures().size());
+        Assert.assertEquals(2, gvlV3.getSpecialFeatures().size());
+        Assert.assertEquals(43, gvlV3.getStacks().size());
+        Assert.assertEquals(2, gvlV3.getVendors().size());
     }
 }

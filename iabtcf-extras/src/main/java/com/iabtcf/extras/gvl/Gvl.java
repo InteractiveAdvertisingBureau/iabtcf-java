@@ -22,6 +22,7 @@ package com.iabtcf.extras.gvl;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface Gvl {
 
@@ -102,4 +103,12 @@ public interface Gvl {
      * @return A {@link Vendor} object
      */
     Vendor getVendor(int vendorId);
+
+    /**
+     * A list of data categories
+     * @since 3.0
+     *
+     * @return A {@link List} of {@link DataCategory} objects
+     */
+    Optional<List<DataCategory>> getDataCategories();
 }

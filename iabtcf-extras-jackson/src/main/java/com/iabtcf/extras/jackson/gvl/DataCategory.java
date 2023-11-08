@@ -20,34 +20,30 @@ package com.iabtcf.extras.jackson.gvl;
  * #L%
  */
 
-import java.util.List;
-import java.util.Optional;
-
 /*
- * List of Features the Vendor may utilize when performing some declared Purposes processing
+ * Vendors will be able to declare the categories of data they collect and process.
+ * @since 3.0
  */
-public class Feature implements com.iabtcf.extras.gvl.Feature {
+public class DataCategory implements com.iabtcf.extras.gvl.DataCategory {
 
     private int id;
     private String name;
     private String description;
-    private String descriptionLegal;
-    private List<String> illustrations;
 
     /**
-     * A feature id
+     * A id
      *
-     * @return feature id
+     * @return id
      */
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
     /**
-     * Name of the feature
+     * Name
      *
-     * @return feature name string
+     * @return name
      */
     @Override
     public String getName() {
@@ -55,33 +51,12 @@ public class Feature implements com.iabtcf.extras.gvl.Feature {
     }
 
     /**
-     * Description of the feature
+     * Description
      *
-     * @return feature description string
+     * @return description
      */
     @Override
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Legal description of the feature
-     * @deprecated since 3.0
-     *
-     * @return legal description string
-     */
-    @Override
-    public Optional<String> getDescriptionLegal() {
-        return Optional.ofNullable(descriptionLegal);
-    }
-
-    /**
-     * illustrations
-     * @since 3.0
-     * @return illustrations
-     */
-    @Override
-    public Optional<List<String>> getIllustrations() {
-        return Optional.ofNullable(illustrations);
     }
 }

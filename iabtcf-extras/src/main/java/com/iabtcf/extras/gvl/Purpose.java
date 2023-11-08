@@ -20,6 +20,9 @@ package com.iabtcf.extras.gvl;
  * #L%
  */
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * A standard purpose
  */
@@ -48,10 +51,18 @@ public interface Purpose {
 
     /**
      * Legal description of the purpose
+     * @deprecated since 3.0
      *
      * @return legal description string
      */
-    String getDescriptionLegal();
+    Optional<String> getDescriptionLegal();
+
+    /**
+     * A list of illustrations
+     * @since 3.0
+     * @return A {@link List} of strings
+     */
+    Optional<List<String>> getIllustrations();
 
     /**
      * An optional flag where false means CMPs should never afford users the means to provide an

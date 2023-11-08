@@ -20,48 +20,35 @@ package com.iabtcf.extras.gvl;
  * #L%
  */
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /*
- * List of Features the Vendor may utilize when performing some declared Purposes processing
+ * DataRetention allows vendors to declare how long they retain users’ data for each declared purpose. Vendors can
+ * define specific retention periods on a per-purpose and special-purpose basis, and/or define a standard retention
+ * period if it is the same for many or all of the declared purposes
+ * @since 3.0
  */
-public interface Feature {
+public interface DataRetention {
 
     /**
-     * A feature id
+     * stdRetention
      *
-     * @return feature id
+     * @return stdRetention
      */
-    int getId();
+    Optional<Integer> getStdRetention();
 
     /**
-     * Name of the feature
+     * purposes
      *
-     * @return feature name string
+     * @return purposes
      */
-    String getName();
+    Map<Integer, Integer> getPurposes();
 
     /**
-     * Description of the feature
+     * specialPurposes
      *
-     * @return feature description string
+     * @return specialPurposes
      */
-    String getDescription();
-
-    /**
-     * Legal description of the feature
-     * @deprecated since 3.0
-     *
-     * @return legal description string
-     */
-    Optional<String> getDescriptionLegal();
-
-    /**
-     * A list of illustrations
-     * @since 3.0
-     *
-     * @return A {@link List} of strings
-     */
-    Optional<List<String>> getIllustrations();
+    Map<Integer, Integer> getSpecialPurposes();
 }

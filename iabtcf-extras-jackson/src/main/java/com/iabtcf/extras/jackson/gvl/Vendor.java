@@ -24,7 +24,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.iabtcf.extras.gvl.DataRetention;
 import com.iabtcf.extras.gvl.Overflow;
+import com.iabtcf.extras.gvl.VendorUrl;
 
 public class Vendor implements com.iabtcf.extras.gvl.Vendor {
 
@@ -38,12 +40,16 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
     private List<Integer> specialFeatures;
     private String policyUrl;
     private Instant deletedDate;
-    private com.iabtcf.extras.gvl.Overflow overflow;
+    private Overflow overflow;
     private Long cookieMaxAgeSeconds;
     private boolean usesCookies;
     private boolean cookieRefresh;
     private boolean usesNonCookieAccess;
     private String deviceStorageDisclosureUrl;
+    private DataRetention dataRetention;
+    private List<VendorUrl> urls;
+    private List<Integer> dataDeclaration;
+
 
     /**
      * A vendor id: a numeric ID which is incrementally assigned and never re-used – deleted Vendors
@@ -133,12 +139,12 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
 
     /**
      * GDPR/privacy policy page URL
-     *
+     * @deprecated since 3.0
      * @return policy url string
      */
     @Override
-    public String getPolicyUrl() {
-        return policyUrl;
+    public Optional<String> getPolicyUrl() {
+        return Optional.ofNullable(policyUrl);
     }
 
     /**
@@ -192,8 +198,8 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
      * @return True indicates cookie storage is used
      */
     @Override
-    public boolean getUsesCookies() {
-        return usesCookies;
+    public Optional<Boolean> getUsesCookies() {
+        return Optional.ofNullable(usesCookies);
     }
 
     /**
@@ -203,8 +209,8 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
      * @return True indicates the vendor refreshes this cookie
      */
     @Override
-    public boolean getHasCookieRefresh() {
-        return cookieRefresh;
+    public Optional<Boolean> getCookieRefresh() {
+        return Optional.ofNullable(cookieRefresh);
     }
 
     /**
@@ -215,8 +221,8 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
      * @return True indicates non-cookie access is used
      */
     @Override
-    public boolean getUsesNonCookieAccess() {
-        return usesNonCookieAccess;
+    public Optional<Boolean> getUsesNonCookieAccess() {
+        return Optional.of(usesNonCookieAccess);
     }
 
     /**
@@ -227,5 +233,32 @@ public class Vendor implements com.iabtcf.extras.gvl.Vendor {
     @Override
     public Optional<String> getDeviceStorageDisclosureUrl() {
         return Optional.ofNullable(deviceStorageDisclosureUrl);
+    }
+
+    /**
+     * Data Retention
+     * @since 3.0
+     * @return dataRetention
+     */
+    public Optional<DataRetention> getDataRetention() {
+        return Optional.ofNullable(dataRetention);
+    }
+
+    /**
+     * urls
+     * @since 3.0
+     * @return urls
+     */
+    public Optional<List<VendorUrl>> getUrls() {
+        return Optional.ofNullable(urls);
+    }
+
+    /**
+     * Data Declarations
+     * @since 3.0
+     * @return dataDeclarations
+     */
+    public Optional<List<Integer>> getDataDeclaration() {
+        return Optional.ofNullable(dataDeclaration);
     }
 }

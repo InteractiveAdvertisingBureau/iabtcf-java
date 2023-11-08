@@ -20,48 +20,29 @@ package com.iabtcf.extras.gvl;
  * #L%
  */
 
-import java.util.List;
-import java.util.Optional;
-
 /*
- * List of Features the Vendor may utilize when performing some declared Purposes processing
+ * Vendors will be able to declare the categories of data they collect and process.
+ * @since 3.0
  */
-public interface Feature {
-
+public interface DataCategory {
     /**
-     * A feature id
+     * id
      *
-     * @return feature id
+     * @return id
      */
-    int getId();
+    Integer getId();
 
     /**
-     * Name of the feature
+     * name
      *
-     * @return feature name string
+     * @return name
      */
     String getName();
 
     /**
-     * Description of the feature
+     * description
      *
-     * @return feature description string
+     * @return description
      */
     String getDescription();
-
-    /**
-     * Legal description of the feature
-     * @deprecated since 3.0
-     *
-     * @return legal description string
-     */
-    Optional<String> getDescriptionLegal();
-
-    /**
-     * A list of illustrations
-     * @since 3.0
-     *
-     * @return A {@link List} of strings
-     */
-    Optional<List<String>> getIllustrations();
 }

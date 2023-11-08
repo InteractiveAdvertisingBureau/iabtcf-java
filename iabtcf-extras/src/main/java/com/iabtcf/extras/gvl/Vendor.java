@@ -90,10 +90,11 @@ public interface Vendor {
 
     /**
      * GDPR/privacy policy page URL
+     * @deprecated since 3.0
      *
      * @return policy url string
      */
-    String getPolicyUrl();
+    Optional<String> getPolicyUrl();
 
     /**
      * If available, a date/time after which the vendor is deleted from the GVL
@@ -136,14 +137,14 @@ public interface Vendor {
      * This boolean field indicates whether the vendor uses cookie storage (session or otherwise).
      * @return True indicates cookie storage is used
      */
-    boolean getUsesCookies();
+    Optional<Boolean> getUsesCookies();
 
     /**
      * This true or false field indicates whether any cookies in scope for cookieMaxAgeSeconds are refreshed after
      * being initially set.
      * @return True indicates the vendor refreshes this cookie
      */
-    boolean getHasCookieRefresh();
+    Optional<Boolean> getCookieRefresh();
 
     /**
      * This boolean field indicates whether the vendor uses other, non-cookie methods of storage or accessing
@@ -151,11 +152,35 @@ public interface Vendor {
      * indexDB, mobile ad IDs, etc.
      * @return True indicates non-cookie access is used
      */
-    boolean getUsesNonCookieAccess();
+    Optional<Boolean> getUsesNonCookieAccess();
 
     /**
      * Link to a recommended, vendor-hosted, secure URL for disclosing additional storage information
      * @return Location of vendor-hosted deviceStorage.json file
      */
     Optional<String> getDeviceStorageDisclosureUrl();
+
+    /**
+     * This object indicates how long vendors retain user's data for each declared purpose
+     * @since 3.0
+     * @return {@link DataRetention} object
+     */
+    Optional<DataRetention> getDataRetention();
+
+    /**
+     * This list indicates unique urls to privacy policies by language and link to an explanation of their legitimate
+     * interests at stake
+     * @since 3.0
+     *
+     * @return A {@link List} of {@link VendorUrl} objects
+     */
+    Optional<List<VendorUrl>> getUrls();
+
+    /**
+     * This list of integers indicates data categories {@link DataCategory} that vendors collect and process
+     * @since 3.0
+     *
+     * @return A {@link List} of integers
+     */
+    Optional<List<Integer>> getDataDeclaration();
 }
