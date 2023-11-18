@@ -185,7 +185,11 @@ public class BitReader {
      *
      * @throws ByteParseException
      */
-    private byte readByteBits(int offset, int nbits) {
+    public byte readByteBits(int offset, int nbits) {
+        if (nbits < 0 || nbits > 8) {
+            throw new ByteParseException("Only 0 to 8 bytes can be read into a byte");
+        }
+
         int startByte = offset >>> 3;
         int bitPos = offset % 8;
         int n = 8 - bitPos;
@@ -289,6 +293,30 @@ public class BitReader {
     /**
      * @throws ByteParseException
      */
+    public int readBits32(int offset) {
+        int startByte = offset >>> 3;
+        int bitPos = offset % 8;
+        int n = 8 - bitPos;
+
+        if (n < 8) {
+            ensureReadable(startByte, 5);
+            return ((unsafeReadLsb(buffer[startByte], bitPos, n) & 0xFF) << 24)
+                    | (buffer[startByte + 1] & 0xFF) << (16 + bitPos)
+                    | (buffer[startByte + 2] & 0xFF) << (8 + bitPos)
+                    | (buffer[startByte + 3] & 0xFF) << bitPos
+                    | (unsafeReadMsb(buffer[startByte + 4], 0, bitPos) & 0xFF);
+        } else {
+            ensureReadable(startByte, 4);
+            return (buffer[startByte] & 0xFF) << 24
+                    | (buffer[startByte + 1] & 0xFF) << 16
+                    | (buffer[startByte + 2] & 0xFF) << 8
+                    | (buffer[startByte + 3] & 0xFF);
+        }
+    }
+
+    /**
+     * @throws ByteParseException
+     */
     public long readBits36(FieldDefs field) {
         assert field.getLength(this) == 36;
         return readBits36(field.getOffset(this));
@@ -323,15 +351,78 @@ public class BitReader {
     /**
      * @throws ByteParseException
      */
+    public long readBits64(int offset) {
+        int startByte = offset >>> 3;
+        int bitPos = offset % 8;
+        int n = 8 - bitPos; // # bits to read
+
+        if (n < 8) {
+            ensureReadable(startByte, 9);
+            return ((long) unsafeReadLsb(buffer[startByte], bitPos, n) & 0xFF) << 56
+                    | ((long) buffer[startByte + 1] & 0xFF) << (48 + bitPos)
+                    | ((long) buffer[startByte + 2] & 0xFF) << (40 + bitPos)
+                    | ((long) buffer[startByte + 3] & 0xFF) << (32 + bitPos)
+                    | ((long) buffer[startByte + 4] & 0xFF) << (24 + bitPos)
+                    | ((long) buffer[startByte + 5] & 0xFF) << (16 + bitPos)
+                    | ((long) buffer[startByte + 6] & 0xFF) << (8 + bitPos)
+                    | ((long) buffer[startByte + 7] & 0xFF) << bitPos
+                    | ((long) unsafeReadMsb(buffer[startByte + 8], 0, bitPos) & 0xFF);
+        } else {
+            ensureReadable(startByte, 8);
+            return ((long) buffer[startByte] & 0xFF) << 56
+                    | ((long) buffer[startByte + 1] & 0xFF) << 48
+                    | ((long) buffer[startByte + 2] & 0xFF) << 40
+                    | ((long) buffer[startByte + 3] & 0xFF) << 32
+                    | ((long) buffer[startByte + 4] & 0xFF) << 24
+                    | ((long) buffer[startByte + 5] & 0xFF) << 16
+                    | ((long) buffer[startByte + 6] & 0xFF) << 8
+                    | ((long) buffer[startByte + 7] & 0xFF);
+        }
+    }
+
+    /**
+     * @throws ByteParseException
+     */
     public BitSet readBitSet(int offset, int length) {
-        // TODO(mk): can we read larger chunks at a time?
-        BitSet bs = new BitSet(length);
-        for (int i = 0; i < length; i++) {
-            if (readBits1(offset + i)) {
-                bs.set(i);
+        return readBitSet(offset, length, 0);
+    }
+
+    /**
+     * @throws ByteParseException
+     */
+    public BitSet readBitSet(int offset, int length, int resultShift) {
+        final BitSet bs = new BitSet(length);
+        int i = 0;
+        while (i < length) {
+            final int remaining = length - i;
+            final int readIndex = offset + i;
+            final int writeIndex = resultShift + i;
+            if (remaining >= 64) {
+                fillBitSetWithContent(bs, readBits64(readIndex), 64, writeIndex);
+                i += 64;
+            } else if (remaining >= 32) {
+                fillBitSetWithContent(bs, readBits32(readIndex), 32, writeIndex);
+                i += 32;
+            } else if (remaining >= 16) {
+                fillBitSetWithContent(bs, readBits16(readIndex), 16, writeIndex);
+                i += 16;
+            } else if (remaining >= 8) {
+                fillBitSetWithContent(bs, readByteBits(readIndex, 8), 8, writeIndex);
+                i += 8;
+            } else {
+                fillBitSetWithContent(bs, readByteBits(readIndex, remaining), remaining, writeIndex);
+                i += remaining;
             }
         }
         return bs;
+    }
+
+    private void fillBitSetWithContent(BitSet bs, long content, int size, int offset) {
+        for (int j = 0; j < size; j++) {
+            if (((content >>> (size - 1 - j)) & 1) == 1) {
+                bs.set(offset + j);
+            }
+        }
     }
 
     private byte unsafeReadMsb(byte from, int offset, int length) {
